@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/communityFragment"
+        android:title="Communauté"
+        android:icon="@drawable/group"/>
+    <item
+        android:id="@+id/mapFragment"
+        android:title="Carte"
+        android:icon="@drawable/map"
+        />
+    <item
+        android:id="@+id/photoFragment"
+        android:title="Photo"
+        android:icon="@drawable/photo"
+        />
+    <item
+        android:id="@+id/groupFragment"
+        android:title="Parcelles"
+        android:icon="@drawable/photo_prints"
+        />
+    <item
+        android:id="@+id/accountFragment"
+        android:title="Compte"
+        android:icon="@drawable/account"
+        />
+</menu>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/background">
+
+    <EditText
+
+        android:id="@+id/fullnameField"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:minWidth="300dp"
+        android:minHeight="50dp"
+
+        android:layout_marginTop="180dp"
+        android:background="@drawable/edit_text_style"
+
+        android:hint="Nom complet"
+        android:inputType="text"
+
+
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/text1_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:minWidth="300dp"
+        android:minHeight="50dp"
+
+        android:layout_marginTop="30dp"
+
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+
+        android:id="@+id/emailField"
+
+        android:textColor="@color/text1_black"
+
+        android:background="@drawable/edit_text_style"
+
+        android:hint="Email"
+        android:inputType="text"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fullnameField" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:minWidth="300dp"
+        android:minHeight="50dp"
+
+        android:layout_marginTop="30dp"
+
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+
+        android:id="@+id/idField"
+
+        android:textColor="@color/text1_black"
+
+        android:background="@drawable/edit_text_style"
+
+        android:hint="Identifiant"
+        android:inputType="text"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/emailField" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:minWidth="300dp"
+        android:minHeight="50dp"
+
+        android:layout_marginTop="30dp"
+
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+
+        android:id="@+id/pwdField"
+
+        android:textColor="@color/text1_black"
+
+        android:background="@drawable/edit_text_style"
+
+
+
+        android:hint="mot de passe"
+        android:inputType="text"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/idField" />
+
+    <com.google.android.material.button.MaterialButton
+
+        android:layout_marginTop="64dp"
+
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="269dp"
+
+        android:textColor="@color/text1_black"
+
+        app:strokeColor="@color/stroke1_dark_green"
+        app:strokeWidth="1dp"
+
+        android:backgroundTint="@color/bg1_pale_green"
+
+        android:text="Créer son compte"
+        android:id="@+id/loginBtn"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pwdField"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/toSignUpBtn"
+
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+
+        android:backgroundTint="@color/bg1_pale_green"
+        android:maxWidth="168dp"
+        android:maxHeight="28dp"
+
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+
+        android:text="Déjà un compte ?"
+        android:textColor="@color/text1_black"
+
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="parent"
+
+
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginBtn"
+        app:strokeColor="@color/stroke1_dark_green"
+        app:strokeWidth="1dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
