@@ -3,12 +3,250 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".myAccountFragment">
-
-    <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/pfpField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:layout_marginTop="64dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/pfp_style"
+            android:src="@drawable/ic_launcher_foreground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <EditText
+
+            android:id="@+id/fullNameField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:minWidth="300dp"
+            android:minHeight="50dp"
+
+            android:layout_marginEnd="64dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edit_text_style"
+
+            android:text="Launay Antoine"
+            android:textSize="16sp"
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+
+            android:textColor="@color/text1_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pfpField" />
+
+        <EditText
+
+            android:id="@+id/emailField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:minWidth="300dp"
+            android:minHeight="50dp"
+
+            android:layout_marginEnd="64dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edit_text_style"
+
+            android:text="antoine.launay@etu.umontpellier.fr"
+            android:textSize="16sp"
+
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+
+            android:textColor="@color/text1_black"
+
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fullNameField" />
+
+        <EditText
+
+            android:id="@+id/idField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:minWidth="300dp"
+            android:minHeight="50dp"
+
+            android:layout_marginEnd="64dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edit_text_style"
+
+            android:text="LnyAntoine"
+            android:textSize="16sp"
+
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+
+            android:enabled="false"
+            android:textColor="@color/text1_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailField" />
+
+        <EditText
+
+            android:id="@+id/pwdField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:minWidth="300dp"
+            android:minHeight="50dp"
+
+            android:layout_marginEnd="64dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edit_text_style"
+
+            android:text="******"
+            android:textSize="16sp"
+
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+
+            android:enabled="false"
+            android:textColor="@color/text1_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/idField" />
+
+
+
+        <com.google.android.material.button.MaterialButton
+
+            android:layout_marginTop="64dp"
+
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="269dp"
+
+            android:textColor="@color/text1_black"
+
+            app:strokeColor="@color/stroke1_dark_green"
+            app:strokeWidth="1dp"
+
+            android:backgroundTint="@color/bg1_pale_green"
+
+            android:text="Se déconnecter"
+            android:id="@+id/lougoutBtn"
+            android:enabled="false"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pwdField"
+            />
+
+
+        <ImageButton
+            android:id="@+id/fullNameEditBtn"
+            android:src="@drawable/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="4dp"
+
+            android:background="@drawable/edit_button_style"
+            app:tint="@color/btn2_green"
+
+            app:layout_constraintStart_toEndOf="@id/fullNameField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fullNameField"
+            app:layout_constraintBottom_toBottomOf="@id/fullNameField"
+            />
+
+        <ImageButton
+            android:id="@+id/emailEditBtn"
+            android:src="@drawable/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="4dp"
+
+            android:background="@drawable/edit_button_style"
+            app:tint="@color/btn2_green"
+
+            app:layout_constraintStart_toEndOf="@id/emailField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/emailField"
+            app:layout_constraintBottom_toBottomOf="@id/emailField"
+            />
+
+
+        <ImageButton
+            android:id="@+id/idEditBtn"
+
+            android:src="@drawable/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="4dp"
+
+            android:background="@drawable/edit_button_style"
+            app:tint="@color/btn2_green"
+
+            app:layout_constraintStart_toEndOf="@id/idField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/idField"
+            app:layout_constraintBottom_toBottomOf="@id/idField"
+            app:strokeColor="@color/stroke1_dark_green"
+            app:strokeWidth="1dp" />
+
+        <ImageButton
+            android:id="@+id/pwdEditBtn"
+
+            android:src="@drawable/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="4dp"
+
+            android:background="@drawable/edit_button_style"
+            app:tint="@color/btn2_green"
+
+            app:layout_constraintStart_toEndOf="@id/pwdField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pwdField"
+            app:layout_constraintBottom_toBottomOf="@id/pwdField"
+            />
+
+        <ImageButton
+            android:id="@+id/pfpEditBtn"
+            android:src="@drawable/edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="4dp"
+
+            android:background="@drawable/edit_button_style"
+            app:tint="@color/btn2_green"
+
+            app:layout_constraintStart_toEndOf="@id/pfpField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pfpField"
+            app:layout_constraintBottom_toBottomOf="@id/pfpField"
+            />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
