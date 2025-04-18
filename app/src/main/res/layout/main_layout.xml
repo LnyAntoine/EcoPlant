@@ -12,11 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
 
-        android:id="@+id/nav_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true"/>
+        android:id="@+id/fragment_container"
+        />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:background="@color/stroke1_dark_green"

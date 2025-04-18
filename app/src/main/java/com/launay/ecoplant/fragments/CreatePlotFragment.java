@@ -1,4 +1,4 @@
-package com.launay.ecoplant;
+package com.launay.ecoplant.fragments;
 
 import android.os.Bundle;
 
@@ -8,12 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.launay.ecoplant.R;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link PhotoFragment#newInstance} factory method to
+ * Use the {@link CreatePlotFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PhotoFragment extends Fragment {
+public class CreatePlotFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +26,7 @@ public class PhotoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public PhotoFragment() {
+    public CreatePlotFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +36,11 @@ public class PhotoFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment PhotoFragment.
+     * @return A new instance of fragment CreatePlotFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PhotoFragment newInstance(String param1, String param2) {
-        PhotoFragment fragment = new PhotoFragment();
+    public static CreatePlotFragment newInstance(String param1, String param2) {
+        CreatePlotFragment fragment = new CreatePlotFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -59,6 +61,6 @@ public class PhotoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photo, container, false);
+        return inflater.inflate(R.layout.fragment_create_plot, container, false);
     }
 }
