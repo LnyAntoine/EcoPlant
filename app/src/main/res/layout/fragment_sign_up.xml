@@ -6,9 +6,118 @@
     tools:context=".fragments.SignUpFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        >
 
+        <EditText
+            style="@style/Theme.EcoPlant.EditText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="180dp"
+
+            android:id="@+id/fullnameField"
+
+            android:hint="Email"
+            android:inputType="text"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+
+            style="@style/Theme.EcoPlant.EditText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:id="@+id/emailField"
+            android:hint="Email"
+            android:inputType="text"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fullnameField" />
+
+        <EditText
+            style="@style/Theme.EcoPlant.EditText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+
+            android:layout_marginTop="30dp"
+
+
+            android:id="@+id/idField"
+
+
+            android:hint="Identifiant"
+            android:inputType="text"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/emailField" />
+
+        <EditText
+            style="@style/Theme.EcoPlant.EditText"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="30dp"
+
+            android:id="@+id/pwdField"
+
+            android:hint="mot de passe"
+            android:inputType="text"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/idField" />
+
+        <com.google.android.material.button.MaterialButton
+
+            style="@style/Theme.EcoPlant.MaterialButton"
+
+            android:layout_marginTop="64dp"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Créer son compte"
+            android:id="@+id/loginBtn"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pwdField"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/toSignUpBtn"
+
+            app:layout_constraintWidth_max="168dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+
+            style="@style/Theme.EcoPlant.MaterialButton"
+
+            android:textSize="11sp"
+
+            android:text="Déjà un compte ?"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/loginBtn"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

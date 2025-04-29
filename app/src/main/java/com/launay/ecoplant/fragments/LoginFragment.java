@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.launay.ecoplant.R;
 
@@ -61,6 +62,19 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+    View view = inflater.inflate(R.layout.fragment_login, container, false);
+    Button loginBtn = view.findViewById(R.id.loginBtn);
+    Button signupBtn = view.findViewById(R.id.toSignUpBtn);
+
+    signupBtn.setOnClickListener(v->{
+        Fragment signupF = new SignUpFragment();
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container,signupF)
+                .addToBackStack(null)
+                .commit();
+    });
+
+
+    return view;
     }
 }

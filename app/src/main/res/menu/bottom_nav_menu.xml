@@ -14,7 +14,7 @@
         android:icon="@drawable/photo"
         />
     <item
-        android:id="@+id/groupFragment"
+        android:id="@+id/plotFragment"
         android:title="Parcelles"
         android:icon="@drawable/photo_prints"
         />

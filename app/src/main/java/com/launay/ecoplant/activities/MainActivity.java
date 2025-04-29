@@ -1,24 +1,80 @@
 package com.launay.ecoplant.activities;
 
 import android.os.Bundle;
+import android.text.Layout;
+import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.fragments.CommunityFragment;
+import com.launay.ecoplant.fragments.MapFragment;
+import com.launay.ecoplant.fragments.MyPlotFragment;
 import com.launay.ecoplant.fragments.PhotoFragment;
+import com.launay.ecoplant.fragments.myAccountFragment;
 
 public class MainActivity extends AppCompatActivity {
+
+    Integer fragment_containerId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.main_layout);
+
         PhotoFragment photoFragment = new PhotoFragment();
+
+        BottomNavigationView navbar = findViewById(R.id.bottom_nav);
+        fragment_containerId = R.id.fragment_container;
+
+        changeFragment(photoFragment,"photo_fragment");
+
+        navbar.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id =item.getItemId();
+                if (id==R.id.accountFragment){
+                    changeFragment(new myAccountFragment(),"account_fragment");
+                    return true;
+                }
+                else {
+                    if (id == R.id.photoFragment){
+                        changeFragment(new PhotoFragment(),"photo_fragment");
+                        return true;
+                    }
+                    else {
+                        if (id == R.id.mapFragment){
+                            changeFragment(new MapFragment(),"map_fragment");
+                            return true;
+                        } else {
+                            if (id == R.id.communityFragment){
+                                changeFragment(new CommunityFragment(),"community_fragment");
+                                return true;
+                            } else {
+                                if (id == R.id.plotFragment){
+                                    changeFragment(new MyPlotFragment(),"plot_fragment");
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        });
+    }
+    void changeFragment(Fragment fragment,String name){
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container,photoFragment)
-                .addToBackStack("photo_fragment")
+                .replace(fragment_containerId,fragment)
+                .addToBackStack(name)
                 .commit();
     }
 }
