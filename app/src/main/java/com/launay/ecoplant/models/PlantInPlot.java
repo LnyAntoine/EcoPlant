@@ -5,4 +5,5 @@ public class PlantInPlot {
     String plotId;
     String pictureURI;
     String userId;
+
 }

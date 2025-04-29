@@ -1,5 +1,6 @@
 package com.launay.ecoplant.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +65,40 @@ public class SignUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_up, container, false);
+        View view =  inflater.inflate(R.layout.fragment_sign_up, container, false);
+        Button signUpBtn = view.findViewById(R.id.signUp);
+        Button toLoginBtn = view.findViewById(R.id.toLoginBtn);
+
+        EditText fullnameField = view.findViewById(R.id.fullnameField);
+        EditText mailField = view.findViewById(R.id.emailField);
+        EditText idField = view.findViewById(R.id.idField);
+        EditText pwdField = view.findViewById(R.id.pwdField);
+
+
+        toLoginBtn.setOnClickListener(v->{
+            Fragment loginF = new LoginFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,loginF)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        signUpBtn.setOnClickListener(v->{
+            String mail = mailField.getText().toString();
+            String fullname = fullnameField.getText().toString();
+            String pwd = pwdField.getText().toString();
+            String id = idField.getText().toString();
+            //Verifier l'inscription
+            if (true){
+                //Actualiser bdd
+                Intent toMainIntent = new Intent(requireActivity(), MainActivity.class);
+                startActivity(toMainIntent);
+            }
+            else {
+                //gérer erreur
+            }
+        });
+
+        return view;
     }
 }

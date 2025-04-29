@@ -1,8 +1,9 @@
 package com.launay.ecoplant.models;
 
 public class Plot {
+    String type;
     String name;
-    String id;
+    String plotId;
     String pictureUri;
     String ownerId;
     Float latitude;

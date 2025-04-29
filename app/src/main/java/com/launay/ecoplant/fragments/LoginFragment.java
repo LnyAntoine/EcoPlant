@@ -1,5 +1,6 @@
 package com.launay.ecoplant.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +69,13 @@ public class LoginFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_login, container, false);
     Button loginBtn = view.findViewById(R.id.loginBtn);
     Button signupBtn = view.findViewById(R.id.toSignUpBtn);
+    TextView pwdForgotten = view.findViewById(R.id.pwdForgottenLink);
+    EditText idField = view.findViewById(R.id.idField);
+    EditText pwdField = view.findViewById(R.id.pwdField);
+
+    pwdForgotten.setOnClickListener(v->{
+        //TODO gérer le mot de passe
+    });
 
     signupBtn.setOnClickListener(v->{
         Fragment signupF = new SignUpFragment();
@@ -73,8 +84,18 @@ public class LoginFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     });
-
-
+    loginBtn.setOnClickListener(v->{
+        String id = idField.getText().toString();
+        String pwd = pwdField.getText().toString();
+        if (true){
+            //Actualiser bdd
+            Intent toMainIntent = new Intent(requireActivity(),MainActivity.class);
+            startActivity(toMainIntent);
+        }
+        else {
+            //gérer erreurs
+        }
+    });
     return view;
     }
 }
