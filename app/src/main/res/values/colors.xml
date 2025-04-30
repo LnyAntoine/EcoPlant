@@ -18,6 +18,7 @@
     <color name="searchBar_black">#49454F</color>
     <color name="pale_red">#F28B96</color>
     <color name="pale_orange">#E6A37E</color>
-    <color name="pale_green">#CFF7D3</color>    
+    <color name="pale_green">#CFF7D3</color>
+    <color name="stroke_white">#CAC4D0</color>
 
 </resources>

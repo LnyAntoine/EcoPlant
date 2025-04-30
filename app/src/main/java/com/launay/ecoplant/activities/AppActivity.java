@@ -14,7 +14,6 @@ import com.launay.ecoplant.fragments.PhotoFragment;
 import com.launay.ecoplant.fragments.SignUpFragment;
 
 public class AppActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
