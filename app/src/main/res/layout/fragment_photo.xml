@@ -94,18 +94,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+
+
             <androidx.recyclerview.widget.RecyclerView
-                android:background="@drawable/recyclerview_style"
                 android:layout_marginTop="10dp"
-                android:id="@+id/plant_list"
-                app:layout_constraintTop_toBottomOf="@id/plant_detected_title"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                tools:listitem="@layout/plant_item"
-                tools:itemCount="5"
-                tools:visibility="visible"
+                    android:background="@drawable/recyclerview_style"
+                    android:id="@+id/plant_list"
+                    app:layout_constraintTop_toBottomOf="@id/plant_detected_title"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    tools:listitem="@layout/plant_item"
+                    tools:itemCount="50"
+                    tools:visibility="visible"
                 />
+
+
+
+
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
