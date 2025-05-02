@@ -95,7 +95,7 @@ public class SignUpFragment extends Fragment {
                 startActivity(toMainIntent);
             }
             else {
-                //gérer erreur
+                //gÃ©rer erreur
             }
         });
 
