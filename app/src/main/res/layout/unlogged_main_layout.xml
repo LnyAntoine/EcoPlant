@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         >
-        <include layout="@layout/fragment_login"/>
+        <include layout="@layout/fragment_sign_up"/>
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

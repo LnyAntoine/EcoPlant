@@ -1,5 +1,6 @@
 [versions]
 agp = "8.9.1"
+kotlin = "1.9.22"             # ✅ ajout essentiel
 firebaseBom = "33.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
@@ -26,4 +27,6 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
