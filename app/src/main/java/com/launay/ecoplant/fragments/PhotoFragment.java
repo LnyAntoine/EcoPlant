@@ -1,12 +1,16 @@
 package com.launay.ecoplant.fragments;
 
+import static android.view.View.GONE;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.launay.ecoplant.R;
 
@@ -60,7 +64,35 @@ public class PhotoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photo, container, false);
+        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+        Button switchPlotBtn = view.findViewById(R.id.switch_plot_btn);
+        View plantField = view.findViewById(R.id.plant_field);
+        Button photoBtn = view.findViewById(R.id.photo_btn);
+        Button galleryBtn = view.findViewById(R.id.gallery_btn);
+
+        //TODO : Faire une liste de plante pour l'adapter du recycler view
+        //TODO : récupérer le plot actuel
+
+        //TODO Si pas de plante détectée, désafficher plantfield
+        //plantField.setVisibility(GONE);
+
+        photoBtn.setOnClickListener(v->{
+            //TODO Ouvrir l'appareil photo et récupérer la photo prise
+        });
+
+        galleryBtn.setOnClickListener(v->{
+            //TODO Ouvrir la galerie et récupérer la photo choisie
+        });
+
+        switchPlotBtn.setOnClickListener(v->{
+            Fragment fragment = new SwitchPlotPhotoFragment();
+            //TODO ajouter le plot actuel dans le bundle (flemme), passer par viewmodel ?
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,fragment)
+                    .addToBackStack("switch_plot_fragment")
+                    .commit();
+        });
+
+        return view;
     }
 }

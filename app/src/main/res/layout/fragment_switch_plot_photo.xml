@@ -116,7 +116,7 @@
                 android:layout_marginTop="10dp"
                 style="@style/Theme.EcoPlant.MaterialButton"
                 android:text="annuler"
-                android:id="@+id/switch_plot_btn"
+                android:id="@+id/cancel_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
