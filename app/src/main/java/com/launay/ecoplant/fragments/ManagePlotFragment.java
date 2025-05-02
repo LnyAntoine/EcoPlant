@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.launay.ecoplant.R;
 
@@ -61,6 +63,44 @@ public class ManagePlotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_manage_plot, container, false);
+        View view = inflater.inflate(R.layout.fragment_manage_plot, container, false);
+        Button changePictureBtn = view.findViewById(R.id.change_picture_btn);
+        Button editNameBtn = view.findViewById(R.id.edit_name_btn);
+        EditText nameField = view.findViewById(R.id.name_field);
+        Button deleteBtn = view.findViewById(R.id.delete_btn);
+        Button returnBtn = view.findViewById(R.id.return_btn);
+        Button addPlant = view.findViewById(R.id.add_plant_btn);
+
+        nameField.setActivated(false);
+
+        addPlant.setOnClickListener(v->{
+            //TODO récupérer le plot actuel, view model ?
+            Fragment fragment = new PhotoFragment();
+            Bundle bundle = new Bundle();
+            fragment.setArguments(bundle);
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,fragment)
+                    .addToBackStack("photo_fragment")
+                    .commit();
+        });
+
+        editNameBtn.setOnClickListener(v->{
+            nameField.setActivated(true);
+        });
+
+        returnBtn.setOnClickListener(v->{
+            getParentFragmentManager().popBackStack();
+        });
+
+        deleteBtn.setOnClickListener(v->{
+            //TODO vérifier que l'utilisateur soit d'accord
+            // supprimer le plot
+            getParentFragmentManager().popBackStack();
+        });
+
+        changePictureBtn.setOnClickListener(v->{
+            //TODO récupérer l'image dans la gallerie
+        });
+        return view;
     }
 }

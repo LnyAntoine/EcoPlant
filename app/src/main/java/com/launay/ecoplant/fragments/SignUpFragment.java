@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.launay.ecoplant.R;
-import com.launay.ecoplant.activities.MainActivity;
+import com.launay.ecoplant.activities.LoggedMainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -91,7 +91,7 @@ public class SignUpFragment extends Fragment {
             //Verifier l'inscription
             if (true){
                 //Actualiser bdd
-                Intent toMainIntent = new Intent(requireActivity(), MainActivity.class);
+                Intent toMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toMainIntent);
             }
             else {

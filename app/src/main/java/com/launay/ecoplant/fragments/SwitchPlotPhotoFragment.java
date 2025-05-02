@@ -3,10 +3,12 @@ package com.launay.ecoplant.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.launay.ecoplant.R;
 
@@ -61,6 +63,17 @@ public class SwitchPlotPhotoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_switch_plot_photo, container, false);
+        View view = inflater.inflate(R.layout.fragment_switch_plot_photo, container, false);
+        Button cancelBtn = view.findViewById(R.id.cancel_btn);
+        RecyclerView plotListRV = view.findViewById(R.id.plot_list);
+
+        //TODO récupérer la liste de tous les plots et faire l'adapter du recycler view
+        // Pour chaque objet faire le onclicklistener qui change le plot actuel, viewmodel ? puis pop la backstack
+
+        //Cancel -> retour en arrière
+        cancelBtn.setOnClickListener(v->{
+            getParentFragmentManager().popBackStack();
+        });
+        return view;
     }
 }

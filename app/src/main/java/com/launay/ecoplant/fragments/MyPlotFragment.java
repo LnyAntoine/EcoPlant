@@ -3,10 +3,13 @@ package com.launay.ecoplant.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SearchView;
 
 import com.launay.ecoplant.R;
 
@@ -61,6 +64,37 @@ public class MyPlotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_plot, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_plot, container, false);
+        SearchView searchView = view.findViewById(R.id.search_bar);
+        Button addPlotBtn = view.findViewById(R.id.add_plot);
+        RecyclerView plotListRV = view.findViewById(R.id.plot_list);
+
+        //TODO faire l'adapter du RecyclerView et récupérer la liste de tous les plots
+        // Ajouter le onclickListener qui envoie sur managePlot
+        /* TODO pour l'adapter du recyclerview :
+        Button managePlotBtn = view.findViewById(R.id.manage_plot);
+        managePlotBtn.setOnClickListener(v->{
+            Fragment fragment = new CreatePlotFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("plot_id","randomid");
+            fragment.setArguments(bundle);
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,fragment)
+                    .addToBackStack("create_plot_fragment")
+                    .commit();
+        });*/
+
+        addPlotBtn.setOnClickListener(v->{
+            Fragment fragment = new ManagePlotFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,fragment)
+                    .addToBackStack("manage_plot_fragment")
+                    .commit();
+        });
+
+        //TODO gérer la searchbar
+
+
+        return view;
     }
 }

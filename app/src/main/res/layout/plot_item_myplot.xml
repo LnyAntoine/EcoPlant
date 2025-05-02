@@ -179,7 +179,7 @@
                 <com.google.android.material.button.MaterialButton
                     app:icon="@drawable/edit"
                     app:iconTint="@color/btn2_green"
-                    android:id="@+id/knowmore_btn"
+                    android:id="@+id/manage_plot"
                     android:minHeight="10dp"
                     android:minWidth="50dp"
                     android:textSize="11sp"

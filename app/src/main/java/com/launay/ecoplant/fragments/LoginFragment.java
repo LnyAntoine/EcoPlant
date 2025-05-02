@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
-import com.launay.ecoplant.activities.MainActivity;
+import com.launay.ecoplant.activities.LoggedMainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -89,7 +89,7 @@ public class LoginFragment extends Fragment {
             String pwd = pwdField.getText().toString();
             if (true){
                 //Actualiser bdd
-                Intent toMainIntent = new Intent(requireActivity(),MainActivity.class);
+                Intent toMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toMainIntent);
             }
             else {
