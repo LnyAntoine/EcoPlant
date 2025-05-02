@@ -3,12 +3,246 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ManagePlotFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.PhotoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+
+            android:layout_marginTop="10dp"
+
+            android:background="@drawable/recyclerview_style"
+
+            android:id="@+id/plant_field"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_field"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_marginBottom="10dp"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/base_field"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/picture_field"
+                    android:background="@drawable/field_style"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/stroke1_dark_green"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/imageView"
+                        android:layout_width="150dp"
+                        android:layout_height="100dp"
+                        android:layout_margin="10dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/jardin"
+                        app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_margin="5dp"
+                        android:textSize="11sp"
+                        android:text="Modifier bannière"
+                        style="@style/Theme.EcoPlant.MaterialButton"
+                        android:minWidth="100dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/imageView"
+                        app:layout_constraintTop_toTopOf="@id/imageView"
+                        app:layout_constraintStart_toEndOf="@id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <EditText
+                    android:id="@+id/name_field"
+                    android:text="Nom de la parcelle"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    style="@style/Theme.EcoPlant.EditText"
+                    app:layout_constraintTop_toBottomOf="@id/picture_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <ImageButton
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    app:tint="@color/btn2_green"
+                    android:background="@drawable/imagebutton_style"
+                    android:src="@drawable/edit"
+                    app:layout_constraintBottom_toBottomOf="@id/name_field"
+                    app:layout_constraintTop_toTopOf="@id/name_field"
+                    app:layout_constraintStart_toEndOf="@id/name_field"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:id="@+id/edit_name_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:padding="5dp"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/score_field"
+                    style="@style/Theme.EcoPlant.TextViewTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/name_field">
+
+                    <TextView
+                        android:id="@+id/azote_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fixation de l'azote dans le sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_red"
+                        android:textColor="@color/text1_black"
+                        android:text="0.22"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/azote_text"
+                        android:id="@+id/azote_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/ground_text"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Structure du sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/azote_text" />
+                    <TextView
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_green"
+                        android:textColor="@color/text1_black"
+                        android:text="0.9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/ground_text"
+                        android:id="@+id/ground_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/water_text"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rétention d’eau dans le sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/ground_text" />
+                    <TextView
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_orange"
+                        android:textColor="@color/text1_black"
+                        android:text="0.3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/water_text"
+                        android:id="@+id/water_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/plant_list_title"
+                    android:minHeight="35dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="Liste plantes"
+                    style="@style/Theme.EcoPlant.TextViewTitle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/score_field"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/plant_list"
+                    app:layout_constraintTop_toBottomOf="@id/plant_list_title"
+                    app:layout_constraintBottom_toTopOf="@id/delete_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    tools:listitem="@layout/plot_item_myplot"
+                    tools:itemCount="50"
+                    tools:visibility="visible"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:text="Supprimer"
+                    app:cornerRadius="16dp"
+                    android:backgroundTint="@color/pale_red"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:id="@+id/delete_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/btn_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageButton
+                android:layout_marginStart="30dp"
+                app:tint="@color/btn2_green"
+                android:background="@drawable/imagebutton_style"
+                android:src="@drawable/return_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/return_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:padding="10dp"
+                android:text="Ajouter une plante"
+                style="@style/Theme.EcoPlant.MaterialButton"
+                app:layout_constraintStart_toEndOf="@id/return_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/return_btn"
+                app:layout_constraintBottom_toBottomOf="@id/return_btn"
+                android:id="@+id/cancel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
