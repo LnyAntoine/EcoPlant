@@ -10,20 +10,153 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-
-            style="@style/Theme.EcoPlant.EditText"
-
-
-            android:id="@+id/plot_choosenTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/plot_field"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textAlignment="center"
+                android:text="Parcelle chosie"
+
+                android:layout_marginTop="20dp"
+                style="@style/Theme.EcoPlant.TextViewTitle"
+
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:minHeight="0dp"
+                android:id="@+id/plot_choosenTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/plot_choosenTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/conteneur"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="85dp"
+                >
+                <include layout="@layout/plot_item" tools:visibility="visible"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:textSize="10sp"
+                app:icon="@drawable/edit"
+                app:iconTint="@color/btn2_green"
+                android:minWidth="150dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:layout_marginTop="10dp"
+                style="@style/Theme.EcoPlant.MaterialButton"
+                android:text="Changer parcelle"
+                android:id="@+id/switch_plot_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/conteneur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/plant_field"
+            app:layout_constraintTop_toBottomOf="@+id/plot_field"
+            app:layout_constraintBottom_toTopOf="@id/btn_field"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_marginBottom="10dp"
+            >
+
+            <TextView
+                android:textAlignment="center"
+                android:text="Plante détectée"
+
+                android:layout_marginTop="10dp"
+                style="@style/Theme.EcoPlant.TextViewTitle"
+
+                android:textSize="16sp"
+                android:padding="5dp"
+                android:minHeight="0dp"
+                android:id="@+id/plant_detected_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:background="@drawable/recyclerview_style"
+                android:layout_marginTop="10dp"
+                android:id="@+id/plant_list"
+                app:layout_constraintTop_toBottomOf="@id/plant_detected_title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:listitem="@layout/plant_item"
+                tools:itemCount="5"
+                tools:visibility="visible"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/btn_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            >
+            <ImageButton
+                app:tint="@color/btn2_green"
+                android:background="@drawable/imagebutton_style"
+                android:id="@+id/gallery_btn"
+                android:src="@drawable/photo_prints"
+
+                android:scaleType="fitCenter"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_marginEnd="50dp"
+
+                app:layout_constraintTop_toTopOf="@id/photo_btn"
+                app:layout_constraintBottom_toBottomOf="@id/photo_btn"
+                app:layout_constraintEnd_toStartOf="@id/photo_btn"
+                />
+            <ImageButton
+
+                app:tint="@color/btn2_green"
+                android:background="@drawable/imagebutton_style"
+                android:id="@+id/photo_btn"
+                android:src="@drawable/photo"
+
+                android:scaleType="fitCenter"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
