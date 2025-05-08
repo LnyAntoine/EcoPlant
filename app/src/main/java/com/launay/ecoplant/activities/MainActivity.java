@@ -16,8 +16,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this,UnloggedMainActivity.class);
-        startActivity(intent);
+        Intent intentToUMA = new Intent(this,UnloggedMainActivity.class);
+        Intent intentToLMA = new Intent(this,LoggedMainActivity.class);
+        startActivity(intentToUMA);
 
     }
 }

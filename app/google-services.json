@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "369205281155",
+    "firebase_url": "https://ecoplant-cd12f-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ecoplant-cd12f",
+    "storage_bucket": "ecoplant-cd12f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369205281155:android:3aa739be22bc2a4da476b6",
+        "android_client_info": {
+          "package_name": "com.launay.ecoplant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtfSebbW7IELd5R05hvPBZ4OMkP-Bl0Ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

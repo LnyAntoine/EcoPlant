@@ -1,5 +1,6 @@
 package com.launay.ecoplant.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.activities.MainActivity;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +33,7 @@ public class myAccountFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private View view;
 
     public myAccountFragment() {
         // Required empty public constructor
@@ -61,9 +70,27 @@ public class myAccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_my_account, container, false);
+        view = inflater.inflate(R.layout.fragment_my_account, container, false);
+        ImageView pfp = view.findViewById(R.id.pfpField);
+        ImageButton pfpEditBtn = view.findViewById(R.id.pfpEditBtn);
+        TextView fullNameField = view.findViewById(R.id.fullNameField);
+        ImageButton fullnameEditBtn = view.findViewById(R.id.fullNameEditBtn);
+        TextView mailField = view.findViewById(R.id.emailField);
+        ImageButton mailEditBtn = view.findViewById(R.id.emailEditBtn);
+        TextView idField = view.findViewById(R.id.idField);
+        ImageButton idEditBtn = view.findViewById(R.id.idEditBtn);
+        Button logoutBtn = view.findViewById(R.id.logoutBtn);
 
+        //TODO récupérer les info de l'utilisateur
+
+        logoutBtn.setOnClickListener(v->{
+            //TODO vider la base de donnée locale
+            // dégager le userPreference
+            Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
+            startActivity(logoutIntent);
+        });
 
         return view;
     }
+
 }

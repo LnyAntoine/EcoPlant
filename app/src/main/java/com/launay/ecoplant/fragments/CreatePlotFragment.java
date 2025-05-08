@@ -2,12 +2,15 @@ package com.launay.ecoplant.fragments;
 
 import android.os.Bundle;
 
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 
 /**
@@ -27,18 +30,9 @@ public class CreatePlotFragment extends Fragment {
     private String mParam2;
 
     public CreatePlotFragment() {
-        // Required empty public constructor
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CreatePlotFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CreatePlotFragment newInstance(String param1, String param2) {
         CreatePlotFragment fragment = new CreatePlotFragment();
         Bundle args = new Bundle();
@@ -61,6 +55,33 @@ public class CreatePlotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_plot, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_plot, container, false);
+
+        Button modifyPictureBtn = view.findViewById(R.id.change_picture_btn);
+        ShapeableImageView picture = view.findViewById(R.id.imageView);
+        AppCompatEditText changeName = view.findViewById(R.id.name_field);
+        Button createBtn = view.findViewById(R.id.create_btn);
+        Button cancelBtn  = view.findViewById(R.id.cancel_btn);
+
+        modifyPictureBtn.setOnClickListener(v->{
+            //TODO ouvrir la gallerie et afficher l'image selectionné (voir tp1)
+        });
+
+        createBtn.setOnClickListener(v->{
+            String plotID;
+            //TODO gérer la creation du plot et récupérer le nouvel id
+            plotID = "randomid";
+            Fragment fragment = ManagePlotFragment.newInstance(true,plotID);
+            getParentFragmentManager().beginTransaction()
+                    .addToBackStack("manage_plot_fragment")
+                    .replace(R.id.fragment_container,fragment)
+                    .commit();
+        });
+
+        cancelBtn.setOnClickListener(v->{
+            getParentFragmentManager().popBackStack();
+        });
+
+        return view;
     }
 }

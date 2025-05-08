@@ -191,7 +191,7 @@
                     app:layout_constraintBottom_toTopOf="@id/delete_btn"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    tools:listitem="@layout/plot_item_myplot"
+                    tools:listitem="@layout/plant_item"
                     tools:itemCount="50"
                     tools:visibility="visible"
                     />

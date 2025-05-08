@@ -1,16 +1,27 @@
 package com.launay.ecoplant.fragments;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,13 +78,126 @@ public class SwitchPlotPhotoFragment extends Fragment {
         Button cancelBtn = view.findViewById(R.id.cancel_btn);
         RecyclerView plotListRV = view.findViewById(R.id.plot_list);
 
-        //TODO récupérer la liste de tous les plots et faire l'adapter du recycler view
-        // Pour chaque objet faire le onclicklistener qui change le plot actuel, viewmodel ? puis pop la backstack
-
-        //Cancel -> retour en arrière
         cancelBtn.setOnClickListener(v->{
             getParentFragmentManager().popBackStack();
         });
         return view;
+    }
+
+    public class PlotAdapter extends RecyclerView.Adapter<PlotViewHolder> {
+
+        private final List<Plot> filteredPlots;
+        private final List<Plot> allPlots;
+        private final Context ctx;
+        private final FragmentManager fragmentManager;
+
+        public PlotAdapter(Context ctx, List<Plot> plots, FragmentManager fragmentManager) {
+            this.allPlots = new ArrayList<>(plots);
+            this.filteredPlots = new ArrayList<>(plots);
+            this.ctx = ctx;
+            this.fragmentManager = fragmentManager;
+        }
+
+        @NonNull
+        @Override
+        public PlotViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(ctx).inflate(R.layout.choosing_plot_item, parent, false);
+            return new PlotViewHolder(view,fragmentManager);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull PlotViewHolder holder, int position) {
+            Plot plot = filteredPlots.get(position);
+            holder.bind(plot,this);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return filteredPlots.size(); // Correction ici
+        }
+        public void filter(String text) {
+            filteredPlots.clear();
+            if (text.isEmpty()) {
+                filteredPlots.addAll(allPlots);
+            } else {
+                text = text.toLowerCase();
+
+                for (Plot plot : allPlots) {
+                    if (plot.getPlotname().toLowerCase().contains(text)) {
+                        filteredPlots.add(plot);
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    public class PlotViewHolder extends RecyclerView.ViewHolder {
+        private final FragmentManager fragmentManager;
+
+
+
+        private final TextView plotName;
+        private final TextView nbPlant;
+        private final ImageButton chooseBtn;
+
+        //private final ImageView flagImage;
+
+
+        public PlotViewHolder(@NonNull View itemView,FragmentManager fragmentManager) {
+            super(itemView);
+            this.fragmentManager = fragmentManager;
+            this.plotName = itemView.findViewById(R.id.plot_name);
+            this.nbPlant = itemView.findViewById(R.id.nb_plant);
+            this.chooseBtn = itemView.findViewById(R.id.choose_btn);
+
+
+        }
+
+        public void bind(Plot plot, PlotAdapter adapter) {
+            plotName.setText(plot.getPlotname());
+            nbPlant.setText("Nb plant : "+plot.getNbPlant());
+            chooseBtn.setOnClickListener(v->{
+                //TODO modifier le viewModels pour le bon plot.getId()
+                getParentFragmentManager().popBackStack();
+            });
+        }
+    }
+
+    public static class Plot {
+        private final String id;
+        private final String plotname;
+        private final int nbPlant;
+
+
+
+
+        public Plot(String id, String plotname, int nbPlant, Double azoteScore, Double groundScore, Double waterScore) {
+            this.plotname = plotname;
+            this.id = id;
+            this.nbPlant = nbPlant;
+
+        }
+
+        public String getId() {
+            return id;
+        }
+
+
+        public String getPlotname() {
+            return plotname;
+        }
+
+        public int getNbPlant() {
+            return nbPlant;
+        }
+
+
+        @Override
+        @NonNull
+        public String toString(){
+            return this.getPlotname();
+        }
     }
 }

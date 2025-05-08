@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -37,7 +36,9 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.glide)
+    implementation("com.google.firebase:firebase-config:21.0.1")  // Dépendance Firebase Remote Config
+    implementation("com.google.firebase:firebase-analytics:21.1.0")  // Optionnel mais recommandé pour Firebase Analytics
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -50,3 +51,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
 }
+
+apply(plugin = "com.google.gms.google-services")

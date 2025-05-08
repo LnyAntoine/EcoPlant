@@ -149,7 +149,7 @@
             android:backgroundTint="@color/bg1_pale_green"
 
             android:text="Se déconnecter"
-            android:id="@+id/lougoutBtn"
+            android:id="@+id/logoutBtn"
             android:enabled="false"
 
             app:layout_constraintEnd_toEndOf="parent"

@@ -11,7 +11,7 @@ public class UnloggedMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);
+        setContentView(R.layout.unlogged_main_layout);
         SignUpFragment signUpFragment = new SignUpFragment();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container,signUpFragment)
