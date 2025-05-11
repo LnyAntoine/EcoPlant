@@ -19,7 +19,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        //TODO : donner les autorisations des images
+        //TODO : donner les autorisations internet
+        //TODO : verifier la connexion à internet
+        //TODO : verifier comment fonctionne la bdd plantnet
+        //TODO : mettre la clé d'api plantnet sur firebase
         //TODO quand firebase auth et BDD active activer le code :
         /*
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
