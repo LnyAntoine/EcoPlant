@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.LoggedMainActivity;
 
@@ -70,7 +72,7 @@ public class LoginFragment extends Fragment {
         Button loginBtn = view.findViewById(R.id.loginBtn);
         Button signupBtn = view.findViewById(R.id.toSignUpBtn);
         TextView pwdForgotten = view.findViewById(R.id.pwdForgottenLink);
-        EditText idField = view.findViewById(R.id.idField);
+        EditText mailField = view.findViewById(R.id.mailField);
         EditText pwdField = view.findViewById(R.id.pwdField);
 
         pwdForgotten.setOnClickListener(v->{
@@ -85,15 +87,33 @@ public class LoginFragment extends Fragment {
                     .commit();
         });
         loginBtn.setOnClickListener(v->{
-            String id = idField.getText().toString();
+            String mail = mailField.getText().toString();
             String pwd = pwdField.getText().toString();
+
+            //TODO quand firebase auth et BDD active activer le code :
+            /*
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+            mAuth.createUserWithEmailAndPassword(mail, pwd)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user!=null){
+                                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
+                                startActivity(toLoggedMainIntent);
+                            }
+
+                        } else {
+                            // Gérer l’erreur
+                        }
+                    });
+
+
+             */
+            //TODO quand firebase auth et BDD active retirer le code :
             if (true){
-                //Actualiser bdd
-                Intent toMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
-                startActivity(toMainIntent);
-            }
-            else {
-                //gérer erreurs
+                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
+                startActivity(toLoggedMainIntent);
             }
         });
         return view;

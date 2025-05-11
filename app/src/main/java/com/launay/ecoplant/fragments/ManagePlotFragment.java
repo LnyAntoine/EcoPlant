@@ -9,9 +9,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +25,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.PlantInPlot;
+import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,6 +47,9 @@ public class ManagePlotFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private Boolean fromCreate;
     private String plotID;
+    private PlantAdapter adapter;
+
+
 
     public ManagePlotFragment() {
         // Required empty public constructor
@@ -79,6 +87,9 @@ public class ManagePlotFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_manage_plot, container, false);
+
+
+
         Button changePictureBtn = view.findViewById(R.id.change_picture_btn);
         ImageButton editNameBtn = view.findViewById(R.id.edit_name_btn);
         EditText nameField = view.findViewById(R.id.name_field);
@@ -87,12 +98,46 @@ public class ManagePlotFragment extends Fragment {
         Button addPlant = view.findViewById(R.id.add_plant_btn);
         RecyclerView plantListRCV = view.findViewById(R.id.plant_list);
 
+        plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
+
+        adapter = new PlantAdapter(requireContext(),new ArrayList<>(),getParentFragmentManager());
+
+        plantListRCV.setAdapter(adapter);
+
+        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewModel.refreshCurrentPlot(plotID);
+        viewModel.getCurrentPlotLiveData().observe(requireActivity(),plot ->{
+            nameField.setText(plot.getName());
+            viewModel.refreshPlants();
+        });
+
+        viewModel.getCombinedLiveData().observe(requireActivity(),pair ->{
+
+            List<Plant> plants = new ArrayList<>();
+            pair.first.forEach(plant -> {
+
+                int nb = 0;
+                for (PlantInPlot plantInPlot:pair.second) {
+                    if (Objects.equals(plantInPlot.getPlantId(), plant.getPlantId())
+                            && Objects.equals(plantInPlot.getPlotId(), plotID)){
+                        nb++;
+                    }
+                }
+                if (nb>0) {
+                    Plant plant1 = new Plant(plant.getPlantId(), plant.getShortname(), nb, plant.getFullname(),
+                            plant.getScoreAzote(), plant.getScoreStruct(), plant.getScoreWater(), "");
+
+                    plants.add(plant1);
+                }
+
+            });
+            adapter.updateList(plants);
+        });
+
 
         //TODO récupérer la liste des plantes pour ce plot
         List<Plant> plants = new ArrayList<>();
 
-        plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        plantListRCV.setAdapter(new PlantAdapter(requireContext(),plants,getParentFragmentManager()));
 
         nameField.setActivated(false);
 
@@ -110,12 +155,14 @@ public class ManagePlotFragment extends Fragment {
         });
 
         returnBtn.setOnClickListener(v->{
+            //TODO verifier si vient d'un endroit en particulier et renvoyer sur la liste si c'est le cas
             getParentFragmentManager().popBackStack();
         });
 
         deleteBtn.setOnClickListener(v->{
             //TODO vérifier que l'utilisateur soit d'accord
             // supprimer le plot
+            //TODO verifier si vient d'un endroit en particulier et renvoyer sur la liste si c'est le cas
             getParentFragmentManager().popBackStack();
         });
 
@@ -135,6 +182,13 @@ public class ManagePlotFragment extends Fragment {
             this.plantList = new ArrayList<>(plants);
             this.ctx = ctx;
             this.fragmentManager = fragmentManager;
+        }
+
+        public void updateList(List<Plant> plantList) {
+            Log.d("UpdateList",""+plantList);
+            this.plantList.clear();
+            this.plantList.addAll(plantList);
+            notifyDataSetChanged(); // Peut être remplacé par DiffUtil pour plus d'efficacité
         }
 
         @NonNull

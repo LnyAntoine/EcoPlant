@@ -32,6 +32,7 @@
                 android:src="@drawable/jardin"
                 app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
             <LinearLayout
+                android:gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginStart="0dp"
@@ -42,6 +43,7 @@
                 android:orientation="vertical"
                 >
                 <TextView
+                    android:id="@+id/plot_name"
                     style="@style/Theme.EcoPlant.TextView2"
                     android:text="Mon jardin"
 
@@ -49,6 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:id="@+id/nb_plant"
                     android:layout_marginTop="2dp"
 
                     style="@style/Theme.EcoPlant.TextView2"
@@ -59,17 +62,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                <TextView
-                    android:layout_marginTop="2dp"
 
-                    style="@style/Theme.EcoPlant.TextView2"
-
-                    android:text="Détails"
-
-                    android:minWidth="100dp"
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
             </LinearLayout>
             <ImageButton
                 android:id="@+id/choose_btn"

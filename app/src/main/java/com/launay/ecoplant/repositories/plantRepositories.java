@@ -18,14 +18,17 @@ public class plantRepositories {
     private final MutableLiveData<List<PlantInPlot>> plantInPlotLiveData = new MutableLiveData<>();
 
     public plantRepositories(){
+
+        //TODO quand firebase auth et BDD active retirer le code :
+
         List<Plant> plantList = new ArrayList<>();
 
         // Ajout des plantes avec des données spécifiques
-        plantList.add(new Plant("1", "Tomato", "Tomato Plant", "https://example.com/tomato", 7.5f, 8.0f, 6.0f));
-        plantList.add(new Plant("2", "Cucumber", "Cucumber Plant", "https://example.com/cucumber", 6.0f, 7.5f, 7.0f));
-        plantList.add(new Plant("3", "Carrot", "Carrot Plant", "https://example.com/carrot", 6.5f, 7.0f, 8.0f));
-        plantList.add(new Plant("4", "Lettuce", "Lettuce Plant", "https://example.com/lettuce", 5.5f, 6.0f, 6.5f));
-        plantList.add(new Plant("5", "Strawberry", "Strawberry Plant", "https://example.com/strawberry", 7.0f, 8.5f, 7.8f));
+        plantList.add(new Plant("1", "Tomato", "Tomato Plant", "https://example.com/tomato", 7.5, 8.0, 6.0));
+        plantList.add(new Plant("2", "Cucumber", "Cucumber Plant", "https://example.com/cucumber", 6.0, 7.5, 7.0));
+        plantList.add(new Plant("3", "Carrot", "Carrot Plant", "https://example.com/carrot", 6.5, 7.0, 8.0));
+        plantList.add(new Plant("4", "Lettuce", "Lettuce Plant", "https://example.com/lettuce", 5.5, 6.0, 6.5));
+        plantList.add(new Plant("5", "Strawberry", "Strawberry Plant", "https://example.com/strawberry", 7.0, 8.5, 7.8));
 
         plantsLiveData.setValue(plantList);
         List<PlantInPlot> plantInPlotList = new ArrayList<>();
@@ -66,7 +69,9 @@ public class plantRepositories {
 
         List<Plant> plantList = new ArrayList<>();
         List<PlantInPlot> plantInPlots = new ArrayList<>();
-        Map<String,Integer> plantMap = new HashMap<>();
+
+
+        //TODO quand firebase auth et BDD active activer le code :
         /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -104,6 +109,8 @@ public class plantRepositories {
     }
 
     private Plant getPlantById(String plantid){
+
+        //TODO quand firebase auth et BDD active activer le code :
         /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Plant")

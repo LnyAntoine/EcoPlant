@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.MainActivity;
+import com.launay.ecoplant.viewmodels.ViewModel;
 
 import org.w3c.dom.Text;
 
@@ -77,15 +79,25 @@ public class myAccountFragment extends Fragment {
         ImageButton fullnameEditBtn = view.findViewById(R.id.fullNameEditBtn);
         TextView mailField = view.findViewById(R.id.emailField);
         ImageButton mailEditBtn = view.findViewById(R.id.emailEditBtn);
-        TextView idField = view.findViewById(R.id.idField);
+        TextView displayNameField = view.findViewById(R.id.displayNameField);
         ImageButton idEditBtn = view.findViewById(R.id.idEditBtn);
+        TextView pwdFIeld = view.findViewById(R.id.pwdField);
+        ImageButton pwdEditBtn = view.findViewById(R.id.pwdEditBtn);
         Button logoutBtn = view.findViewById(R.id.logoutBtn);
 
         //TODO récupérer les info de l'utilisateur
 
+        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewModel.getUserLiveData().observe(requireActivity(),user -> {
+            fullNameField.setText(user.getFullname());
+            mailField.setText(user.getMail());
+            displayNameField.setText(user.getDisplayName());
+            pwdFIeld.setText(user.getPwd());
+        });
+
+
         logoutBtn.setOnClickListener(v->{
-            //TODO vider la base de donnée locale
-            // dégager le userPreference
+            viewModel.logout();
             Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
             startActivity(logoutIntent);
         });

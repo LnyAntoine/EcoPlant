@@ -9,8 +9,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,9 @@ public class SwitchPlotPhotoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private PlotAdapter adapter;
+
+
 
     public SwitchPlotPhotoFragment() {
         // Required empty public constructor
@@ -78,6 +85,43 @@ public class SwitchPlotPhotoFragment extends Fragment {
         Button cancelBtn = view.findViewById(R.id.cancel_btn);
         RecyclerView plotListRV = view.findViewById(R.id.plot_list);
 
+        View currentPlotView = view.findViewById(R.id.current_plot);
+        TextView plotName = currentPlotView.findViewById(R.id.plot_name);
+        TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
+
+        adapter = new PlotAdapter(requireActivity(),new ArrayList<>(),getParentFragmentManager());
+        plotListRV.setLayoutManager(new LinearLayoutManager(requireActivity()));
+        plotListRV.setAdapter(adapter);
+
+        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+
+        viewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
+            if (p!=null){
+                currentPlotView.setVisibility(VISIBLE);
+                plotName.setText(p.getName());
+                plotNbPlant.setText(p.getNbPlant()+" plantes");
+            }
+            else {
+                currentPlotView.setVisibility(GONE);
+            }
+
+        });
+
+        viewModel.refreshPlots();
+
+        viewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
+            List<Plot> plotList = new ArrayList<>();
+            plots.forEach(plot -> {
+
+                Plot plot1 = new Plot(plot.getPlotId(),plot.getName(),plot.getNbPlant(),
+                        plot.getScoreAzote(),plot.getScoreStruct(),plot.getScoreWater());
+                plotList.add(plot1);
+
+            });
+            adapter.updateList(plotList);
+        });
+
+
         cancelBtn.setOnClickListener(v->{
             getParentFragmentManager().popBackStack();
         });
@@ -96,6 +140,15 @@ public class SwitchPlotPhotoFragment extends Fragment {
             this.filteredPlots = new ArrayList<>(plots);
             this.ctx = ctx;
             this.fragmentManager = fragmentManager;
+        }
+
+        public void updateList(List<Plot> nouvelleListe) {
+            Log.d("UpdateList",""+nouvelleListe);
+            this.allPlots.clear();
+            this.allPlots.addAll(nouvelleListe);
+            filteredPlots.clear();
+            filteredPlots.addAll(nouvelleListe);
+            notifyDataSetChanged(); // Peut être remplacé par DiffUtil pour plus d'efficacité
         }
 
         @NonNull
@@ -159,7 +212,8 @@ public class SwitchPlotPhotoFragment extends Fragment {
             plotName.setText(plot.getPlotname());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             chooseBtn.setOnClickListener(v->{
-                //TODO modifier le viewModels pour le bon plot.getId()
+                ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+                viewModel.refreshCurrentPlot(plot.getId());
                 getParentFragmentManager().popBackStack();
             });
         }

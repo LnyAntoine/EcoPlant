@@ -37,6 +37,9 @@ android {
 
 dependencies {
     implementation(libs.glide)
+    implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.google.firebase:firebase-database:20.3.0") // si tu utilises Realtime Database
+    implementation("com.google.firebase:firebase-firestore:24.11.0") // pour Firestore
     implementation("com.google.firebase:firebase-config:21.0.1")  // Dépendance Firebase Remote Config
     implementation("com.google.firebase:firebase-analytics:21.1.0")  // Optionnel mais recommandé pour Firebase Analytics
     implementation(libs.appcompat)

@@ -22,7 +22,7 @@
 
             android:id="@+id/fullnameField"
 
-            android:hint="Email"
+            android:hint="Full name"
             android:inputType="text"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -54,10 +54,10 @@
             android:layout_marginTop="30dp"
 
 
-            android:id="@+id/idField"
+            android:id="@+id/displayNameField"
 
 
-            android:hint="Identifiant"
+            android:hint="Pseudonyme"
             android:inputType="text"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,7 +79,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/idField" />
+            app:layout_constraintTop_toBottomOf="@id/displayNameField" />
 
         <com.google.android.material.button.MaterialButton
 

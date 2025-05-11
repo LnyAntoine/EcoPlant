@@ -12,9 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class MyPlotFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private List<Plot> plots;
+    private PlotAdapter adapter;
 
     public MyPlotFragment() {
         // Required empty public constructor
@@ -84,26 +87,30 @@ public class MyPlotFragment extends Fragment {
         Button addPlotBtn = view.findViewById(R.id.add_plot);
         RecyclerView plotListRCV = view.findViewById(R.id.plot_list);
 
-        //TODO récupérer la liste de tous les plots
-
-
-        plots = new ArrayList<>();
-
-        Plot plot1 = new Plot("1", "Jardin du Nord", 15, 1.0, 1.0, 1.0);
-        Plot plot2 = new Plot("2", "Parcelle Est", 20, 1.0, 1.0, 1.0);
-        Plot plot3 = new Plot("3", "Zone Sud", 12, 1.0, 1.0, 1.0);
-        Plot plot4 = new Plot("4", "Coin Vert", 18, 1.0, 1.0, 1.0);
-        Plot plot5 = new Plot("5", "Terre Riche", 25, 1.0, 1.0, 1.0);
-
-        plots.add(plot1);
-        plots.add(plot2);
-        plots.add(plot3);
-        plots.add(plot4);
-        plots.add(plot5);
-
-        PlotAdapter adapter = new PlotAdapter(requireActivity(),plots,getParentFragmentManager());
+        adapter = new PlotAdapter(requireActivity(),new ArrayList<>(),getParentFragmentManager());
         plotListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
         plotListRCV.setAdapter(adapter);
+
+        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        viewModel.refreshPlots();
+
+        viewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
+            List<Plot> plotList = new ArrayList<>();
+            plots.forEach(plot -> {
+
+                Plot plot1 = new Plot(plot.getPlotId(),plot.getName(),plot.getNbPlant(),
+                        plot.getScoreAzote(),plot.getScoreStruct(),plot.getScoreWater());
+                plotList.add(plot1);
+
+            });
+            adapter.updateList(plotList);
+        });
+
+
+
+
+
+
 
         addPlotBtn.setOnClickListener(v->{
             Fragment fragment = new CreatePlotFragment();
@@ -155,8 +162,18 @@ public class MyPlotFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PlotViewHolder holder, int position) {
             Plot plot = filteredPlots.get(position);
+            Log.d("onBindViewHolder",""+plot);
             holder.bind(plot,this);
 
+        }
+
+        public void updateList(List<Plot> nouvelleListe) {
+            Log.d("UpdateList",""+nouvelleListe);
+            this.allPlots.clear();
+            this.allPlots.addAll(nouvelleListe);
+            filteredPlots.clear();
+            filteredPlots.addAll(nouvelleListe);
+            notifyDataSetChanged(); // Peut être remplacé par DiffUtil pour plus d'efficacité
         }
 
         @Override

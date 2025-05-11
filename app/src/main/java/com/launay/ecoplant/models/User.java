@@ -3,16 +3,16 @@ package com.launay.ecoplant.models;
 public class User {
     String userId;
     String fullname;
-    String userPseudo;
+    String displayName;
     String mail;
     String pwd;
     String pfpURI;
 
 
-    public User(String userId, String fullname, String userPseudo, String mail, String pwd) {
+    public User(String userId, String fullname, String displayName, String mail, String pwd) {
         this.userId = userId;
         this.fullname = fullname;
-        this.userPseudo = userPseudo;
+        this.displayName = displayName;
         this.mail = mail;
         this.pwd = pwd;
     }
@@ -25,8 +25,8 @@ public class User {
         return fullname;
     }
 
-    public String getUserPseudo() {
-        return userPseudo;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getMail() {

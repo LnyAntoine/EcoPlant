@@ -1,8 +1,16 @@
 package com.launay.ecoplant.repositories;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.launay.ecoplant.models.User;
 
 public class userRepositories {
@@ -10,8 +18,12 @@ public class userRepositories {
 
 
     public userRepositories(){
+        this.loadCurrentUser();
+
+        //TODO quand firebase auth et BDD active retirer le code :
         User fakeuser = new User("1","Launay Antoine","LnyAntoine","launay.antoine1509@gmail.com","12345");
         this.userLiveData.setValue(fakeuser);
+
     }
 
     public LiveData<User> getUserLiveData(){
@@ -19,27 +31,38 @@ public class userRepositories {
     }
 
     public void loadCurrentUser(){
+
+        //TODO quand firebase auth et BDD active activer le code :
         /*
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
-            firebaseUser.getIdToken(true).addOnSuccessListener(result -> {
-                String idToken = result.getToken();
-                String uid = firebaseUser.getUid();
-                String email = firebaseUser.getEmail();
+            String uid = firebaseUser.getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User user = snapshot.getValue(User.class);
+                    userLiveData.setValue(user);
+                }
 
-                // Exemple de transformation vers ton modèle User
-                User user = new User(uid, email, idToken);
-                userLiveData.postValue(user);
-            }).addOnFailureListener(e -> {
-                userLiveData.postValue(null);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Gérer les erreurs ici
+                }
             });
         } else {
-            userLiveData.postValue(null);
+            userLiveData.setValue(null);
         }
+
          */
+
     }
 
     public void logout(){
+        //TODO quand firebase auth et BDD active activer le code :
+        /*
+        FirebaseAuth.getInstance().signOut();
+        */
         this.userLiveData.setValue(null);
     }
 }

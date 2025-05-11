@@ -37,7 +37,7 @@
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
-            android:text="Launay Antoine"
+            android:text=""
             android:textSize="16sp"
 
             android:paddingStart="16dp"
@@ -62,7 +62,7 @@
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
-            android:text="antoine.launay@etu.umontpellier.fr"
+            android:text=""
             android:textSize="16sp"
 
 
@@ -78,7 +78,7 @@
 
         <EditText
 
-            android:id="@+id/idField"
+            android:id="@+id/displayNameField"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
-            android:text="LnyAntoine"
+            android:text=""
             android:textSize="16sp"
 
 
@@ -117,7 +117,7 @@
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
-            android:text="******"
+            android:text=""
             android:textSize="16sp"
 
 
@@ -128,7 +128,7 @@
             android:textColor="@color/text1_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/idField" />
+            app:layout_constraintTop_toBottomOf="@id/displayNameField" />
 
 
 
@@ -205,10 +205,10 @@
             android:background="@drawable/edit_button_style"
             app:tint="@color/btn2_green"
 
-            app:layout_constraintStart_toEndOf="@id/idField"
+            app:layout_constraintStart_toEndOf="@id/displayNameField"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/idField"
-            app:layout_constraintBottom_toBottomOf="@id/idField"
+            app:layout_constraintTop_toTopOf="@id/displayNameField"
+            app:layout_constraintBottom_toBottomOf="@id/displayNameField"
             app:strokeColor="@color/stroke1_dark_green"
             app:strokeWidth="1dp" />
 

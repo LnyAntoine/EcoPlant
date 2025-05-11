@@ -9,9 +9,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,10 @@ import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Plot;
+import com.launay.ecoplant.viewmodels.ViewModel;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,14 +75,31 @@ public class PhotoFragment extends Fragment {
         ImageButton photoBtn = view.findViewById(R.id.photo_btn);
         ImageButton galleryBtn = view.findViewById(R.id.gallery_btn);
         RecyclerView plantRCV = view.findViewById(R.id.plant_list);
+        View currentPlotView = view.findViewById(R.id.current_plot);
+        TextView plotName = currentPlotView.findViewById(R.id.plot_name);
+        TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
+
+        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+
+
+        viewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
+            if (p!=null){
+                currentPlotView.setVisibility(VISIBLE);
+                plotName.setText(p.getName());
+                plotNbPlant.setText(p.getNbPlant()+" plantes");
+            }
+            else {
+                currentPlotView.setVisibility(GONE);
+            }
+
+        });
+
 
         List<Plant> plants = new ArrayList<>();
 
         //TODO : Faire une liste de plante pour l'adapter du recycler view
         //TODO : récupérer le plot actuel
 
-        //TODO Si pas de plante détectée, désafficher plantfield
-        //plantField.setVisibility(GONE);
 
         photoBtn.setOnClickListener(v->{
             //TODO Ouvrir l'appareil photo et récupérer la photo prise

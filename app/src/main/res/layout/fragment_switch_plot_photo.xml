@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="85dp"
                 >
-                <include layout="@layout/plot_item" tools:visibility="visible"/>
+                <include android:id="@+id/current_plot" layout="@layout/plot_item" tools:visibility="visible"/>
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

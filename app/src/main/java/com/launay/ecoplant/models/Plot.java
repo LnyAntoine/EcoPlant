@@ -9,11 +9,11 @@ public class Plot {
     Float latitude;
     Float longitude;
     int nbPlant;
-    float scoreAzote;
-    float scoreStruct;
-    float scoreWater;
+    Double scoreAzote;
+    Double scoreStruct;
+    Double scoreWater;
 
-    public Plot(String type, String name, String plotId, String ownerId, Float latitude, Float longitude, int nbPlant, float scoreAzote, float scoreStruct, float scoreWater) {
+    public Plot(String type, String name, String plotId, String ownerId, Float latitude, Float longitude, int nbPlant, Double scoreAzote, Double scoreStruct, Double scoreWater) {
         this.type = type;
         this.name = name;
         this.plotId = plotId;
@@ -58,15 +58,15 @@ public class Plot {
         return nbPlant;
     }
 
-    public float getScoreAzote() {
+    public Double getScoreAzote() {
         return scoreAzote;
     }
 
-    public float getScoreStruct() {
+    public Double getScoreStruct() {
         return scoreStruct;
     }
 
-    public float getScoreWater() {
+    public Double getScoreWater() {
         return scoreWater;
     }
 
@@ -102,15 +102,15 @@ public class Plot {
         this.nbPlant = nbPlant;
     }
 
-    public void setScoreAzote(float scoreAzote) {
+    public void setScoreAzote(Double scoreAzote) {
         this.scoreAzote = scoreAzote;
     }
 
-    public void setScoreStruct(float scoreStruct) {
+    public void setScoreStruct(Double scoreStruct) {
         this.scoreStruct = scoreStruct;
     }
 
-    public void setScoreWater(float scoreWater) {
+    public void setScoreWater(Double scoreWater) {
         this.scoreWater = scoreWater;
     }
 }

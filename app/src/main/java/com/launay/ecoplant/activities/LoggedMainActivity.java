@@ -7,6 +7,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.launay.ecoplant.R;
@@ -15,6 +16,7 @@ import com.launay.ecoplant.fragments.MapFragment;
 import com.launay.ecoplant.fragments.MyPlotFragment;
 import com.launay.ecoplant.fragments.PhotoFragment;
 import com.launay.ecoplant.fragments.myAccountFragment;
+import com.launay.ecoplant.viewmodels.ViewModel;
 
 public class LoggedMainActivity extends AppCompatActivity {
 
@@ -25,6 +27,9 @@ public class LoggedMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.main_layout);
+
+        ViewModel viewModel = new ViewModelProvider(this).get(ViewModel.class);
+        viewModel.refreshUser();
 
         PhotoFragment photoFragment = new PhotoFragment();
 
