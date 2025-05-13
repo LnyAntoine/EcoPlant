@@ -12,23 +12,21 @@ import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantInPlot;
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.models.User;
-import com.launay.ecoplant.repositories.userRepositories;
-import com.launay.ecoplant.repositories.plotRepositories;
-import com.launay.ecoplant.repositories.plantRepositories;
+import com.launay.ecoplant.repositories.UserRepositories;
+import com.launay.ecoplant.repositories.PlotRepositories;
+import com.launay.ecoplant.repositories.PlantRepositories;
 
 import java.util.List;
 
 public class ViewModel extends AndroidViewModel {
 
 
-    private final userRepositories userRepositories;
-    private final plotRepositories plotRepositories;
-    private final plantRepositories plantRepositories;
+    private final UserRepositories userRepositories;
+    private final PlotRepositories plotRepositories;
+    private final PlantRepositories plantRepositories;
     private final LiveData<User> userLiveData;
     private final LiveData<List<Plot>> plotsLiveData;
     private final LiveData<Plot> currentPlotLiveData;
-
-
 
     private final LiveData<List<Plant>> plantsLiveData;
     private final LiveData<List<PlantInPlot>> plantsInPlotLiveData;
@@ -36,9 +34,9 @@ public class ViewModel extends AndroidViewModel {
 
     public ViewModel(@NonNull Application application) {
         super(application);
-        this.userRepositories = new userRepositories();
-        this.plotRepositories = new plotRepositories();
-        this.plantRepositories = new plantRepositories();
+        this.userRepositories = UserRepositories.getInstance();
+        this.plotRepositories = PlotRepositories.getInstance();
+        this.plantRepositories = new PlantRepositories();
         this.userLiveData = userRepositories.getUserLiveData();
         userRepositories.loadCurrentUser();
         this.plotsLiveData = this.plotRepositories.getPlotsLiveData();

@@ -13,20 +13,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.launay.ecoplant.models.User;
 
-public class userRepositories {
+public class UserRepositories {
     private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
 
+    private static UserRepositories instance;
 
-    public userRepositories(){
+    private UserRepositories(){
         this.loadCurrentUser();
-
         //TODO quand firebase auth et BDD active retirer le code :
         User fakeuser = new User("1","Launay Antoine","LnyAntoine","launay.antoine1509@gmail.com","12345");
         this.userLiveData.setValue(fakeuser);
 
     }
 
-    public LiveData<User> getUserLiveData(){
+    public static synchronized UserRepositories getInstance() {
+        if (instance == null) {
+            instance = new UserRepositories();
+        }
+        return instance;
+    }
+
+    public MutableLiveData<User> getUserLiveData(){
         return this.userLiveData;
     }
 
@@ -53,8 +60,10 @@ public class userRepositories {
         } else {
             userLiveData.setValue(null);
         }
+        */
 
-         */
+
+
 
     }
 

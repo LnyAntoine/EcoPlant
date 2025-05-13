@@ -1,23 +1,21 @@
 package com.launay.ecoplant.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantInPlot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class plantRepositories {
+public class PlantRepositories {
     private final MutableLiveData<List<Plant>> plantsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<PlantInPlot>> plantInPlotLiveData = new MutableLiveData<>();
 
-    public plantRepositories(){
+    public PlantRepositories(){
 
         //TODO quand firebase auth et BDD active retirer le code :
 

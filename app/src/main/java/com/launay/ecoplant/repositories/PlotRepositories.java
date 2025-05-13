@@ -3,22 +3,18 @@ package com.launay.ecoplant.repositories;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.Plot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class plotRepositories {
+public class PlotRepositories {
+    private static PlotRepositories instance;
     private final MutableLiveData<List<Plot>> plotsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Plot> currentPlotLiveData = new MutableLiveData<>();
 
-    public plotRepositories() {
+    private PlotRepositories() {
 
         this.loadUserPlots();
         //TODO quand firebase auth et BDD active retirer le code :
@@ -37,10 +33,17 @@ public class plotRepositories {
         this.currentPlotLiveData.setValue(plot);
     }
 
+    public static synchronized PlotRepositories getInstance() {
+        if (instance == null) {
+            instance = new PlotRepositories();
+        }
+        return instance;
+    }
+
     public LiveData<List<Plot>> getPlotsLiveData(){
         return this.plotsLiveData;
     }
-    public LiveData<Plot> getCurrentPlotLiveData(){
+    public MutableLiveData<Plot> getCurrentPlotLiveData(){
         return this.currentPlotLiveData;
     }
 
