@@ -1,5 +1,7 @@
 package com.launay.ecoplant.repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -9,13 +11,29 @@ import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantInPlot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PlantRepositories {
     private final MutableLiveData<List<Plant>> plantsLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<PlantInPlot>> plantInPlotLiveData = new MutableLiveData<>();
 
-    public PlantRepositories(){
+
+
+    private final MutableLiveData<List<Plant>> detectedPlantsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<PlantInPlot>> detectedPlantIntPlotLiveData = new MutableLiveData<>();
+    private static PlantRepositories instance;
+
+    public static PlantRepositories getInstance(){
+        if (instance==null){
+            instance = new PlantRepositories();
+        }
+        return instance;
+    }
+
+    private PlantRepositories(){
 
         //TODO quand firebase auth et BDD active retirer le code :
 
@@ -56,17 +74,23 @@ public class PlantRepositories {
         plantInPlotLiveData.setValue(plantInPlotList);
 
     }
+    public MutableLiveData<List<PlantInPlot>> getDetectedPlantIntPlotLiveData() {
+        return detectedPlantIntPlotLiveData;
+    }
+    public MutableLiveData<List<Plant>> getDetectedPlantsLiveData() {
+        return detectedPlantsLiveData;
+    }
     public LiveData<List<Plant>> getPlantsLiveData(){
         return this.plantsLiveData;
     }
     public LiveData<List<PlantInPlot>> getPlantInPlotLiveData(){
         return this.plantInPlotLiveData;
     }
-
     public void loadPlantForPlot(String plotId){
 
         List<Plant> plantList = new ArrayList<>();
         List<PlantInPlot> plantInPlots = new ArrayList<>();
+        Map<String,Integer> plantMap = new HashMap<>();
 
 
         //TODO quand firebase auth et BDD active activer le code :
@@ -85,6 +109,7 @@ public class PlantRepositories {
 
                         // Charger les informations de la plante à partir de la collection Plants
                         plantInPlots.add(new PlantInPlot(plantId,plotId,userId));
+
                         if (plantMap.containsKey(plantId)){
                             plantMap.replace(plantId,plantMap.get(plantId)+1);
                         } else{
@@ -102,12 +127,12 @@ public class PlantRepositories {
             });
         this.plantsLiveData.setValue(plantList);
         this.plantInPlotLiveData.setValue(plantInPlots);
-     */
+        */
 
     }
 
     private Plant getPlantById(String plantid){
-
+        AtomicReference<Plant> plant = new AtomicReference<>();
         //TODO quand firebase auth et BDD active activer le code :
         /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -121,21 +146,25 @@ public class PlantRepositories {
                             String shortname = document.getString("shortname");
                             String fullname = document.getString("fullname");
                             String detailsLink = document.getString("detailsLink");
-                            float scoreAzote = document.getFloat("scoreAzote");
-                            float scoreStruct = document.getFloat("scoreStruct");
-                            float scoreWater = document.getFloat("scoreWater");
-
-
+                            Double scoreAzote = document.getDouble("scoreAzote");
+                            Double scoreStruct = document.getDouble("scoreStruct");
+                            Double scoreWater = document.getDouble("scoreWater");
                             // Charger les informations de la plante à partir de la collection Plants
-                            return new Plant(plantId,shortname,fullname,detailsLink,scoreAzote,scoreStruct,scoreWater);
+                            plant.set(new Plant(plantId, shortname, fullname, detailsLink, scoreAzote, scoreStruct, scoreWater));
                         }
                     } else {
                         // Gérer l'échec de la récupération des données
                         Log.e("PlantRepository", "Error getting documents.", task.getException());
+
                     }
                 });
-         */
-        return null;
+        */
+        return plant.get();
+    }
+
+
+    private void detectPlant(String URIphoto,String plotId){
+        //TODO a faire
     }
 
     public void reset(){

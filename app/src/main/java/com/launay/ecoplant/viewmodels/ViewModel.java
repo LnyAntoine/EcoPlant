@@ -36,7 +36,8 @@ public class ViewModel extends AndroidViewModel {
         super(application);
         this.userRepositories = UserRepositories.getInstance();
         this.plotRepositories = PlotRepositories.getInstance();
-        this.plantRepositories = new PlantRepositories();
+        this.plantRepositories = PlantRepositories.getInstance();
+
         this.userLiveData = userRepositories.getUserLiveData();
         userRepositories.loadCurrentUser();
         this.plotsLiveData = this.plotRepositories.getPlotsLiveData();
