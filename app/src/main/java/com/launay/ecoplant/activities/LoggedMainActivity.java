@@ -16,6 +16,8 @@ import com.launay.ecoplant.fragments.MapFragment;
 import com.launay.ecoplant.fragments.MyPlotFragment;
 import com.launay.ecoplant.fragments.PhotoFragment;
 import com.launay.ecoplant.fragments.myAccountFragment;
+import com.launay.ecoplant.viewmodels.AuthViewModel;
+import com.launay.ecoplant.viewmodels.UserViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 public class LoggedMainActivity extends AppCompatActivity {
@@ -27,9 +29,16 @@ public class LoggedMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.main_layout);
-
+/*
         ViewModel viewModel = new ViewModelProvider(this).get(ViewModel.class);
         viewModel.refreshUser();
+
+
+ */
+        AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        authViewModel.loadCurrentUser();
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.loadCurrentUser();
 
         PhotoFragment photoFragment = new PhotoFragment();
 

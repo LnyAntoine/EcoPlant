@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.MainActivity;
+import com.launay.ecoplant.viewmodels.AuthViewModel;
+import com.launay.ecoplant.viewmodels.UserViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import org.w3c.dom.Text;
@@ -85,19 +87,19 @@ public class myAccountFragment extends Fragment {
         ImageButton pwdEditBtn = view.findViewById(R.id.pwdEditBtn);
         Button logoutBtn = view.findViewById(R.id.logoutBtn);
 
-        //TODO récupérer les info de l'utilisateur
 
-        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        viewModel.getUserLiveData().observe(requireActivity(),user -> {
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        AuthViewModel authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+
+        userViewModel.getCurrentUser().observe(requireActivity(),user -> {
             fullNameField.setText(user.getFullname());
             mailField.setText(user.getMail());
             displayNameField.setText(user.getDisplayName());
             pwdFIeld.setText(user.getPwd());
         });
 
-
         logoutBtn.setOnClickListener(v->{
-            viewModel.logout();
+            authViewModel.signOut();
             Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
             startActivity(logoutIntent);
         });

@@ -94,7 +94,7 @@ public class PlantRepositories {
 
 
         //TODO quand firebase auth et BDD active activer le code :
-        /*
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("PlantInPlot")
@@ -127,14 +127,14 @@ public class PlantRepositories {
             });
         this.plantsLiveData.setValue(plantList);
         this.plantInPlotLiveData.setValue(plantInPlots);
-        */
+
 
     }
 
     private Plant getPlantById(String plantid){
         AtomicReference<Plant> plant = new AtomicReference<>();
         //TODO quand firebase auth et BDD active activer le code :
-        /*
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("Plant")
                 .whereEqualTo("plantId", plantid) // Filtre par plotId
@@ -158,7 +158,7 @@ public class PlantRepositories {
 
                     }
                 });
-        */
+
         return plant.get();
     }
 

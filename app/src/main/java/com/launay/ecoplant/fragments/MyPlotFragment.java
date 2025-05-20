@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
@@ -91,10 +92,11 @@ public class MyPlotFragment extends Fragment {
         plotListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
         plotListRCV.setAdapter(adapter);
 
-        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        viewModel.refreshPlots();
 
-        viewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        plotViewModel.loadPlots();
+
+        plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
             List<Plot> plotList = new ArrayList<>();
             plots.forEach(plot -> {
 
@@ -105,12 +107,6 @@ public class MyPlotFragment extends Fragment {
             });
             adapter.updateList(plotList);
         });
-
-
-
-
-
-
 
         addPlotBtn.setOnClickListener(v->{
             Fragment fragment = new CreatePlotFragment();

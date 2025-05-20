@@ -21,6 +21,11 @@ public class PlotViewModel extends AndroidViewModel {
         plotsLiveData = plotRepositories.getPlotsLiveData();
         currentPlotLiveData = plotRepositories.getCurrentPlotLiveData();
     }
+
+
+    public boolean createPlot(String name){
+        return this.plotRepositories.createPlot(name);
+    }
     public LiveData<Plot> getCurrentPlotLiveData(){return this.currentPlotLiveData;}
     public LiveData<List<Plot>> getPlotsLiveData(){return this.plotsLiveData;}
     public void loadPlots(){

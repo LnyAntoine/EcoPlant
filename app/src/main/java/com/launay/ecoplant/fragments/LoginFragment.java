@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.LoggedMainActivity;
+import com.launay.ecoplant.viewmodels.AuthViewModel;
+import com.launay.ecoplant.viewmodels.UserViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -75,6 +78,19 @@ public class LoginFragment extends Fragment {
         EditText mailField = view.findViewById(R.id.mailField);
         EditText pwdField = view.findViewById(R.id.pwdField);
 
+        AuthViewModel authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
+        authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
+            //TODO retirer le ou après
+            if (firebaseUser!=null || true){
+                userViewModel.loadCurrentUser();
+                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
+                startActivity(toLoggedMainIntent);
+            }
+        });
+
+
         pwdForgotten.setOnClickListener(v->{
             //TODO gérer le mot de passe
         });
@@ -90,31 +106,9 @@ public class LoginFragment extends Fragment {
             String mail = mailField.getText().toString();
             String pwd = pwdField.getText().toString();
 
-            //TODO quand firebase auth et BDD active activer le code :
-            /*
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            authViewModel.signIn(mail,pwd);
+            authViewModel.loadCurrentUser();
 
-            mAuth.createUserWithEmailAndPassword(mail, pwd)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user!=null){
-                                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
-                                startActivity(toLoggedMainIntent);
-                            }
-
-                        } else {
-                            // Gérer l’erreur
-                        }
-                    });
-
-
-             */
-            //TODO quand firebase auth et BDD active retirer le code :
-            if (true){
-                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
-                startActivity(toLoggedMainIntent);
-            }
         });
         return view;
     }

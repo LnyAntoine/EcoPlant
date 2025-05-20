@@ -8,10 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.AuthViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,13 +27,11 @@ public class MainActivity extends AppCompatActivity {
         //TODO : verifier comment fonctionne la bdd plantnet
         //TODO : mettre la clé d'api plantnet sur firebase
         //TODO quand firebase auth et BDD active activer le code :
-        /*
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        */
-        //TODO quand firebase auth et BDD active retirer le code :
-        Object firebaseUser = null;
 
-        if (firebaseUser!=null){
+        AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        authViewModel.loadCurrentUser();
+
+        if (authViewModel.isSignedIn()){
             Intent intentToLMA = new Intent(this,LoggedMainActivity.class);
             startActivity(intentToLMA);
         }else{

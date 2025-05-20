@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
@@ -93,9 +94,10 @@ public class SwitchPlotPhotoFragment extends Fragment {
         plotListRV.setLayoutManager(new LinearLayoutManager(requireActivity()));
         plotListRV.setAdapter(adapter);
 
-        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        plotViewModel.loadPlots();
 
-        viewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
+        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
             if (p!=null){
                 currentPlotView.setVisibility(VISIBLE);
                 plotName.setText(p.getName());
@@ -107,9 +109,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
 
         });
 
-        viewModel.refreshPlots();
-
-        viewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
+        plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
             List<Plot> plotList = new ArrayList<>();
             plots.forEach(plot -> {
 

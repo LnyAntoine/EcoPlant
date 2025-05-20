@@ -40,6 +40,13 @@ public class PlotRepositories {
         return instance;
     }
 
+
+    //TODO faire createPlot
+    // gérer coté firebase la creation (vérifier nom etc...)
+    // Set le currentPlot avec ce nouveau plot
+    public boolean createPlot(String name){
+        return true;
+    }
     public LiveData<List<Plot>> getPlotsLiveData(){
         return this.plotsLiveData;
     }

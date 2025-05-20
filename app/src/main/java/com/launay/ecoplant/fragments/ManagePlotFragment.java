@@ -25,11 +25,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantInPlot;
+import com.launay.ecoplant.viewmodels.PlantInPlotViewModel;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -104,35 +109,46 @@ public class ManagePlotFragment extends Fragment {
 
         plantListRCV.setAdapter(adapter);
 
-        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-        viewModel.refreshCurrentPlot(plotID);
-        viewModel.getCurrentPlotLiveData().observe(requireActivity(),plot ->{
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        PlantInPlotViewModel plantInPlotViewModel = new ViewModelProvider(requireActivity()).get(PlantInPlotViewModel.class);
+
+        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),plot ->{
             nameField.setText(plot.getName());
-            viewModel.refreshPlants();
+            plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
         });
 
-        viewModel.getCombinedLiveData().observe(requireActivity(),pair ->{
+        plantInPlotViewModel.getPlantlistLiveData().observe(requireActivity(),plantList -> {
+            if (plantList != null){
+                if (!plantList.isEmpty()){
+                    List<PlantInPlot> plantInPlots = plantInPlotViewModel.getPlantInPlotListLiveData().getValue();
+                    if (plantInPlots!=null){
+                        if (!plantInPlots.isEmpty()){
 
-            List<Plant> plants = new ArrayList<>();
-            pair.first.forEach(plant -> {
+                            Map<String,Integer> plantMap = new HashMap<>();
+                            for (PlantInPlot pip : plantInPlots){
+                                if (plantMap.containsKey(pip.getPlantId())){
+                                    plantMap.replace(pip.getPlantId(),plantMap.get(pip.getPlantId())+1);
+                                } else{
+                                    plantMap.put(pip.getPlantId(),1);
+                                }
+                            }
+                            List<Plant> plants = new ArrayList<>();
+                            for (com.launay.ecoplant.models.Plant plant : plantList){
 
-                int nb = 0;
-                for (PlantInPlot plantInPlot:pair.second) {
-                    if (Objects.equals(plantInPlot.getPlantId(), plant.getPlantId())
-                            && Objects.equals(plantInPlot.getPlotId(), plotID)){
-                        nb++;
+                                int nb = plantMap.get(plant.getPlantId());
+
+                                Plant plant1 = new Plant(plant.getPlantId(), plant.getShortname(), nb, plant.getFullname(),
+                                        plant.getScoreAzote(), plant.getScoreStruct(), plant.getScoreWater(), "");
+
+                                plants.add(plant1);
+                            }
+                            adapter.updateList(plants);
+                        }
                     }
                 }
-                if (nb>0) {
-                    Plant plant1 = new Plant(plant.getPlantId(), plant.getShortname(), nb, plant.getFullname(),
-                            plant.getScoreAzote(), plant.getScoreStruct(), plant.getScoreWater(), "");
-
-                    plants.add(plant1);
-                }
-
-            });
-            adapter.updateList(plants);
+            }
         });
+
 
 
         //TODO récupérer la liste des plantes pour ce plot
@@ -143,7 +159,7 @@ public class ManagePlotFragment extends Fragment {
 
         addPlant.setOnClickListener(v->{
             //TODO récupérer le plot actuel, view model ?
-            Fragment fragment = PhotoFragment.newInstance(plotID);
+            Fragment fragment = new PhotoFragment();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,fragment)
                     .addToBackStack("photo_fragment")

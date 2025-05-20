@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Button;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,15 +65,17 @@ public class CreatePlotFragment extends Fragment {
         Button createBtn = view.findViewById(R.id.create_btn);
         Button cancelBtn  = view.findViewById(R.id.cancel_btn);
 
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+
+
         modifyPictureBtn.setOnClickListener(v->{
             //TODO ouvrir la gallerie et afficher l'image selectionné (voir tp1)
         });
 
         createBtn.setOnClickListener(v->{
-            String plotID;
-            //TODO gérer la creation du plot et récupérer le nouvel id
-            plotID = "randomid";
-            Fragment fragment = ManagePlotFragment.newInstance(true,plotID);
+
+            plotViewModel.createPlot(changeName.getText().toString());
+            Fragment fragment = new ManagePlotFragment();
             getParentFragmentManager().beginTransaction()
                     .addToBackStack("manage_plot_fragment")
                     .replace(R.id.fragment_container,fragment)

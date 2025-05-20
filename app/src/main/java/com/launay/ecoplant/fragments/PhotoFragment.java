@@ -24,6 +24,8 @@ import android.widget.TextView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plot;
+import com.launay.ecoplant.viewmodels.DetectedPlantViewModel;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import org.w3c.dom.Text;
@@ -79,10 +81,13 @@ public class PhotoFragment extends Fragment {
         TextView plotName = currentPlotView.findViewById(R.id.plot_name);
         TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
 
-        ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
+
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+
+        DetectedPlantViewModel detectedPlantViewModel = new ViewModelProvider(requireActivity()).get(DetectedPlantViewModel.class);
 
 
-        viewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
+        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
             if (p!=null){
                 currentPlotView.setVisibility(VISIBLE);
                 plotName.setText(p.getName());
@@ -95,10 +100,8 @@ public class PhotoFragment extends Fragment {
         });
 
 
-        List<Plant> plants = new ArrayList<>();
 
-        //TODO : Faire une liste de plante pour l'adapter du recycler view
-        //TODO : récupérer le plot actuel
+        List<Plant> plants = new ArrayList<>();
 
 
         photoBtn.setOnClickListener(v->{
@@ -111,7 +114,6 @@ public class PhotoFragment extends Fragment {
 
         switchPlotBtn.setOnClickListener(v->{
             Fragment fragment = new SwitchPlotPhotoFragment();
-            //TODO ajouter le plot actuel dans le bundle (flemme), passer par viewmodel ?
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,fragment)
                     .addToBackStack("switch_plot_fragment")

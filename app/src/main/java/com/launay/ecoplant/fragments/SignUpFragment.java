@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.LoggedMainActivity;
 import com.launay.ecoplant.models.User;
+import com.launay.ecoplant.viewmodels.AuthViewModel;
+import com.launay.ecoplant.viewmodels.UserViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,6 +74,19 @@ public class SignUpFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_sign_up, container, false);
+
+        AuthViewModel authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
+        authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
+            //TODO retirer le ou après
+            if (firebaseUser!=null || true){
+                userViewModel.loadCurrentUser();
+                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
+                startActivity(toLoggedMainIntent);
+            }
+        });
+
         Button signUpBtn = view.findViewById(R.id.signUp);
         Button toLoginBtn = view.findViewById(R.id.toLoginBtn);
 
@@ -94,45 +110,8 @@ public class SignUpFragment extends Fragment {
             String pwd = pwdField.getText().toString();
             String displayName = displayNameField.getText().toString();
 
-            //TODO quand firebase auth et BDD active activer le code :
-            /*
-            FirebaseAuth auth = FirebaseAuth.getInstance();
-            DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("users");
-
-            auth.createUserWithEmailAndPassword(mail, pwd)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser firebaseUser = auth.getCurrentUser();
-                            if (firebaseUser != null) {
-                                String uid = firebaseUser.getUid();
-
-                                // Création de l'objet utilisateur personnalisé
-                                User user = new User(uid,fullname,displayName,mail,pwd);
-
-                                // Stockage dans la base de données
-                                dbRef.child(uid).setValue(user)
-                                        .addOnSuccessListener(unused -> {
-                                            FirebaseUser u = auth.getCurrentUser();
-                                            if (u!=null){
-                                                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
-                                                startActivity(toLoggedMainIntent);
-                                            }
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            //N'arrive pas à enregistrer dans la bdd
-                                        });
-                            }
-                        } else {
-                            //N'arrive pas à s'inscrire
-                        }
-                    });
-            */
-            //TODO quand firebase auth et BDD active retirer le code :
-
-            if (true){
-                Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
-                startActivity(toLoggedMainIntent);
-            }
+            authViewModel.signUp(mail,pwd,fullname,displayName);
+            authViewModel.loadCurrentUser();
 
         });
 
