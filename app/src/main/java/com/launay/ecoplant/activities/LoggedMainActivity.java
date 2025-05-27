@@ -28,6 +28,9 @@ public class LoggedMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         setContentView(R.layout.main_layout);
 /*
         ViewModel viewModel = new ViewModelProvider(this).get(ViewModel.class);

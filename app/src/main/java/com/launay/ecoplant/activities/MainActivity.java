@@ -2,6 +2,7 @@ package com.launay.ecoplant.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         //TODO : donner les autorisations des images
         //TODO : donner les autorisations internet
         //TODO : verifier la connexion à internet
@@ -31,12 +33,16 @@ public class MainActivity extends AppCompatActivity {
         AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         authViewModel.loadCurrentUser();
 
-        if (authViewModel.isSignedIn()){
-            Intent intentToLMA = new Intent(this,LoggedMainActivity.class);
-            startActivity(intentToLMA);
-        }else{
-            Intent intentToUMA = new Intent(this,UnloggedMainActivity.class);
-            startActivity(intentToUMA);
-        }
+        authViewModel.getCurrentUser().observe(this, user -> {
+            if (user != null) {
+                Log.d("Firebase", "SIGNEDIN " + user.getEmail());
+                Intent intentToLMA = new Intent(this, LoggedMainActivity.class);
+                startActivity(intentToLMA);
+            } else {
+                Log.d("Firebase", "NOT SIGNEDIN");
+                Intent intentToUMA = new Intent(this, UnloggedMainActivity.class);
+                startActivity(intentToUMA);
+            }
+        });
     }
 }

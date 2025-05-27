@@ -1,6 +1,7 @@
 package com.launay.ecoplant.repositories;
 
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -9,6 +10,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.launay.ecoplant.models.User;
+import com.launay.ecoplant.utils;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -16,14 +18,14 @@ public class AuthRepositories {
     private static AuthRepositories instance;
     private final MutableLiveData<FirebaseUser> currentUser;
     private final FirebaseAuth auth;
-    private final DatabaseReference userDbRef;
+    //private final DatabaseReference userDbRef;
 
 
     private AuthRepositories() {
         auth = FirebaseAuth.getInstance();
         currentUser = new MutableLiveData<>();
         currentUser.setValue(auth.getCurrentUser());
-        userDbRef = FirebaseDatabase.getInstance().getReference("users");
+        //userDbRef = FirebaseDatabase.getInstance().getReference("users");
     }
     public static synchronized AuthRepositories getInstance() {
         if (instance == null) {
@@ -34,58 +36,75 @@ public class AuthRepositories {
     public void loadCurrentUser(){
         this.currentUser.setValue(auth.getCurrentUser());
     }
-    public boolean signIn(String mail,String pwd){
-        if (!this.isSignedIn()){
-            this.auth.createUserWithEmailAndPassword(mail, pwd)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            this.currentUser.setValue(this.auth.getCurrentUser());
-                        }});
-            return this.isSignedIn();
+
+
+    public void signIn(String mail, String pwd, utils.AuthCallback callback){
+        if (this.isSignedIn()) {
+            callback.onComplete(false); // déjà connecté
+            return;
         }
-        return false;
+
+        auth.signInWithEmailAndPassword(mail, pwd)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        currentUser.setValue(auth.getCurrentUser());
+                        callback.onComplete(true);
+                    } else {
+                        callback.onComplete(false);
+                    }
+                });
     }
-    public boolean signUp(String mail,String pwd, String fullname,String displayName){
 
-            if (this.isSignedIn()){
-                return false;
-            }
+    public void signUp(String mail, String pwd, String fullname, String displayName, utils.AuthCallback  callback) {
+        if (this.isSignedIn()) {
+            Log.d("SignUpFirebase","UserAlreadySignedIn"+this.isSignedIn()+this.currentUser.getValue());
+            callback.onComplete(false);
+            return;
+        }
+        Log.d("SignUpFirebase","UserNotSignedIn"+this.isSignedIn()+this.currentUser.getValue());
+        auth.createUserWithEmailAndPassword(mail, pwd)
+                .addOnCompleteListener(task -> {
+                    Log.d("SignUpFirebase","addOnCompleteListener"+task);
+                    if (task.isSuccessful()) {
+                        Log.d("SignUpFirebase","TaskSuccessful"+task);
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        currentUser.setValue(firebaseUser);
 
-            auth.createUserWithEmailAndPassword(mail, pwd)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            currentUser.setValue(auth.getCurrentUser());
-                            if (this.isSignedIn()) {
-                                String uid = currentUser.getValue().getUid();
+                        if (firebaseUser != null) {
+                            Log.d("SignUpFirebase","firebaseUser!=null"+firebaseUser);
 
-                                User user = new User(uid,fullname,displayName,mail,pwd);
+                            String uid = firebaseUser.getUid();
+                            User user = new User(uid, fullname, displayName, mail, pwd);
+                            /*
+                            userDbRef.child(uid).setValue(user)
+                                    .addOnSuccessListener(unused -> callback.onComplete(true))
+                                    .addOnFailureListener(e -> {
+                                        this.signOut();
+                                        callback.onComplete(false);
+                                    });
 
-                                userDbRef.child(uid).setValue(user)
-                                        .addOnSuccessListener(unused -> {
-
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            //N'arrive pas à enregistrer dans la bdd
-                                            this.signOut();
-                                        });
-                            }
+                             */
                         } else {
-                            //N'arrive pas à s'inscrire
+                            Log.d("SignUpFirebase","firebaseUser==null"+firebaseUser);
+                            callback.onComplete(false);
                         }
-                    });
+                    } else {
+                        Log.d("SignUpFirebase","TaskError"+task);
 
-
-        return this.isSignedIn();
+                        callback.onComplete(false);
+                    }
+                });
     }
 
     public boolean isSignedIn(){
-        return currentUser!=null;
+        return this.currentUser.getValue() != null;
     }
     public MutableLiveData<FirebaseUser> getCurrentUser() {
         return this.currentUser;
     }
 
     public void signOut() {
+        Log.d("AuthRepo","SignedOut"+getCurrentUser().getValue());
         auth.signOut();
     }
 }

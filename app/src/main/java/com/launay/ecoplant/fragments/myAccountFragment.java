@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,7 @@ public class myAccountFragment extends Fragment {
         });
 
         logoutBtn.setOnClickListener(v->{
+            Log.d("MYAccFragment","Signout");
             authViewModel.signOut();
             Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
             startActivity(logoutIntent);

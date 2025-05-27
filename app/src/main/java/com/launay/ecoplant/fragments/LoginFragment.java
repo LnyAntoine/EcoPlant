@@ -83,7 +83,7 @@ public class LoginFragment extends Fragment {
 
         authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
             //TODO retirer le ou après
-            if (firebaseUser!=null || true){
+            if (firebaseUser!=null){
                 userViewModel.loadCurrentUser();
                 Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toLoggedMainIntent);
@@ -106,9 +106,14 @@ public class LoginFragment extends Fragment {
             String mail = mailField.getText().toString();
             String pwd = pwdField.getText().toString();
 
-            authViewModel.signIn(mail,pwd);
-            authViewModel.loadCurrentUser();
+            authViewModel.signIn(mail,pwd,success -> {
+                if (success) {
 
+                } else {
+
+                }
+            });
+            authViewModel.loadCurrentUser();
         });
         return view;
     }

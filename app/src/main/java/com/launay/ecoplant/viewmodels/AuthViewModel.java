@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.launay.ecoplant.repositories.AuthRepositories;
+import com.launay.ecoplant.utils;
 
 public class AuthViewModel extends AndroidViewModel {
     private final LiveData<FirebaseUser> currentUser;
@@ -27,15 +28,16 @@ public class AuthViewModel extends AndroidViewModel {
         this.authRepositories.loadCurrentUser();
     }
     public boolean isSignedIn(){
-        return this.currentUser!=null;
+        return this.authRepositories.isSignedIn();
     }
     public void signOut(){
         this.authRepositories.signOut();
     }
-    public boolean signIn(String mail, String pwd){
-        return authRepositories.signIn(mail, pwd);
+    public void signIn(String mail, String pwd, utils.AuthCallback callback) {
+        authRepositories.signIn(mail, pwd, callback);
     }
-    public boolean signUp(String mail,String pwd,String fullname,String displayName){
-        return authRepositories.signUp(mail,pwd,fullname,displayName);
+
+    public void signUp(String mail, String pwd, String fullname, String displayName, utils.AuthCallback callback) {
+        authRepositories.signUp(mail, pwd, fullname, displayName, callback);
     }
 }

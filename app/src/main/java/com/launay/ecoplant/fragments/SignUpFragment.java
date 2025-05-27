@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,8 +80,7 @@ public class SignUpFragment extends Fragment {
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
-            //TODO retirer le ou après
-            if (firebaseUser!=null || true){
+            if (firebaseUser!=null){
                 userViewModel.loadCurrentUser();
                 Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toLoggedMainIntent);
@@ -110,7 +110,13 @@ public class SignUpFragment extends Fragment {
             String pwd = pwdField.getText().toString();
             String displayName = displayNameField.getText().toString();
 
-            authViewModel.signUp(mail,pwd,fullname,displayName);
+            authViewModel.signUp(mail,pwd,fullname,displayName,success -> {
+                if (success) {
+                    Log.d("FirebaseSignUp","Success"+authViewModel.getCurrentUser().getValue());
+                } else {
+                    Log.d("FirebaseSignUp","Error"+authViewModel.getCurrentUser().getValue());
+                }
+            });
             authViewModel.loadCurrentUser();
 
         });
