@@ -52,6 +52,7 @@ public class PlotRepositories {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Plot plot = documentSnapshot.toObject(Plot.class);
+                        plot.setPlotId(plotId);
                         plotLiveData.setValue(plot);
                     }
                     else {
