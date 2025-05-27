@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.User;
 import com.launay.ecoplant.utils;
 
@@ -18,14 +19,14 @@ public class AuthRepositories {
     private static AuthRepositories instance;
     private final MutableLiveData<FirebaseUser> currentUser;
     private final FirebaseAuth auth;
-    //private final DatabaseReference userDbRef;
+    private final FirebaseFirestore db;
 
 
     private AuthRepositories() {
         auth = FirebaseAuth.getInstance();
         currentUser = new MutableLiveData<>();
-        currentUser.setValue(auth.getCurrentUser());
-        //userDbRef = FirebaseDatabase.getInstance().getReference("users");
+        this.loadCurrentUser();
+        db = FirebaseFirestore.getInstance();
     }
     public static synchronized AuthRepositories getInstance() {
         if (instance == null) {
@@ -74,16 +75,15 @@ public class AuthRepositories {
                             Log.d("SignUpFirebase","firebaseUser!=null"+firebaseUser);
 
                             String uid = firebaseUser.getUid();
-                            User user = new User(uid, fullname, displayName, mail, pwd);
-                            /*
-                            userDbRef.child(uid).setValue(user)
+                            User user = new User(uid, fullname, displayName, mail);
+
+                            db.collection("users").document(uid)
+                                    .set(user)
                                     .addOnSuccessListener(unused -> callback.onComplete(true))
                                     .addOnFailureListener(e -> {
                                         this.signOut();
                                         callback.onComplete(false);
                                     });
-
-                             */
                         } else {
                             Log.d("SignUpFirebase","firebaseUser==null"+firebaseUser);
                             callback.onComplete(false);

@@ -93,10 +93,12 @@ public class myAccountFragment extends Fragment {
         AuthViewModel authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         userViewModel.getCurrentUser().observe(requireActivity(),user -> {
-            fullNameField.setText(user.getFullname());
-            mailField.setText(user.getMail());
-            displayNameField.setText(user.getDisplayName());
-            pwdFIeld.setText(user.getPwd());
+            if (user!=null) {
+                fullNameField.setText(user.getFullname());
+                mailField.setText(user.getMail());
+                displayNameField.setText(user.getDisplayName());
+                pwdFIeld.setText(user.getPwd());
+            }
         });
 
         logoutBtn.setOnClickListener(v->{

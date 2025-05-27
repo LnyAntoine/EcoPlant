@@ -1,5 +1,7 @@
 package com.launay.ecoplant.repositories;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,18 +13,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.User;
 
 public class UserRepositories {
-    private final MutableLiveData<User> userLiveData = new MutableLiveData<>();
+    private final MutableLiveData<User> userLiveData;
 
     private static UserRepositories instance;
 
     private UserRepositories(){
+        userLiveData = new MutableLiveData<>();
         this.loadCurrentUser();
-        //TODO quand firebase auth et BDD active retirer le code :
-        User fakeuser = new User("1","Launay Antoine","LnyAntoine","launay.antoine1509@gmail.com","12345");
-        this.userLiveData.setValue(fakeuser);
 
     }
 
@@ -38,33 +39,30 @@ public class UserRepositories {
     }
 
     public void loadCurrentUser(){
-
-        //TODO quand firebase auth et BDD active activer le code :
-        /*
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             String uid = firebaseUser.getUid();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(uid);
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User user = snapshot.getValue(User.class);
-                    userLiveData.setValue(user);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Gérer les erreurs ici
-                }
-            });
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            userLiveData.setValue(user);
+                        } else {
+                            Log.d("UserRepo","Document not found");
+                            userLiveData.setValue(null); // Pas de document trouvé
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("UserRepo","AddOnFailureListener"+e.getMessage());
+                        userLiveData.setValue(null);
+                    });
         } else {
+            Log.d("UserRepo","FirebaseUser null"+firebaseUser);
+
             userLiveData.setValue(null);
         }
-        */
-
-
-
-
     }
 
     public void logout(){

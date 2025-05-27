@@ -8,13 +8,13 @@ public class User {
     String pwd;
     String pfpURI;
 
+    public User(){}
 
-    public User(String userId, String fullname, String displayName, String mail, String pwd) {
+    public User(String userId, String fullname, String displayName, String mail) {
         this.userId = userId;
         this.fullname = fullname;
         this.displayName = displayName;
         this.mail = mail;
-        this.pwd = pwd;
     }
 
     public String getUserId() {
