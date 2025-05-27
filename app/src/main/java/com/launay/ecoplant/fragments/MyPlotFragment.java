@@ -158,7 +158,7 @@ public class MyPlotFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PlotViewHolder holder, int position) {
             Plot plot = filteredPlots.get(position);
-            Log.d("onBindViewHolder",""+plot);
+            Log.d("onBindViewHolder",""+plot.toString());
             holder.bind(plot,this);
 
         }
@@ -323,7 +323,7 @@ public class MyPlotFragment extends Fragment {
         @Override
         @NonNull
         public String toString(){
-            return this.getPlotname();
+            return this.getPlotname() + "-"+ this.getId();
         }
     }
 }

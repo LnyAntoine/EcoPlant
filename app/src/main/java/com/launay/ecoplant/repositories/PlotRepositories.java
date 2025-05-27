@@ -1,36 +1,37 @@
 package com.launay.ecoplant.repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.Plot;
+import com.launay.ecoplant.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class PlotRepositories {
     private static PlotRepositories instance;
-    private final MutableLiveData<List<Plot>> plotsLiveData = new MutableLiveData<>();
-    private final MutableLiveData<Plot> currentPlotLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Plot>> plotsLiveData;
+    private final MutableLiveData<Plot> currentPlotLiveData ;
+    private final MutableLiveData<Plot> plotLiveData;
 
     private PlotRepositories() {
-
+        plotsLiveData  = new MutableLiveData<>();
+        currentPlotLiveData = new MutableLiveData<>();
+        currentPlotLiveData.setValue(null);
+        plotLiveData = new MutableLiveData<>();
+        plotLiveData.setValue(null);
         this.loadUserPlots();
-        //TODO quand firebase auth et BDD active retirer le code :
 
-        List<Plot> plotList = new ArrayList<>();
-
-        // Ajout des plots avec des données spécifiques
-        plotList.add(new Plot("Vegetable", "Plot A", "1", "1", 48.858844f, 2.294350f, 20, 5.0, 7.3, 6.5));
-        plotList.add(new Plot("Flower", "Plot B", "2", "1", 51.5074f, -0.1278f, 30, 6.1, 8.5, 7.2));
-        plotList.add(new Plot("Fruit", "Plot C", "3", "1", 40.712776f, -74.005974f, 25, 7.3, 6.0, 8.1));
-        plotList.add(new Plot("Vegetable", "Plot D", "4", "1", 34.052235f, -118.243683f, 40, 6.8, 7.0, 7.5));
-        plotList.add(new Plot("Fruit", "Plot E", "5", "1", 37.774929f, -122.419418f, 15, 6.2, 8.0, 6.0));
-
-        this.plotsLiveData.setValue(plotList);
-        Plot plot = new Plot("Vegetable", "Plot A", "1", "1", 48.858844f, 2.294350f, 20, 5.0, 7.3, 6.5);
-        this.currentPlotLiveData.setValue(plot);
     }
 
     public static synchronized PlotRepositories getInstance() {
@@ -40,12 +41,72 @@ public class PlotRepositories {
         return instance;
     }
 
+    public void loadPlotById(String plotId){
+
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("plots")
+                .document(plotId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Plot plot = documentSnapshot.toObject(Plot.class);
+                        plotLiveData.setValue(plot);
+                    }
+                    else {
+                        Log.d("PlotRepo","CurrentPlot : Document not found");
+                        plotLiveData.setValue(null);
+                    }
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("PlotRepo","Current Plot : AddOnFailureListener"+e.getMessage());
+                    plotLiveData.postValue(null);
+                });
+
+
+    }
+    public LiveData<Plot> getPlotById(){
+        return plotLiveData;
+    }
+
 
     //TODO faire createPlot
     // gérer coté firebase la creation (vérifier nom etc...)
     // Set le currentPlot avec ce nouveau plot
-    public boolean createPlot(String name){
-        return true;
+    public void createPlot(String name,Double lat,Double longi,String type){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Création de l'objet Plot
+            Plot plot = new Plot(
+                    type,               // type
+                    name,     // name
+                    null,                    // plotId (sera généré par Firestore)
+                    userId,                  // ownerId
+                    lat,                // latitude
+                    longi,                 // longitude
+                    0,                      // nbPlant
+                    0.,                     // scoreAzote
+                    0.,                     // scoreStruct
+                    0.                     // scoreWater
+            );
+
+            // Ajout du plot dans la collection
+            db.collection("plots")
+                    .add(plot)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d("Firestore", "Plot créé avec ID: " + documentReference.getId());
+                        this.loadCurrentPlot(documentReference.getId());
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Erreur lors de la création du plot", e);
+                    });
+        }
     }
     public LiveData<List<Plot>> getPlotsLiveData(){
         return this.plotsLiveData;
@@ -56,70 +117,91 @@ public class PlotRepositories {
 
     public void loadCurrentPlot(String plotId){
 
-        //TODO quand firebase auth et BDD active retirer le code :
-
-        List<Plot> plotList = new ArrayList<>(this.plotsLiveData.getValue());
-        for (Plot plot:plotList){
-            if (Objects.equals(plot.getPlotId(), plotId)){
-                this.currentPlotLiveData.setValue(plot);
-            }
-        }
-
-        //TODO quand firebase auth et BDD active activer le code :
-
-        /*
-        Plot plot = null;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("plots")
                 .document(plotId)
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        plot = doc.toObject(Plot.class);
-                        plot.setId(doc.getId()); // si tu veux l'id
-
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Plot plot = documentSnapshot.toObject(Plot.class);
+                        currentPlotLiveData.setValue(plot);
                     }
-                    currentPlotLiveData.setValue(plot);
+                    else {
+                        Log.d("PlotRepo","CurrentPlot : Document not found");
+                        currentPlotLiveData.setValue(null);
+                    }
+
                 })
                 .addOnFailureListener(e -> {
+                    Log.d("PlotRepo","Current Plot : AddOnFailureListener"+e.getMessage());
                     currentPlotLiveData.postValue(null);
                 });
 
-         */
     }
 
     public void loadUserPlots(){
-        //TODO quand firebase auth et BDD active activer le code :
 
-/*
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user!=null) {
+        if (user != null) {
             String userId = user.getUid();
-
             FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("plots")
+                    .whereEqualTo("ownerId", userId)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        List<Plot> plots = new ArrayList<>();
+                        for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                            Plot plot = doc.toObject(Plot.class);
+                            if (plot != null) {
+                                plot.setPlotId(doc.getId()); // si tu veux conserver l'ID du document
+                                plots.add(plot);
+                            }
+                        }
+                        plotsLiveData.setValue(plots);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("PlotRepo","AllPlots : addOnFailureListener "+e.getMessage());
+                        plotsLiveData.setValue(Collections.emptyList());
+                    });
+        } else {
+            Log.d("PlotRepo","AllPlots : user == null "+user);
 
-            db.collection("users")
-              .document(userId)
-              .collection("plots")
-              .get()
-              .addOnSuccessListener(querySnapshot -> {
-                  List<Plot> plots = new ArrayList<>();
-                  for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                      Plot plot = doc.toObject(Plot.class);
-                      plot.setPlotId(doc.getId()); // si tu veux l'id
-                      plots.add(plot);
-                  }
-                  plotsLiveData.setValue(plots);
-              })
-              .addOnFailureListener(e -> {
-                  plotsLiveData.setValue(Collections.emptyList());
-              });
         }
 
- */
+    }
+    public void deletePlot(String plotId, utils.AuthCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            // Pas d'utilisateur connecté
+            callback.onComplete(false);
+            return;
+        }
 
+        String userId = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // On récupère la référence du document à supprimer
+        DocumentReference plotRef = db.collection("plots").document(plotId);
+
+        // Vérifier que l'utilisateur est bien le propriétaire (optionnel mais recommandé en local)
+        plotRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String ownerId = documentSnapshot.getString("ownerId");
+                if (userId.equals(ownerId)) {
+                    // L'utilisateur est propriétaire, on peut supprimer
+                    plotRef.delete()
+                            .addOnSuccessListener(unused -> callback.onComplete(true))
+                            .addOnFailureListener(e -> callback.onComplete(false));
+                } else {
+                    // Pas propriétaire
+                    callback.onComplete(false);
+                }
+            } else {
+                // Document inexistant
+                callback.onComplete(false);
+            }
+        }).addOnFailureListener(e -> callback.onComplete(false));
     }
 
     public void reset(){

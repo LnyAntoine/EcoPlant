@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.repositories.PlotRepositories;
+import com.launay.ecoplant.utils;
 
 import java.util.List;
 
@@ -23,9 +24,11 @@ public class PlotViewModel extends AndroidViewModel {
     }
 
 
-    public boolean createPlot(String name){
-        return this.plotRepositories.createPlot(name);
+    public void createPlot(String name){
+        this.plotRepositories.createPlot(name,0.,0.,"private");
     }
+    public LiveData<Plot> getPlotById(){return this.plotRepositories.getPlotById();}
+    public void loadPlotByid(String id){plotRepositories.loadPlotById(id);}
     public LiveData<Plot> getCurrentPlotLiveData(){return this.currentPlotLiveData;}
     public LiveData<List<Plot>> getPlotsLiveData(){return this.plotsLiveData;}
     public void loadPlots(){
@@ -33,6 +36,9 @@ public class PlotViewModel extends AndroidViewModel {
     }
     public void loadCurrentPlot(String id){
         plotRepositories.loadCurrentPlot(id);
+    }
+    public void deletePlot(String plotid, utils.AuthCallback authCallback){
+        plotRepositories.deletePlot(plotid,authCallback);
     }
     public void logout(){
         plotRepositories.reset();

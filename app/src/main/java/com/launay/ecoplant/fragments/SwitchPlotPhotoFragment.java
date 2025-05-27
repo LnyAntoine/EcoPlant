@@ -212,8 +212,9 @@ public class SwitchPlotPhotoFragment extends Fragment {
             plotName.setText(plot.getPlotname());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             chooseBtn.setOnClickListener(v->{
-                ViewModel viewModel = new ViewModelProvider(requireActivity()).get(ViewModel.class);
-                viewModel.refreshCurrentPlot(plot.getId());
+
+                PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+                plotViewModel.loadCurrentPlot(plot.getId());
                 getParentFragmentManager().popBackStack();
             });
         }

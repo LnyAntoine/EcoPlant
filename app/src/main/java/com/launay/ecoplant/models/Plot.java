@@ -6,14 +6,16 @@ public class Plot {
     String plotId;
     String pictureUri;
     String ownerId;
-    Float latitude;
-    Float longitude;
+    Double latitude;
+    Double longitude;
     int nbPlant;
     Double scoreAzote;
     Double scoreStruct;
     Double scoreWater;
 
-    public Plot(String type, String name, String plotId, String ownerId, Float latitude, Float longitude, int nbPlant, Double scoreAzote, Double scoreStruct, Double scoreWater) {
+    public Plot(){}
+
+    public Plot(String type, String name, String plotId, String ownerId, Double latitude, Double longitude, int nbPlant, Double scoreAzote, Double scoreStruct, Double scoreWater) {
         this.type = type;
         this.name = name;
         this.plotId = plotId;
@@ -46,11 +48,11 @@ public class Plot {
         return ownerId;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
@@ -86,7 +88,7 @@ public class Plot {
         this.pictureUri = pictureUri;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
@@ -94,7 +96,7 @@ public class Plot {
         this.ownerId = ownerId;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

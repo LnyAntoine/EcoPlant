@@ -27,6 +27,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantInPlot;
+import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.PlantInPlotViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
@@ -102,6 +103,9 @@ public class ManagePlotFragment extends Fragment {
         ImageButton returnBtn = view.findViewById(R.id.return_btn);
         Button addPlant = view.findViewById(R.id.add_plant_btn);
         RecyclerView plantListRCV = view.findViewById(R.id.plant_list);
+        TextView azoteScoreTV = view.findViewById(R.id.azote_score);
+        TextView groundScoreTV = view.findViewById(R.id.ground_score);
+        TextView waterScoreTV = view.findViewById(R.id.water_score);
 
         plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -111,10 +115,40 @@ public class ManagePlotFragment extends Fragment {
 
         PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
         PlantInPlotViewModel plantInPlotViewModel = new ViewModelProvider(requireActivity()).get(PlantInPlotViewModel.class);
+        plotViewModel.loadPlotByid(plotID);
 
-        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),plot ->{
-            nameField.setText(plot.getName());
-            plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
+        plotViewModel.getPlotById().observe(requireActivity(),plot ->{
+            if (plot!=null) {
+                nameField.setText(plot.getName());
+                azoteScoreTV.setText(plot.getScoreAzote().toString());
+                groundScoreTV.setText(plot.getScoreStruct().toString());
+                waterScoreTV.setText(plot.getScoreWater().toString());
+
+
+                //TODO semble y avoir une erreur ici ?
+                if (plot.getScoreAzote()>=0.33){
+                    azoteScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
+                    if (plot.getScoreAzote()>=0.66){
+                        azoteScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
+                    }
+                }
+                if (plot.getScoreStruct()>=0.33){
+                    groundScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
+                    if (plot.getScoreStruct()>=0.66){
+                        groundScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
+                    }
+                }
+                if (plot.getScoreWater()>=0.33){
+                    waterScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
+                    if (plot.getScoreWater()>=0.66){
+                        waterScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
+                    }
+                }
+
+
+                plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
+
+            }
         });
 
         plantInPlotViewModel.getPlantlistLiveData().observe(requireActivity(),plantList -> {
@@ -176,9 +210,14 @@ public class ManagePlotFragment extends Fragment {
         });
 
         deleteBtn.setOnClickListener(v->{
-            //TODO vérifier que l'utilisateur soit d'accord
-            // supprimer le plot
-            //TODO verifier si vient d'un endroit en particulier et renvoyer sur la liste si c'est le cas
+            Plot plot = plotViewModel.getPlotById().getValue();
+            if (plot != null){
+                plotViewModel.deletePlot(plot.getPlotId(),success -> {
+                    if (success){
+
+                    }
+                });
+            }
             getParentFragmentManager().popBackStack();
         });
 
