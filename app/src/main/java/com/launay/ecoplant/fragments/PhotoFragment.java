@@ -3,21 +3,26 @@ package com.launay.ecoplant.fragments;
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,18 +30,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.DetectedPlantViewModel;
+import com.launay.ecoplant.viewmodels.PlantNetViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,6 +66,7 @@ public class PhotoFragment extends Fragment {
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Uri> cameraLauncher;
     private Uri photoUri;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
 
     public PhotoFragment() {
         // Required empty public constructor
@@ -74,29 +87,7 @@ public class PhotoFragment extends Fragment {
         if (getArguments() != null) {
             plotID = getArguments().getString(ARG_PARAM1);
         }
-        galleryLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri selectedImageUri = result.getData().getData();
-                        if (selectedImageUri != null) {
-                            // Ici tu peux utiliser l'Uri, par ex l'afficher dans un ImageView
 
-                        }
-                    }
-                }
-        );
-
-        // 2) Initialiser le launcher pour prendre une photo avec la caméra
-        cameraLauncher = registerForActivityResult(
-                new ActivityResultContracts.TakePicture(),
-                success -> {
-                    if (success) {
-                        // photoUri contient la photo prise, tu peux par exemple l'afficher
-
-                    }
-                }
-        );
     }
 
     @Override
@@ -117,6 +108,8 @@ public class PhotoFragment extends Fragment {
 
         DetectedPlantViewModel detectedPlantViewModel = new ViewModelProvider(requireActivity()).get(DetectedPlantViewModel.class);
 
+        PlantNetViewModel plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
+
 
         plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
             if (p!=null){
@@ -131,16 +124,43 @@ public class PhotoFragment extends Fragment {
         });
 
 
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            // Ici tu peux utiliser l'Uri, par ex l'afficher dans un ImageView
+                            plantNetViewModel.loadPlantNetListLiveDataByUri(selectedImageUri);
+
+                        }
+                    }
+                }
+        );
+
+        // 2) Initialiser le launcher pour prendre une photo avec la caméra
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                success -> {
+                    if (success) {
+                        // photoUri contient la photo prise, tu peux par exemple l'afficher
+                        plantNetViewModel.loadPlantNetListLiveDataByUri(photoUri);
+
+                    }
+                }
+        );
+
+
 
         List<Plant> plants = new ArrayList<>();
 
 
         photoBtn.setOnClickListener(v->{
-            //TODO Ouvrir l'appareil photo et récupérer la photo prise
+            checkPermissionAndOpenCamera();
         });
 
         galleryBtn.setOnClickListener(v->{
-            //TODO Ouvrir la galerie et récupérer la photo choisie
+            openGallery();
         });
 
         switchPlotBtn.setOnClickListener(v->{
@@ -156,6 +176,45 @@ public class PhotoFragment extends Fragment {
 
 
         return view;
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+    public void openCamera() {
+        try {
+            File photoFile = createImageFile();
+            photoUri = FileProvider.getUriForFile(requireActivity(), "com.launay.ecoplant.fileprovider", photoFile);
+            cameraLauncher.launch(photoUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryLauncher.launch(intent);
+    }
+    private void checkPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        } else {
+            openCamera();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(requireContext(), "Permission caméra refusée", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public class PlantAdapter extends RecyclerView.Adapter<PlantViewHolder> {
