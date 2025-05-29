@@ -34,8 +34,10 @@ import android.widget.Toast;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.DetectedPlantViewModel;
+import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlantNetViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.ViewModel;
@@ -66,13 +68,14 @@ public class PhotoFragment extends Fragment {
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Uri> cameraLauncher;
     private Uri photoUri;
+    PlantNetViewModel plantNetViewModel;
+    PlotViewModel plotViewModel;
+    ObservationViewModel observationViewModel;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
 
     public PhotoFragment() {
-        // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static PhotoFragment newInstance(String param1) {
         PhotoFragment fragment = new PhotoFragment();
         Bundle args = new Bundle();
@@ -104,11 +107,11 @@ public class PhotoFragment extends Fragment {
         TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
 
 
-        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
 
-        DetectedPlantViewModel detectedPlantViewModel = new ViewModelProvider(requireActivity()).get(DetectedPlantViewModel.class);
 
-        PlantNetViewModel plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
+        plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
+        observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
 
         plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
@@ -138,7 +141,6 @@ public class PhotoFragment extends Fragment {
                 }
         );
 
-        // 2) Initialiser le launcher pour prendre une photo avec la caméra
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
                 success -> {
@@ -205,7 +207,7 @@ public class PhotoFragment extends Fragment {
         }
     }
 
-    @Override
+    @Override //TODO regarder deprecate ici
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
@@ -284,38 +286,36 @@ public class PhotoFragment extends Fragment {
         }
 
         public void bind(Plant plant, PlantAdapter adapter) {
-            plantName.setText(plant.getPlantName());
-            nbPlant.setText(""+plant.getNbPlant());
-            plantFullName.setText(plant.getPlantfullName());
-            azoteScore.setText(plant.getAzoteScore().toString());
-            waterScore.setText(plant.getWaterScore().toString());
-            groundScore.setText(plant.getGroundScore().toString());
+            plantName.setText(plant.getShortname());
+            //TODO régler ça nbPlant.setText(""+plant.getNbPlant());
+            plantFullName.setText(plant.getFullname());
+            azoteScore.setText(plant.getScoreAzote().toString());
+            waterScore.setText(plant.getScoreWater().toString());
+            groundScore.setText(plant.getScoreStruct().toString());
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             waterScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             groundScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
 
-            if (plant.getAzoteScore()>=0.33){
+            if (plant.getScoreAzote()>=0.33){
                 azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getAzoteScore()>=0.66){
+                if (plant.getScoreAzote()>=0.66){
                     azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
-            if (plant.getGroundScore()>=0.33){
+            if (plant.getScoreStruct()>=0.33){
                 groundScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getGroundScore()>=0.66){
+                if (plant.getScoreStruct()>=0.66){
                     groundScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
-            if (plant.getWaterScore()>=0.33){
+            if (plant.getScoreWater()>=0.33){
                 waterScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getWaterScore()>=0.66){
+                if (plant.getScoreWater()>=0.66){
                     waterScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
-
-
 
             detailsBtn.setOnClickListener(v -> {
                 if (detailedField.getVisibility() == GONE){
@@ -326,7 +326,8 @@ public class PhotoFragment extends Fragment {
             });
 
             addBtn.setOnClickListener(v->{
-                //TODO ajouter la fleur dans la bdd
+                observationViewModel.createObservation(plant,plotID);
+
             });
             knowmoreBtn.setOnClickListener(v->{
                 //TODO renvoyer vers une page web
@@ -335,7 +336,7 @@ public class PhotoFragment extends Fragment {
         }
     }
 
-    public static class Plant {
+    /*public static class Plant {
         private final String id;
         private final String plantName;
         private final int nbPlant;
@@ -398,5 +399,5 @@ public class PhotoFragment extends Fragment {
         public String getPictureURI() {
             return pictureURI;
         }
-    }
+    }*/
 }

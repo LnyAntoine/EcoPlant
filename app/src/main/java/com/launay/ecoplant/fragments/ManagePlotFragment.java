@@ -22,21 +22,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
-import com.launay.ecoplant.models.PlantInPlot;
 import com.launay.ecoplant.models.Plot;
-import com.launay.ecoplant.viewmodels.PlantInPlotViewModel;
+import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,7 +50,7 @@ public class ManagePlotFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private Boolean fromCreate;
     private String plotID;
-    private PlantAdapter adapter;
+    private ObservationAdapter adapter;
 
 
 
@@ -109,13 +106,15 @@ public class ManagePlotFragment extends Fragment {
 
         plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
-        adapter = new PlantAdapter(requireContext(),new ArrayList<>(),getParentFragmentManager());
+        adapter = new ObservationAdapter(requireContext(),new ArrayList<>(),getParentFragmentManager());
 
         plantListRCV.setAdapter(adapter);
 
         PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-        PlantInPlotViewModel plantInPlotViewModel = new ViewModelProvider(requireActivity()).get(PlantInPlotViewModel.class);
+        //PlantInPlotViewModel plantInPlotViewModel = new ViewModelProvider(requireActivity()).get(PlantInPlotViewModel.class);
         plotViewModel.loadPlotByid(plotID);
+
+        ObservationViewModel observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
         plotViewModel.getPlotById().observe(requireActivity(),plot ->{
             if (plot!=null) {
@@ -146,11 +145,27 @@ public class ManagePlotFragment extends Fragment {
                 }
 
 
-                plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
+                observationViewModel.loadObservationListLiveDataByPlotId(plot.getPlotId());
+                //plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
 
             }
         });
 
+
+        observationViewModel.getObservationListLiveData().observe(requireActivity(),observationList -> {
+            if (observationList != null){
+                if (!observationList.isEmpty()){
+                    List<Observation> observations = observationViewModel.getObservationListLiveData().getValue();
+                    if (observations!=null){
+                        if (!observations.isEmpty()){
+                            adapter.updateList(observations);
+                        }
+                    }
+                }
+            }
+        });
+
+        /*
         plantInPlotViewModel.getPlantlistLiveData().observe(requireActivity(),plantList -> {
             if (plantList != null){
                 if (!plantList.isEmpty()){
@@ -182,6 +197,8 @@ public class ManagePlotFragment extends Fragment {
                 }
             }
         });
+
+         */
 
 
 
@@ -227,46 +244,46 @@ public class ManagePlotFragment extends Fragment {
         return view;
     }
 
-    public class PlantAdapter extends RecyclerView.Adapter<PlantViewHolder> {
+    public class ObservationAdapter extends RecyclerView.Adapter<ObservationViewHolder> {
 
-        private final List<Plant> plantList;
+        private final List<Observation> observations;
         private final Context ctx;
         private final FragmentManager fragmentManager;
 
-        public PlantAdapter(Context ctx, List<Plant> plants, FragmentManager fragmentManager) {
-            this.plantList = new ArrayList<>(plants);
+        public ObservationAdapter(Context ctx, List<Observation> observations, FragmentManager fragmentManager) {
+            this.observations = new ArrayList<>(observations);
             this.ctx = ctx;
             this.fragmentManager = fragmentManager;
         }
 
-        public void updateList(List<Plant> plantList) {
-            Log.d("UpdateList",""+plantList);
-            this.plantList.clear();
-            this.plantList.addAll(plantList);
+        public void updateList(List<Observation> observationList) {
+            Log.d("UpdateList",""+observationList);
+            this.observations.clear();
+            this.observations.addAll(observationList);
             notifyDataSetChanged(); // Peut être remplacé par DiffUtil pour plus d'efficacité
         }
 
         @NonNull
         @Override
-        public PlantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ObservationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(ctx).inflate(R.layout.plant_item, parent, false);
-            return new PlantViewHolder(view,fragmentManager);
+            return new ObservationViewHolder(view,fragmentManager);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull PlantViewHolder holder, int position) {
-            Plant plot = plantList.get(position);
-            holder.bind(plot,this);
+        public void onBindViewHolder(@NonNull ObservationViewHolder holder, int position) {
+            Observation obs = observations.get(position);
+            holder.bind(obs,this);
 
         }
 
         @Override
         public int getItemCount() {
-            return plantList.size(); // Correction ici
+            return observations.size(); // Correction ici
         }
     }
 
-    public class PlantViewHolder extends RecyclerView.ViewHolder {
+    public class ObservationViewHolder extends RecyclerView.ViewHolder {
         private final FragmentManager fragmentManager;
         private final View detailsBtn;
         private final View detailedField;
@@ -283,7 +300,7 @@ public class ManagePlotFragment extends Fragment {
         //private final ImageView flagImage;
 
 
-        public PlantViewHolder(@NonNull View itemView, FragmentManager fragmentManager) {
+        public ObservationViewHolder(@NonNull View itemView, FragmentManager fragmentManager) {
             super(itemView);
 
             this.fragmentManager = fragmentManager;
@@ -300,34 +317,35 @@ public class ManagePlotFragment extends Fragment {
             this.picture = itemView.findViewById(R.id.imageView);
         }
 
-        public void bind(Plant plant, PlantAdapter adapter) {
-            plantName.setText(plant.getPlantName());
-            nbPlant.setText(""+plant.getNbPlant());
-            plantFullName.setText(plant.getPlantfullName());
-            azoteScore.setText(plant.getAzoteScore().toString());
-            waterScore.setText(plant.getWaterScore().toString());
-            groundScore.setText(plant.getGroundScore().toString());
+        public void bind(Observation obs, ObservationAdapter adapter) {
+            Plant plant = obs.getPlant();
+            plantName.setText(plant.getShortname());
+            //TODO régler ça : nbPlant.setText(""+plant.getNbPlant());
+            plantFullName.setText(plant.getFullname());
+            azoteScore.setText(plant.getScoreAzote().toString());
+            waterScore.setText(plant.getScoreWater().toString());
+            groundScore.setText(plant.getScoreStruct().toString());
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             waterScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             groundScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
 
-            if (plant.getAzoteScore()>=0.33){
+            if (plant.getScoreAzote()>=0.33){
                 azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getAzoteScore()>=0.66){
+                if (plant.getScoreAzote()>=0.66){
                     azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
-            if (plant.getGroundScore()>=0.33){
+            if (plant.getScoreStruct()>=0.33){
                 groundScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getGroundScore()>=0.66){
+                if (plant.getScoreStruct()>=0.66){
                     groundScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
-            if (plant.getWaterScore()>=0.33){
+            if (plant.getScoreWater()>=0.33){
                 waterScore.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                if (plant.getWaterScore()>=0.66){
+                if (plant.getScoreWater()>=0.66){
                     waterScore.setBackgroundColor(getResources().getColor(R.color.pale_green));
                 }
             }
@@ -352,7 +370,7 @@ public class ManagePlotFragment extends Fragment {
         }
     }
 
-    public static class Plant {
+    /*public static class Plant {
         private final String id;
         private final String plantName;
         private final int nbPlant;
@@ -415,5 +433,5 @@ public class ManagePlotFragment extends Fragment {
         public String getPictureURI() {
             return pictureURI;
         }
-    }
+    }*/
 }

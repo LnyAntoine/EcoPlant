@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.launay.ecoplant.models.Observation;
+import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.repositories.ObservationRepositories;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public class ObservationViewModel extends ViewModel{
         observationRepositories = ObservationRepositories.getInstance();
         observationListLiveData = observationRepositories.getObservationList();
         currentObservationLiveData = observationRepositories.getCurrentObservation();
+    }
+
+    public void createObservation(Plant plant,String plotId){
+        observationRepositories.createObservation(plant,plotId);
     }
 
     public void loadObservationListLiveDataByPlotId(String plotId){

@@ -11,13 +11,24 @@ public class Observation {
     private String plotId;
     private String notes;
 
-    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes) {
+    public Plant getPlant() {
+        return plant;
+    }
+
+    public void setPlant(Plant plant) {
+        this.plant = plant;
+    }
+
+    private Plant plant;
+
+    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant) {
         this.observationId = observationId;
         this.observerId = observerId;
         this.plantId = plantId;
         this.date = date;
         this.plotId = plotId;
         this.notes = notes;
+        this.plant = plant;
     }
 
     public Observation() {

@@ -4,12 +4,16 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.Observation;
+import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.Plot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ObservationRepositories {
@@ -29,6 +33,31 @@ public class ObservationRepositories {
         this.currentObservation= new MutableLiveData<>();
         observationList.setValue(new ArrayList<>());
         currentObservation.setValue(null);
+    }
+
+    public void createObservation(Plant plant,String plotId){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null) {
+            Observation observation = new Observation(
+                    null,
+                    user.getUid(),
+                    plant.getPlantId(),
+                    new Date(),
+                    plotId,
+                    "",
+                    plant
+            );
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("observations")
+                    .add(observation)
+                    .addOnSuccessListener(documentReference -> {
+                        this.loadObservationById(documentReference.getId());
+                    })
+                    .addOnFailureListener(e->{
+                        Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
+                    })
+            ;
+        }
     }
 
     public void loadObservationById(String observationId){
