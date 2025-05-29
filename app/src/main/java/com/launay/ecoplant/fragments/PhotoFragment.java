@@ -1,11 +1,16 @@
 package com.launay.ecoplant.fragments;
 
+import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -46,6 +51,9 @@ public class PhotoFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String plotID;
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Uri> cameraLauncher;
+    private Uri photoUri;
 
     public PhotoFragment() {
         // Required empty public constructor
@@ -66,6 +74,29 @@ public class PhotoFragment extends Fragment {
         if (getArguments() != null) {
             plotID = getArguments().getString(ARG_PARAM1);
         }
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            // Ici tu peux utiliser l'Uri, par ex l'afficher dans un ImageView
+
+                        }
+                    }
+                }
+        );
+
+        // 2) Initialiser le launcher pour prendre une photo avec la caméra
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                success -> {
+                    if (success) {
+                        // photoUri contient la photo prise, tu peux par exemple l'afficher
+
+                    }
+                }
+        );
     }
 
     @Override

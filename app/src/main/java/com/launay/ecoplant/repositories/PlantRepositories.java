@@ -83,6 +83,7 @@ public class PlantRepositories {
     public LiveData<List<Plant>> getPlantsLiveData(){
         return this.plantsLiveData;
     }
+
     public LiveData<List<PlantInPlot>> getPlantInPlotLiveData(){
         return this.plantInPlotLiveData;
     }

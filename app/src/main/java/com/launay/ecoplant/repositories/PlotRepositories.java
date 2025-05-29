@@ -42,8 +42,6 @@ public class PlotRepositories {
     }
 
     public void loadPlotById(String plotId){
-
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("plots")
@@ -71,11 +69,6 @@ public class PlotRepositories {
     public LiveData<Plot> getPlotById(){
         return plotLiveData;
     }
-
-
-    //TODO faire createPlot
-    // gérer coté firebase la creation (vérifier nom etc...)
-    // Set le currentPlot avec ce nouveau plot
     public void createPlot(String name,Double lat,Double longi,String type){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -103,6 +96,7 @@ public class PlotRepositories {
                     .addOnSuccessListener(documentReference -> {
                         Log.d("Firestore", "Plot créé avec ID: " + documentReference.getId());
                         this.loadCurrentPlot(documentReference.getId());
+
                     })
                     .addOnFailureListener(e -> {
                         Log.e("Firestore", "Erreur lors de la création du plot", e);
