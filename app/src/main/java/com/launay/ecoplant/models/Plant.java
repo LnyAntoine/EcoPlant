@@ -7,7 +7,7 @@ public class Plant {
     String detailsLink;
 
     String gbifId;
-    String pictureURI;
+    String pictureUrl;
     Double scoreAzote;
     Double scoreStruct;
     double reliabilityWater;
@@ -73,8 +73,8 @@ public class Plant {
         return gbifId;
     }
 
-    public String getPictureURI() {
-        return pictureURI;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
     @Override
@@ -85,10 +85,70 @@ public class Plant {
                 ", fullname='" + fullname + '\'' +
                 ", detailsLink='" + detailsLink + '\'' +
                 ", gbifId='" + gbifId + '\'' +
-                ", pictureURI='" + pictureURI + '\'' +
+                ", pictureURl='" + pictureUrl + '\'' +
                 ", scoreAzote=" + scoreAzote +
                 ", scoreStruct=" + scoreStruct +
                 ", scoreWater=" + scoreWater +
                 '}';
+    }
+
+    public void setPlantId(String plantId) {
+        this.plantId = plantId;
+    }
+
+    public void setShortname(String shortname) {
+        this.shortname = shortname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public void setDetailsLink(String detailsLink) {
+        this.detailsLink = detailsLink;
+    }
+
+    public void setGbifId(String gbifId) {
+        this.gbifId = gbifId;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
+    public void setScoreAzote(Double scoreAzote) {
+        this.scoreAzote = scoreAzote;
+    }
+
+    public void setScoreStruct(Double scoreStruct) {
+        this.scoreStruct = scoreStruct;
+    }
+
+    public double getReliabilityWater() {
+        return reliabilityWater;
+    }
+
+    public void setReliabilityWater(double reliabilityWater) {
+        this.reliabilityWater = reliabilityWater;
+    }
+
+    public double getReliabilityGround() {
+        return reliabilityGround;
+    }
+
+    public void setReliabilityGround(double reliabilityGround) {
+        this.reliabilityGround = reliabilityGround;
+    }
+
+    public double getReliabilityAzote() {
+        return reliabilityAzote;
+    }
+
+    public void setReliabilityAzote(double reliabilityAzote) {
+        this.reliabilityAzote = reliabilityAzote;
+    }
+
+    public void setScoreWater(Double scoreWater) {
+        this.scoreWater = scoreWater;
     }
 }

@@ -58,12 +58,8 @@ import java.util.Locale;
  * create an instance of this fragment.
  */
 public class PhotoFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "plotID";
 
-    // TODO: Rename and change types of parameters
     private String plotID;
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Uri> cameraLauncher;
@@ -133,7 +129,7 @@ public class PhotoFragment extends Fragment {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
-                            // Ici tu peux utiliser l'Uri, par ex l'afficher dans un ImageView
+                            observationViewModel.setObsUriLiveData(selectedImageUri);
                             plantNetViewModel.loadPlantNetListLiveDataByUri(selectedImageUri);
 
                         }
@@ -145,14 +141,11 @@ public class PhotoFragment extends Fragment {
                 new ActivityResultContracts.TakePicture(),
                 success -> {
                     if (success) {
-                        // photoUri contient la photo prise, tu peux par exemple l'afficher
+                        observationViewModel.setObsUriLiveData(photoUri);
                         plantNetViewModel.loadPlantNetListLiveDataByUri(photoUri);
-
                     }
                 }
         );
-
-
 
         List<Plant> plants = new ArrayList<>();
 
@@ -326,7 +319,9 @@ public class PhotoFragment extends Fragment {
             });
 
             addBtn.setOnClickListener(v->{
-                observationViewModel.createObservation(plant,plotID);
+                if (observationViewModel.getObsUriLiveData().getValue()!=null){
+                    observationViewModel.createObservation(plant,plotID,observationViewModel.getObsUriLiveData().getValue());
+                }
 
             });
             knowmoreBtn.setOnClickListener(v->{
@@ -336,68 +331,4 @@ public class PhotoFragment extends Fragment {
         }
     }
 
-    /*public static class Plant {
-        private final String id;
-        private final String plantName;
-        private final int nbPlant;
-
-        private final String plantfullName;
-        private final Double azoteScore;
-        private final Double groundScore;
-        private final Double waterScore;
-        private final String pictureURI;
-
-
-
-        public Plant(String id, String plantName, int nbPlant, String plantfullName, Double azoteScore, Double groundScore, Double waterScore, String pictureURI) {
-            this.plantName = plantName;
-            this.id = id;
-            this.nbPlant = nbPlant;
-            this.plantfullName = plantfullName;
-            this.azoteScore = azoteScore;
-            this.groundScore = groundScore;
-            this.waterScore = waterScore;
-
-            this.pictureURI = pictureURI;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-
-        public String getPlantName() {
-            return plantName;
-        }
-
-        public int getNbPlant() {
-            return nbPlant;
-        }
-
-        public Double getAzoteScore() {
-            return azoteScore;
-        }
-
-        public Double getGroundScore() {
-            return groundScore;
-        }
-
-        public Double getWaterScore() {
-            return waterScore;
-        }
-
-        @Override
-        @NonNull
-        public String toString(){
-            return this.getPlantName();
-        }
-
-        public String getPlantfullName() {
-            return plantfullName;
-        }
-
-        public String getPictureURI() {
-            return pictureURI;
-        }
-    }*/
 }

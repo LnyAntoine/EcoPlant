@@ -1,5 +1,6 @@
 package com.launay.ecoplant.repositories;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -8,13 +9,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
-import com.launay.ecoplant.models.Plot;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ObservationRepositories {
 
@@ -30,14 +34,15 @@ public class ObservationRepositories {
     }
     private ObservationRepositories(){
         this.observationList = new MutableLiveData<>();
-        this.currentObservation= new MutableLiveData<>();
+        this.currentObservation = new MutableLiveData<>();
         observationList.setValue(new ArrayList<>());
         currentObservation.setValue(null);
     }
 
-    public void createObservation(Plant plant,String plotId){
+    public void createObservation(Plant plant,String plotId,Uri obsUri){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null) {
+            //On crée l'objet Observation à mettre en bdd
             Observation observation = new Observation(
                     null,
                     user.getUid(),
@@ -47,6 +52,32 @@ public class ObservationRepositories {
                     "",
                     plant
             );
+
+            //On enregistre l'image de l'observation dans storage
+            AtomicReference<String> photoUrl = new AtomicReference<>();
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+
+            String fileName = "images/" + UUID.randomUUID().toString() +"-1"+ ".jpg";
+            StorageReference imageRef = storageRef.child(fileName);
+
+            imageRef.putFile(obsUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                            photoUrl.set(downloadUri.toString());
+                            Log.d("FirebaseStorage", "Image URL: " + photoUrl.get());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("FirebaseStorage", "Échec de l'upload", e);
+                    });
+
+            observation.setPhotoUrl(photoUrl.get());
+
+
+            //On push l'objet dans la bdd
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("observations")
                     .add(observation)

@@ -197,7 +197,6 @@ public class ManagePlotFragment extends Fragment {
                 }
             }
         });
-
          */
 
 

@@ -3,6 +3,7 @@ package com.launay.ecoplant.repositories;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,6 +15,15 @@ import com.launay.ecoplant.models.PlantNetResult;
 import com.launay.ecoplant.models.PlantFullService;
 import com.launay.ecoplant.models.PlantService;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +63,25 @@ public class PlantNetRepositories {
                 scoreWater,
                 reliabilityWater
         );
+
+        String pictureUrl = "";
+        String url = "https://api.gbif.org/v1/occurrence/search?taxon_key=" + gbifId + "&mediaType=StillImage";
+
+        try {
+            JSONArray results = getJsonArray(url);
+            if (results.length() > 0) {
+                JSONObject first = results.getJSONObject(0);
+                JSONArray media = first.getJSONArray("media");
+                if (media.length() > 0) {
+                    pictureUrl = media.getJSONObject(0).getString("identifier");
+                }
+            }
+        } catch (Exception e) {
+            Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image en ligne "+ e.getMessage());
+        }
+
+        plant.setPictureUrl(pictureUrl);
+
         db.collection("plants")
                 .add(plant)
                 .addOnSuccessListener(documentReference -> {
@@ -81,7 +110,6 @@ public class PlantNetRepositories {
         ;
         return plant.get();
     }
-
 
     private PlantFullService getPlantService(String plantSpecies){
         PlantFullService plantService = new PlantFullService(plantSpecies,0.0,0.0,0.0,0.0,0.0,0.0);
@@ -156,6 +184,23 @@ public class PlantNetRepositories {
                     .addOnFailureListener(e ->{});
         }
         plantNetList.setValue(plantList);
+    }
+
+    @NonNull
+    private static JSONArray getJsonArray(String url) throws IOException, JSONException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        JSONObject json = new JSONObject(response.toString());
+        return json.getJSONArray("results");
     }
 
 

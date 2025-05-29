@@ -6,6 +6,9 @@ public class Observation {
 
     private String observationId;
     private String observerId;
+
+
+    private String photoUrl;
     private String plantId;
     private Date date;
     private String plotId;
@@ -21,6 +24,16 @@ public class Observation {
 
     private Plant plant;
 
+    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant,String photoUrl) {
+        this.observationId = observationId;
+        this.observerId = observerId;
+        this.plantId = plantId;
+        this.date = date;
+        this.plotId = plotId;
+        this.notes = notes;
+        this.plant = plant;
+        this.photoUrl = photoUrl;
+    }
     public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant) {
         this.observationId = observationId;
         this.observerId = observerId;
@@ -73,6 +86,7 @@ public class Observation {
                 ", plantId='" + plantId + '\'' +
                 ", date=" + date +
                 ", plotId='" + plotId + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
                 '}';
     }
 
@@ -89,6 +103,15 @@ public class Observation {
 
     public void setObservationId(String observationId) {
         this.observationId = observationId;
+    }
+
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
 }
