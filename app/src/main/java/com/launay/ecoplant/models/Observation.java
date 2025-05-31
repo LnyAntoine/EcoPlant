@@ -5,10 +5,13 @@ import java.util.Date;
 public class Observation {
 
     private String observationId;
-    private String observerId;
+    private String userId;
 
+    private Double lat;
 
-    private String photoUrl;
+    private Double longi;
+
+    private String pictureUrl;
     private String plantId;
     private Date date;
     private String plotId;
@@ -24,19 +27,19 @@ public class Observation {
 
     private Plant plant;
 
-    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant,String photoUrl) {
+    public Observation(String observationId,String userId, String plantId, Date date, String plotId, String notes,Plant plant,String pictureUrl) {
         this.observationId = observationId;
-        this.observerId = observerId;
+        this.userId = userId;
         this.plantId = plantId;
         this.date = date;
         this.plotId = plotId;
         this.notes = notes;
         this.plant = plant;
-        this.photoUrl = photoUrl;
+        this.pictureUrl = pictureUrl;
     }
     public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant) {
         this.observationId = observationId;
-        this.observerId = observerId;
+        this.userId = observerId;
         this.plantId = plantId;
         this.date = date;
         this.plotId = plotId;
@@ -47,12 +50,12 @@ public class Observation {
     public Observation() {
     }
 
-    public String getObserverId() {
-        return observerId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setObserverId(String observerId) {
-        this.observerId = observerId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPlantId() {
@@ -82,11 +85,11 @@ public class Observation {
     @Override
     public String toString() {
         return "Observation{" +
-                "observerId='" + observerId + '\'' +
+                "userId='" + userId + '\'' +
                 ", plantId='" + plantId + '\'' +
                 ", date=" + date +
                 ", plotId='" + plotId + '\'' +
-                ", photoUrl='" + photoUrl + '\'' +
+                ", pictureUrl='" + pictureUrl + '\'' +
                 '}';
     }
 
@@ -106,12 +109,27 @@ public class Observation {
     }
 
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+    public Double getLongi() {
+        return longi;
+    }
+
+    public void setLongi(Double longi) {
+        this.longi = longi;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
     }
 
 }

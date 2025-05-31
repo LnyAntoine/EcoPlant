@@ -74,12 +74,16 @@ public class CreatePlotFragment extends Fragment {
 
         createBtn.setOnClickListener(v->{
 
-            plotViewModel.createPlot(changeName.getText().toString());
-            Fragment fragment = new ManagePlotFragment();
-            getParentFragmentManager().beginTransaction()
-                    .addToBackStack("manage_plot_fragment")
-                    .replace(R.id.fragment_container,fragment)
-                    .commit();
+            plotViewModel.createPlot(changeName.getText().toString(),plotid -> {
+                if (!plotid.isEmpty()) {
+                    Fragment fragment = ManagePlotFragment.newInstance(true,plotid);
+                    getParentFragmentManager().beginTransaction()
+                            .addToBackStack("manage_plot_fragment")
+                            .replace(R.id.fragment_container, fragment)
+                            .commit();
+                }
+            });
+
         });
 
         cancelBtn.setOnClickListener(v->{

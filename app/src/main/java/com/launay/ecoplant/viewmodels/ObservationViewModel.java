@@ -1,6 +1,7 @@
 package com.launay.ecoplant.viewmodels;
 
 import android.app.Application;
+import android.location.Location;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -18,12 +19,18 @@ public class ObservationViewModel extends ViewModel{
     private LiveData<List<Observation>> observationListLiveData;
     private LiveData<Observation> currentObservationLiveData;
     private MutableLiveData<Uri> obsUriLiveData;
+    private MutableLiveData<Location> observationLocationLiveData;
+
+
+
+
     public ObservationViewModel(@NonNull Application application) {
         super(application);
         observationRepositories = ObservationRepositories.getInstance();
         observationListLiveData = observationRepositories.getObservationList();
         currentObservationLiveData = observationRepositories.getCurrentObservation();
         obsUriLiveData = new MutableLiveData<>();
+        observationLocationLiveData = new MutableLiveData<>();
     }
 
     public LiveData<Uri> getObsUriLiveData(){
@@ -33,15 +40,24 @@ public class ObservationViewModel extends ViewModel{
         obsUriLiveData.setValue(obsUri);
     }
 
+    public MutableLiveData<Location> getObservationLocationLiveData() {
+        return observationLocationLiveData;
+    }
+
+    public void setObservationLocationLiveData(Location location) {
+        this.observationLocationLiveData.setValue(location);
+    }
+
+
     public void createObservation(Plant plant, String plotId, Uri obsUri){
-        observationRepositories.createObservation(plant,plotId,obsUri);
+        observationRepositories.createObservation(plant,plotId,obsUri,observationLocationLiveData.getValue());
     }
 
     public void loadObservationListLiveDataByPlotId(String plotId){
         observationRepositories.loadObservationListByPlotId(plotId);
     }
-    public void loadCurrentObservationLiveDataById(String observationId){
-        observationRepositories.loadObservationById(observationId);
+    public void loadCurrentObservationLiveDataById(String plotId,String observationId){
+        observationRepositories.loadObservationById(plotId,observationId);
     }
 
     public LiveData<List<Observation>> getObservationListLiveData() {

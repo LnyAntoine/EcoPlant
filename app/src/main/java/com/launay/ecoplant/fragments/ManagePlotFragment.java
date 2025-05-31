@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Observation;
@@ -31,9 +32,7 @@ import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -111,104 +110,29 @@ public class ManagePlotFragment extends Fragment {
         plantListRCV.setAdapter(adapter);
 
         PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-        //PlantInPlotViewModel plantInPlotViewModel = new ViewModelProvider(requireActivity()).get(PlantInPlotViewModel.class);
         plotViewModel.loadPlotByid(plotID);
 
         ObservationViewModel observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
         plotViewModel.getPlotById().observe(requireActivity(),plot ->{
+            Log.d("getPlotById"," "+plot);
             if (plot!=null) {
                 nameField.setText(plot.getName());
-                azoteScoreTV.setText(plot.getScoreAzote().toString());
-                groundScoreTV.setText(plot.getScoreStruct().toString());
-                waterScoreTV.setText(plot.getScoreWater().toString());
-
-
-                //TODO semble y avoir une erreur ici ?
-                if (plot.getScoreAzote()>=0.33){
-                    azoteScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                    if (plot.getScoreAzote()>=0.66){
-                        azoteScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
-                    }
-                }
-                if (plot.getScoreStruct()>=0.33){
-                    groundScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                    if (plot.getScoreStruct()>=0.66){
-                        groundScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
-                    }
-                }
-                if (plot.getScoreWater()>=0.33){
-                    waterScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_orange));
-                    if (plot.getScoreWater()>=0.66){
-                        waterScoreTV.setBackgroundColor(getResources().getColor(R.color.pale_green));
-                    }
-                }
-
-
                 observationViewModel.loadObservationListLiveDataByPlotId(plot.getPlotId());
-                //plantInPlotViewModel.loadPlotPlants(plot.getPlotId());
-
             }
         });
-
 
         observationViewModel.getObservationListLiveData().observe(requireActivity(),observationList -> {
-            if (observationList != null){
-                if (!observationList.isEmpty()){
-                    List<Observation> observations = observationViewModel.getObservationListLiveData().getValue();
-                    if (observations!=null){
-                        if (!observations.isEmpty()){
-                            adapter.updateList(observations);
-                        }
-                    }
-                }
+            Log.d("getObservationListLiveData","" + observationList);
+            if (!observationList.isEmpty()) {
+                adapter.updateList(observationList);
             }
         });
-
-        /*
-        plantInPlotViewModel.getPlantlistLiveData().observe(requireActivity(),plantList -> {
-            if (plantList != null){
-                if (!plantList.isEmpty()){
-                    List<PlantInPlot> plantInPlots = plantInPlotViewModel.getPlantInPlotListLiveData().getValue();
-                    if (plantInPlots!=null){
-                        if (!plantInPlots.isEmpty()){
-
-                            Map<String,Integer> plantMap = new HashMap<>();
-                            for (PlantInPlot pip : plantInPlots){
-                                if (plantMap.containsKey(pip.getPlantId())){
-                                    plantMap.replace(pip.getPlantId(),plantMap.get(pip.getPlantId())+1);
-                                } else{
-                                    plantMap.put(pip.getPlantId(),1);
-                                }
-                            }
-                            List<Plant> plants = new ArrayList<>();
-                            for (com.launay.ecoplant.models.Plant plant : plantList){
-
-                                int nb = plantMap.get(plant.getPlantId());
-
-                                Plant plant1 = new Plant(plant.getPlantId(), plant.getShortname(), nb, plant.getFullname(),
-                                        plant.getScoreAzote(), plant.getScoreStruct(), plant.getScoreWater(), "");
-
-                                plants.add(plant1);
-                            }
-                            adapter.updateList(plants);
-                        }
-                    }
-                }
-            }
-        });
-         */
-
-
-
-        //TODO récupérer la liste des plantes pour ce plot
-        List<Plant> plants = new ArrayList<>();
 
 
         nameField.setActivated(false);
 
         addPlant.setOnClickListener(v->{
-            //TODO récupérer le plot actuel, view model ?
             Fragment fragment = new PhotoFragment();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,fragment)
@@ -221,7 +145,9 @@ public class ManagePlotFragment extends Fragment {
         });
 
         returnBtn.setOnClickListener(v->{
-            //TODO verifier si vient d'un endroit en particulier et renvoyer sur la liste si c'est le cas
+            if (fromCreate){
+                getParentFragmentManager().popBackStack();
+            }
             getParentFragmentManager().popBackStack();
         });
 
@@ -296,7 +222,6 @@ public class ManagePlotFragment extends Fragment {
         private final Button knowmoreBtn;
         private final Button addBtn;
         private final ShapeableImageView picture;
-        //private final ImageView flagImage;
 
 
         public ObservationViewHolder(@NonNull View itemView, FragmentManager fragmentManager) {
@@ -319,7 +244,7 @@ public class ManagePlotFragment extends Fragment {
         public void bind(Observation obs, ObservationAdapter adapter) {
             Plant plant = obs.getPlant();
             plantName.setText(plant.getShortname());
-            //TODO régler ça : nbPlant.setText(""+plant.getNbPlant());
+            //TODO nbPlant.setText(""+obs.getNbPlantes());
             plantFullName.setText(plant.getFullname());
             azoteScore.setText(plant.getScoreAzote().toString());
             waterScore.setText(plant.getScoreWater().toString());
@@ -349,8 +274,6 @@ public class ManagePlotFragment extends Fragment {
                 }
             }
 
-
-
             detailsBtn.setOnClickListener(v -> {
                 if (detailedField.getVisibility() == GONE){
                     detailedField.setVisibility(VISIBLE);
@@ -366,71 +289,12 @@ public class ManagePlotFragment extends Fragment {
                 //TODO renvoyer vers une page web
             });
 
+            Glide.with(requireActivity())
+                    .load(obs.getPictureUrl())
+                    .fitCenter()
+                    .into(picture);
+
         }
     }
 
-    /*public static class Plant {
-        private final String id;
-        private final String plantName;
-        private final int nbPlant;
-
-        private final String plantfullName;
-        private final Double azoteScore;
-        private final Double groundScore;
-        private final Double waterScore;
-        private final String pictureURI;
-
-
-
-        public Plant(String id, String plantName, int nbPlant, String plantfullName, Double azoteScore, Double groundScore, Double waterScore, String pictureURI) {
-            this.plantName = plantName;
-            this.id = id;
-            this.nbPlant = nbPlant;
-            this.plantfullName = plantfullName;
-            this.azoteScore = azoteScore;
-            this.groundScore = groundScore;
-            this.waterScore = waterScore;
-
-            this.pictureURI = pictureURI;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-
-        public String getPlantName() {
-            return plantName;
-        }
-
-        public int getNbPlant() {
-            return nbPlant;
-        }
-
-        public Double getAzoteScore() {
-            return azoteScore;
-        }
-
-        public Double getGroundScore() {
-            return groundScore;
-        }
-
-        public Double getWaterScore() {
-            return waterScore;
-        }
-
-        @Override
-        @NonNull
-        public String toString(){
-            return this.getPlantName();
-        }
-
-        public String getPlantfullName() {
-            return plantfullName;
-        }
-
-        public String getPictureURI() {
-            return pictureURI;
-        }
-    }*/
 }

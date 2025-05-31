@@ -1,5 +1,6 @@
 package com.launay.ecoplant.repositories;
 
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
@@ -9,15 +10,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ObservationRepositories {
@@ -39,7 +37,7 @@ public class ObservationRepositories {
         currentObservation.setValue(null);
     }
 
-    public void createObservation(Plant plant,String plotId,Uri obsUri){
+    public void createObservation(Plant plant, String plotId, Uri obsUri, Location location){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null) {
             //On crée l'objet Observation à mettre en bdd
@@ -52,10 +50,13 @@ public class ObservationRepositories {
                     "",
                     plant
             );
+            observation.setLat(location.getLatitude());
+            observation.setLongi(location.getLongitude());
 
             //On enregistre l'image de l'observation dans storage
             AtomicReference<String> photoUrl = new AtomicReference<>();
-
+            //TODO réactiver quand storage fonctionnera
+            /*
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
@@ -72,17 +73,18 @@ public class ObservationRepositories {
                     .addOnFailureListener(e -> {
                         Log.e("FirebaseStorage", "Échec de l'upload", e);
                     });
-
-            observation.setPhotoUrl(photoUrl.get());
-
+            */
+            observation.setPictureUrl(photoUrl.get());
 
             //On push l'objet dans la bdd
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("observations")
+            db.collection("plots")
+                    .document(plotId)
+                    .collection("observations")
                     .add(observation)
                     .addOnSuccessListener(documentReference -> {
-                        this.loadObservationById(documentReference.getId());
+                        this.loadObservationById(plotId,documentReference.getId());
                     })
                     .addOnFailureListener(e->{
                         Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
@@ -91,9 +93,12 @@ public class ObservationRepositories {
         }
     }
 
-    public void loadObservationById(String observationId){
+    public void loadObservationById(String plotId,String observationId){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("observations").document(observationId)
+        db.collection("plots")
+                .document(plotId)
+                .collection("observations")
+                .document(observationId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()){
@@ -109,16 +114,18 @@ public class ObservationRepositories {
     public void loadObservationListByPlotId(String plotId){
         List<Observation> observations = new ArrayList<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("observations").whereEqualTo("plotid",plotId)
+        db.collection("plots")
+                .document(plotId)
+                .collection("observations")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()){
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
                             observations.add(documentSnapshot.toObject(Observation.class));
                         }
+                        observationList.setValue(observations);
                     } else {
                         Log.d("FirestoreObservations","Il n'existe pas d'observation sur ce plot "+plotId);
-
                     }
                 })
                 .addOnFailureListener(e->{

@@ -39,39 +39,9 @@ public class PlantRepositories {
 
         List<Plant> plantList = new ArrayList<>();
 
-        // Ajout des plantes avec des données spécifiques
-        plantList.add(new Plant("1", "Tomato", "Tomato Plant", "https://example.com/tomato", 7.5, 8.0, 6.0));
-        plantList.add(new Plant("2", "Cucumber", "Cucumber Plant", "https://example.com/cucumber", 6.0, 7.5, 7.0));
-        plantList.add(new Plant("3", "Carrot", "Carrot Plant", "https://example.com/carrot", 6.5, 7.0, 8.0));
-        plantList.add(new Plant("4", "Lettuce", "Lettuce Plant", "https://example.com/lettuce", 5.5, 6.0, 6.5));
-        plantList.add(new Plant("5", "Strawberry", "Strawberry Plant", "https://example.com/strawberry", 7.0, 8.5, 7.8));
-
         plantsLiveData.setValue(plantList);
-        List<PlantInPlot> plantInPlotList = new ArrayList<>();
-        plantInPlotList.add(new PlantInPlot("1", "2", "1")); // Tomato in Plot B
-        plantInPlotList.add(new PlantInPlot("2", "3", "1")); // Cucumber in Plot C
-        plantInPlotList.add(new PlantInPlot("3", "4", "1")); // Carrot in Plot D
-        plantInPlotList.add(new PlantInPlot("4", "5", "1")); // Lettuce in Plot E
-        plantInPlotList.add(new PlantInPlot("5", "1", "1")); // Strawberry in Plot A
 
-        plantInPlotList.add(new PlantInPlot("1", "3", "1")); // Tomato in Plot C
-        plantInPlotList.add(new PlantInPlot("2", "4", "1")); // Cucumber in Plot D
-        plantInPlotList.add(new PlantInPlot("3", "5", "1")); // Carrot in Plot E
-        plantInPlotList.add(new PlantInPlot("4", "1", "1")); // Lettuce in Plot A
-        plantInPlotList.add(new PlantInPlot("5", "2", "1")); // Strawberry in Plot B
-
-        plantInPlotList.add(new PlantInPlot("1", "4", "1")); // Tomato in Plot D
-        plantInPlotList.add(new PlantInPlot("2", "5", "1")); // Cucumber in Plot E
-        plantInPlotList.add(new PlantInPlot("3", "1", "1")); // Carrot in Plot A
-        plantInPlotList.add(new PlantInPlot("4", "2", "1")); // Lettuce in Plot B
-        plantInPlotList.add(new PlantInPlot("5", "3", "1")); // Strawberry in Plot C
-
-        plantInPlotList.add(new PlantInPlot("1", "5", "1")); // Tomato in Plot E
-        plantInPlotList.add(new PlantInPlot("2", "1", "1")); // Cucumber in Plot A
-        plantInPlotList.add(new PlantInPlot("3", "2", "1")); // Carrot in Plot B
-        plantInPlotList.add(new PlantInPlot("4", "3", "1")); // Lettuce in Plot C
-        plantInPlotList.add(new PlantInPlot("5", "4", "1")); // Strawberry in Plot D
-        plantInPlotLiveData.setValue(plantInPlotList);
+        plantInPlotLiveData.setValue(new ArrayList<>());
 
     }
     public MutableLiveData<List<PlantInPlot>> getDetectedPlantIntPlotLiveData() {

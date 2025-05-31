@@ -7,6 +7,8 @@ public class Plant {
     String detailsLink;
 
     String gbifId;
+
+    String powoId;
     String pictureUrl;
     Double scoreAzote;
     Double scoreStruct;
@@ -20,20 +22,11 @@ public class Plant {
 
     public Plant(){}
 
-    public Plant(String plantId, String shortname, String fullname, String gbifId, Double scoreAzote, Double scoreStruct, Double scoreWater) {
+    public Plant(String plantId, String shortname, String fullname,String powoId, String gbifId, Double scoreAzote, Double scoreStruct, double reliabilityWater, double reliabilityGround, double reliabilityAzote, Double scoreWater) {
         this.plantId = plantId;
         this.shortname = shortname;
         this.fullname = fullname;
-        this.gbifId = gbifId;
-        this.scoreAzote = scoreAzote;
-        this.scoreStruct = scoreStruct;
-        this.scoreWater = scoreWater;
-    }
-
-    public Plant(String plantId, String shortname, String fullname, String gbifId, Double scoreAzote, Double scoreStruct, double reliabilityWater, double reliabilityGround, double reliabilityAzote, Double scoreWater) {
-        this.plantId = plantId;
-        this.shortname = shortname;
-        this.fullname = fullname;
+        this.powoId = powoId;
         this.gbifId = gbifId;
         this.scoreAzote = scoreAzote;
         this.scoreStruct = scoreStruct;
@@ -84,6 +77,7 @@ public class Plant {
                 ", shortname='" + shortname + '\'' +
                 ", fullname='" + fullname + '\'' +
                 ", detailsLink='" + detailsLink + '\'' +
+                ", powoId='" + powoId + '\'' +
                 ", gbifId='" + gbifId + '\'' +
                 ", pictureURl='" + pictureUrl + '\'' +
                 ", scoreAzote=" + scoreAzote +
@@ -151,4 +145,13 @@ public class Plant {
     public void setScoreWater(Double scoreWater) {
         this.scoreWater = scoreWater;
     }
+
+    public String getPowoId() {
+        return powoId;
+    }
+
+    public void setPowoId(String powoId) {
+        this.powoId = powoId;
+    }
+
 }

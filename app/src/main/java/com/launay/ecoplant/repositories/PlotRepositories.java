@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class PlotRepositories {
     private static PlotRepositories instance;
@@ -50,7 +51,7 @@ public class PlotRepositories {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Plot plot = documentSnapshot.toObject(Plot.class);
-                        plot.setPlotId(plotId);
+                        plot.setPlotId(documentSnapshot.getId());
                         plotLiveData.setValue(plot);
                     }
                     else {
@@ -69,7 +70,7 @@ public class PlotRepositories {
     public LiveData<Plot> getPlotById(){
         return plotLiveData;
     }
-    public void createPlot(String name,Double lat,Double longi,String type){
+    public void createPlot(String name, Double lat, Double longi, String type,Consumer<String> callback){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
@@ -96,11 +97,15 @@ public class PlotRepositories {
                     .addOnSuccessListener(documentReference -> {
                         Log.d("Firestore", "Plot créé avec ID: " + documentReference.getId());
                         this.loadCurrentPlot(documentReference.getId());
-
+                        callback.accept(documentReference.getId());
                     })
                     .addOnFailureListener(e -> {
                         Log.e("Firestore", "Erreur lors de la création du plot", e);
+                        callback.accept("");
                     });
+        }
+        else {
+            callback.accept("");
         }
     }
     public LiveData<List<Plot>> getPlotsLiveData(){
@@ -120,6 +125,7 @@ public class PlotRepositories {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Plot plot = documentSnapshot.toObject(Plot.class);
+                        plot.setPlotId(documentSnapshot.getId());
                         currentPlotLiveData.setValue(plot);
                     }
                     else {

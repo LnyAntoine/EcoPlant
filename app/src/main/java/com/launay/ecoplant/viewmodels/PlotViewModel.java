@@ -11,6 +11,7 @@ import com.launay.ecoplant.repositories.PlotRepositories;
 import com.launay.ecoplant.utils;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PlotViewModel extends AndroidViewModel {
     private final LiveData<List<Plot>> plotsLiveData;
@@ -24,8 +25,8 @@ public class PlotViewModel extends AndroidViewModel {
     }
 
 
-    public void createPlot(String name){
-        this.plotRepositories.createPlot(name,0.,0.,"private");
+    public void createPlot(String name, Consumer<String > callback){
+        this.plotRepositories.createPlot(name,0.,0.,"private",callback);
     }
     public LiveData<Plot> getPlotById(){return this.plotRepositories.getPlotById();}
     public void loadPlotByid(String id){plotRepositories.loadPlotById(id);}

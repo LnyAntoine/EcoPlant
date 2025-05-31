@@ -1,11 +1,14 @@
 package com.launay.ecoplant.repositories;
 
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,6 +17,7 @@ import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.models.PlantNetResult;
 import com.launay.ecoplant.models.PlantFullService;
 import com.launay.ecoplant.models.PlantService;
+import com.launay.ecoplant.utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,10 +33,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class PlantNetRepositories {
-    private final FirebaseFirestore db;
     private static PlantNetRepositories instance;
     private MutableLiveData<List<Plant>> plantNetList;
     public static synchronized PlantNetRepositories getInstance(){
@@ -44,74 +52,96 @@ public class PlantNetRepositories {
     private PlantNetRepositories(){
         this.plantNetList = new MutableLiveData<>();
         this.plantNetList.setValue(new ArrayList<>());
-         db = FirebaseFirestore.getInstance();
     }
 
-    private Plant createPlant(String shortname,String fullname, String gbifId,Double scoreAzote,
-                              Double scoreStruct, double reliabilityWater, double reliabilityGround,
-                              double reliabilityAzote, Double scoreWater){
-        AtomicReference<Plant> plantReturn = new AtomicReference<>();
-        Plant plant = new Plant(
-                null, //Sera générer par Firestore
-                shortname,
-                fullname,
-                gbifId,
-                scoreAzote,
-                reliabilityAzote,
-                scoreStruct,
-                reliabilityGround,
-                scoreWater,
-                reliabilityWater
-        );
+    public void createPlant(String shortname, String fullname,String powoId ,String gbifId,
+                            Double scoreAzote, Double scoreStruct, double reliabilityWater,
+                            double reliabilityGround, double reliabilityAzote, Double scoreWater,
+                             Consumer<Plant> callback) {
 
-        String pictureUrl = "";
-        String url = "https://api.gbif.org/v1/occurrence/search?taxon_key=" + gbifId + "&mediaType=StillImage";
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
 
-        try {
-            JSONArray results = getJsonArray(url);
-            if (results.length() > 0) {
-                JSONObject first = results.getJSONObject(0);
-                JSONArray media = first.getJSONArray("media");
-                if (media.length() > 0) {
-                    pictureUrl = media.getJSONObject(0).getString("identifier");
+        executor.execute(() -> {
+            String pictureUrl = "";
+            String url = "https://api.gbif.org/v1/occurrence/search?taxon_key=" + gbifId + "&mediaType=StillImage";
+
+            try {
+                JSONArray results = getJsonArray(url); // ← doit être thread-safe
+                if (results.length() > 0) {
+                    JSONObject first = results.getJSONObject(0);
+                    JSONArray media = first.getJSONArray("media");
+                    if (media.length() > 0) {
+                        pictureUrl = media.getJSONObject(0).getString("identifier");
+                    }
                 }
+            } catch (Exception e) {
+                Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image : " + e);
             }
-        } catch (Exception e) {
-            Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image en ligne "+ e.getMessage());
-        }
 
-        plant.setPictureUrl(pictureUrl);
+            String finalPictureUrl = pictureUrl;
+            handler.post(() -> {
+                // Création de la plante dans le thread principal
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                Plant plant = new Plant(
+                        null,
+                        shortname,
+                        fullname,
+                        powoId,
+                        gbifId,
+                        scoreAzote,
+                        reliabilityAzote,
+                        scoreStruct,
+                        reliabilityGround,
+                        scoreWater,
+                        reliabilityWater
+                );
+                plant.setPictureUrl(finalPictureUrl);
 
-        db.collection("plants")
-                .add(plant)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("FireStorePlant","Plante crée "+ plant);
-                    plantReturn.set(getPlantById(documentReference.getId()));
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FireStorePlant","Plante non crée "+e.getMessage());
-                    plantReturn.set(null);
-                });
-        return plantReturn.get();
+                db.collection("plants")
+                        .add(plant)
+                        .addOnSuccessListener(documentReference -> {
+                            getPlantById(documentReference.getId(),
+                                    plant2 -> {
+                                            plant2.setPlantId(documentReference.getId());
+                                            callback.accept(plant2); // ✅ Retour ici
+                            });
+
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("FireStorePlant", "Erreur création plante : " + e.getMessage());
+                            callback.accept(null); // En cas d'erreur
+                        });
+            });
+        });
     }
-    private Plant getPlantById(String plantId){
-        AtomicReference<Plant> plant = new AtomicReference<>();
+
+    private void getPlantById(String plantId,Consumer<Plant> callback){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         db.collection("plants")
                 .document(plantId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()){
-                        plant.set(documentSnapshot.toObject(Plant.class));
+                        Plant plant = documentSnapshot.toObject(Plant.class);
+                        assert plant != null;
+                        plant.setPlantId(plantId);
+                        Log.e("FireStoreGetPlantByid","Plante récupérée : "+plant);
+                        callback.accept(plant);
                     }
                 })
                 .addOnFailureListener(e->{
                     Log.e("FireStoreGetPlantByid","Plante non récupérée : "+e.getMessage());
+                    callback.accept(null);
                 })
         ;
-        return plant.get();
+
     }
 
     private PlantFullService getPlantService(String plantSpecies){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         PlantFullService plantService = new PlantFullService(plantSpecies,0.0,0.0,0.0,0.0,0.0,0.0);
         db.collection("plant-service").whereEqualTo("species",plantSpecies).get()
                 .addOnSuccessListener(queryDocumentSnapshots->{
@@ -145,45 +175,115 @@ public class PlantNetRepositories {
     }
 
 
-    public void loadPlantNetListByUri(Uri plantUri){
+    public void loadPlantNetListByUri(Uri plantUri) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Log.d("LoadPlantNetListByUri", "loading");
         Map<String, Object> resultData = new HashMap<>();
         List<Plant> plantList = new ArrayList<>();
         //TODO récupérer les guess de plantNet
         // pour chacun vérifier si il existe une Plant en bdd existante
         // sinon : la créer
+
+
         ObjectMapper mapper = new ObjectMapper();
         List<PlantNetResult> results = mapper.convertValue(resultData.get("results"),
                 new TypeReference<>() {
                 });
-        for (PlantNetResult result :results){
-            db.collection("plants").whereEqualTo("gbifId",result.getGbif().getId())
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()){
-                            DocumentSnapshot documentSnapshot= queryDocumentSnapshots.getDocuments().get(0);
-                            if (documentSnapshot.exists()){
-                                Plant plant = documentSnapshot.toObject(Plant.class);
-                                plantList.add(plant);
-                            }
-                        }
-                        else { //Il n'existe pas de référence à cette plante dans la bdd -> première recherche on la crée
-                            PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
-                            Plant plant = createPlant(result.getSpecies().getCommonNames().get(0),
-                                    result.getSpecies().getScientificName(),
-                                    result.getGbif().getId(),
-                                    plantFullService.getValueAzote(),
-                                    plantFullService.getReliabilityAzote(),
-                                    plantFullService.getValueGround(),
-                                    plantFullService.getReliabilityGround(),
-                                    plantFullService.getValueWater(),
-                                    plantFullService.getReliabilityWater()
-                            );
-                            plantList.add(plant);
-                        }
-                    })
-                    .addOnFailureListener(e ->{});
+
+        String jsonresponse = utils.requestAPIPlantNet();
+
+        try {
+            // Convertir la chaîne JSON en Map
+            Map<String, Object> jsonMap = mapper.readValue(jsonresponse, new TypeReference<>() {
+            });
+
+            // Extraire et convertir la liste des résultats
+            results = mapper.convertValue(
+                    jsonMap.get("results"),
+                    new TypeReference<>() {
+                    }
+            );
+        } catch (JsonProcessingException e) {
+            Log.e("Erreur", " " + e.getMessage());
         }
-        plantNetList.setValue(plantList);
+
+
+        AtomicInteger completedRequests = new AtomicInteger(0);
+        int total = results.size();
+
+        for (PlantNetResult result : results) {
+            String field;
+            String search;
+
+            if (result.getPowo()==null && result.getGbif() == null) {
+                if (completedRequests.incrementAndGet() == total) {
+                    plantNetList.setValue(plantList);
+                }
+            } else {
+                if (result.getGbif() != null) {
+                    field = "gbifId";
+                    search = result.getGbif().getId();
+                } else {
+                    field = "powoId";
+                    search = result.getPowo().getId();
+                }
+                db.collection("plants").whereEqualTo(field, search)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                                if (documentSnapshot.exists()) {
+                                    Plant plant = documentSnapshot.toObject(Plant.class);
+                                    plantList.add(plant);
+
+                                }
+                                if (completedRequests.incrementAndGet() == total) {
+                                    Log.d("LoadPlantNetListByUri", "end " + plantList);
+                                    plantNetList.setValue(plantList);
+                                }
+                            } else {
+                                String powoId = (result.getPowo() != null) ? result.getPowo().getId() : "";
+                                String gbifId = (result.getGbif() != null) ? result.getGbif().getId() : "";
+                                PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
+                                createPlant(
+                                        result.getSpecies().getCommonNames().get(0),
+                                        result.getSpecies().getScientificName(),
+                                        powoId,
+                                        gbifId,
+                                        plantFullService.getValueAzote(),
+                                        plantFullService.getReliabilityAzote(),
+                                        plantFullService.getValueGround(),
+                                        plantFullService.getReliabilityGround(),
+                                        plantFullService.getValueWater(),
+                                        plantFullService.getReliabilityWater(),
+                                        plant -> {
+                                            if (plant != null) {
+                                                plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
+                                                        (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
+                                                plantList.add(plant);
+                                            }
+                                            if (completedRequests.incrementAndGet() == total) {
+                                                Log.d("LoadPlantNetListByUri", "end " + plantList);
+                                                plantNetList.setValue(plantList);
+                                            }
+                                        }
+                                );
+
+                            }
+
+
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("loadPlant", " " + e.getMessage());
+
+                            // On compte aussi les erreurs comme complétées
+                            if (completedRequests.incrementAndGet() == total) {
+                                plantNetList.setValue(plantList);
+                            }
+                        });
+            }
+        }
     }
 
     @NonNull

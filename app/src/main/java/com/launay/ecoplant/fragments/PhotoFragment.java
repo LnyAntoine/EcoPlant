@@ -7,6 +7,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,17 +34,19 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plant;
-import com.launay.ecoplant.models.Plot;
-import com.launay.ecoplant.viewmodels.DetectedPlantViewModel;
 import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlantNetViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,10 +69,12 @@ public class PhotoFragment extends Fragment {
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Uri> cameraLauncher;
     private Uri photoUri;
+    private PlantAdapter adapter;
     PlantNetViewModel plantNetViewModel;
     PlotViewModel plotViewModel;
     ObservationViewModel observationViewModel;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_LOCATION_PERMISSION = 101;
 
     public PhotoFragment() {
     }
@@ -109,12 +116,21 @@ public class PhotoFragment extends Fragment {
         plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
         observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
+        plantNetViewModel.getPlantNetListLiveData().observe(requireActivity(),plantList -> {
+            Log.d("plantNetlistobserver","observing"+plantList);
+            if (!plantList.isEmpty()){
+                adapter.updateList(plantList);
+            }
+        });
 
         plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
             if (p!=null){
+                Log.d("currentplot",p.toString());
+                plotID = p.getPlotId();
                 currentPlotView.setVisibility(VISIBLE);
                 plotName.setText(p.getName());
                 plotNbPlant.setText(p.getNbPlant()+" plantes");
+                Log.d("currentplot"," "+plotID);
             }
             else {
                 currentPlotView.setVisibility(GONE);
@@ -131,7 +147,7 @@ public class PhotoFragment extends Fragment {
                         if (selectedImageUri != null) {
                             observationViewModel.setObsUriLiveData(selectedImageUri);
                             plantNetViewModel.loadPlantNetListLiveDataByUri(selectedImageUri);
-
+                            checkLocationPermissionAndGetLocation();
                         }
                     }
                 }
@@ -143,11 +159,18 @@ public class PhotoFragment extends Fragment {
                     if (success) {
                         observationViewModel.setObsUriLiveData(photoUri);
                         plantNetViewModel.loadPlantNetListLiveDataByUri(photoUri);
+                        checkLocationPermissionAndGetLocation();
                     }
                 }
         );
+        observationViewModel.getObsUriLiveData().observe(getViewLifecycleOwner(), uri -> {
+            adapter.notifyDataSetChanged();
+        });
 
-        List<Plant> plants = new ArrayList<>();
+        observationViewModel.getObservationLocationLiveData().observe(getViewLifecycleOwner(), loc -> {
+            adapter.notifyDataSetChanged();
+        });
+
 
 
         photoBtn.setOnClickListener(v->{
@@ -165,12 +188,52 @@ public class PhotoFragment extends Fragment {
                     .addToBackStack("switch_plot_fragment")
                     .commit();
         });
+        adapter = new PlantAdapter(requireContext(),plantNetViewModel.getPlantNetListLiveData().getValue(),getParentFragmentManager()) ;
 
         plantRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
-        plantRCV.setAdapter(new PlantAdapter(requireContext(),plants,getParentFragmentManager()));
+        plantRCV.setAdapter(adapter);
 
 
         return view;
+    }
+
+    private void getLocationAndSave() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.e("PhotoFragment", "Permission de localisation non accordée");
+            return;
+        }
+
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setInterval(1000)
+                .setFastestInterval(500)
+                .setNumUpdates(1);
+
+        try {
+            fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    Location location = locationResult.getLastLocation();
+                    if (location != null) {
+                        observationViewModel.setObservationLocationLiveData(location);
+                        Log.d("PhotoFragment", "Location set: " + location.getLatitude() + ", " + location.getLongitude());
+                    }
+                    fusedLocationClient.removeLocationUpdates(this);
+                }
+            }, Looper.getMainLooper());
+        } catch (SecurityException e) {
+            Log.e("PhotoFragment", "SecurityException lors de la récupération de la localisation", e);
+        }
+    }
+
+    private void checkLocationPermissionAndGetLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getLocationAndSave(); // permission déjà accordée
+        } else {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        }
     }
 
     private File createImageFile() throws IOException {
@@ -209,12 +272,19 @@ public class PhotoFragment extends Fragment {
             } else {
                 Toast.makeText(requireContext(), "Permission caméra refusée", Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getLocationAndSave(); // permission maintenant accordée
+            } else {
+                Toast.makeText(requireContext(), "Permission de localisation refusée", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
     public class PlantAdapter extends RecyclerView.Adapter<PlantViewHolder> {
 
-        private final List<Plant> plantList;
+        private List<Plant> plantList;
         private final Context ctx;
         private final FragmentManager fragmentManager;
 
@@ -233,14 +303,23 @@ public class PhotoFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull PlantViewHolder holder, int position) {
-            Plant plot = plantList.get(position);
-            holder.bind(plot,this);
+            Plant plant = plantList.get(position);
+            Uri obsUri = observationViewModel.getObsUriLiveData().getValue();
+            Location location = observationViewModel.getObservationLocationLiveData().getValue();
+
+            holder.bind(plant, obsUri, location, p -> {
+                observationViewModel.createObservation(p, plotID, obsUri);
+            });
 
         }
 
         @Override
         public int getItemCount() {
             return plantList.size(); // Correction ici
+        }
+        public void updateList(List<Plant> newList) {
+            this.plantList = newList;
+            notifyDataSetChanged(); // redessine tout
         }
     }
 
@@ -257,7 +336,7 @@ public class PhotoFragment extends Fragment {
         private final TextView plantFullName;
         private final Button knowmoreBtn;
         private final Button addBtn;
-        private final ShapeableImageView picture;
+        private final ShapeableImageView pictureView;
         //private final ImageView flagImage;
 
 
@@ -275,10 +354,10 @@ public class PhotoFragment extends Fragment {
             this.groundScore = itemView.findViewById(R.id.ground_score);
             this.knowmoreBtn =itemView.findViewById(R.id.knowmore_btn);
             this.addBtn = itemView.findViewById(R.id.add_btn);
-            this.picture = itemView.findViewById(R.id.imageView);
+            this.pictureView = itemView.findViewById(R.id.imageView);
         }
 
-        public void bind(Plant plant, PlantAdapter adapter) {
+        public void bind(Plant plant, Uri obsUri, Location location, Consumer<Plant> onAddClicked) {
             plantName.setText(plant.getShortname());
             //TODO régler ça nbPlant.setText(""+plant.getNbPlant());
             plantFullName.setText(plant.getFullname());
@@ -318,15 +397,24 @@ public class PhotoFragment extends Fragment {
                 }
             });
 
-            addBtn.setOnClickListener(v->{
-                if (observationViewModel.getObsUriLiveData().getValue()!=null){
-                    observationViewModel.createObservation(plant,plotID,observationViewModel.getObsUriLiveData().getValue());
-                }
+            boolean enabled = obsUri != null && location != null;
+            addBtn.setEnabled(enabled);
 
+            addBtn.setOnClickListener(v -> {
+                if (enabled) {
+                    onAddClicked.accept(plant);
+                } else {
+                    Toast.makeText(itemView.getContext(), "Données non prêtes", Toast.LENGTH_SHORT).show();
+                }
             });
             knowmoreBtn.setOnClickListener(v->{
                 //TODO renvoyer vers une page web
             });
+
+            Glide.with(requireContext())
+                    .load(plant.getPictureUrl())
+                    .fitCenter()
+                    .into(pictureView);
 
         }
     }

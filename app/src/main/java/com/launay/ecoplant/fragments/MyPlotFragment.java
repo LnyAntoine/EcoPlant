@@ -6,6 +6,7 @@ import static android.view.View.VISIBLE;
 import static com.launay.ecoplant.R.*;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,12 +24,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -97,15 +101,7 @@ public class MyPlotFragment extends Fragment {
         plotViewModel.loadPlots();
 
         plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            List<Plot> plotList = new ArrayList<>();
-            plots.forEach(plot -> {
-
-                Plot plot1 = new Plot(plot.getPlotId(),plot.getName(),plot.getNbPlant(),
-                        plot.getScoreAzote(),plot.getScoreStruct(),plot.getScoreWater());
-                plotList.add(plot1);
-
-            });
-            adapter.updateList(plotList);
+            adapter.updateList(plots);
         });
 
         addPlotBtn.setOnClickListener(v->{
@@ -158,8 +154,8 @@ public class MyPlotFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PlotViewHolder holder, int position) {
             Plot plot = filteredPlots.get(position);
-            Log.d("onBindViewHolder",""+plot.toString());
-            holder.bind(plot,this);
+            Log.d("onBindViewHolder"," "+plot.toString());
+            holder.bind(plot);
 
         }
 
@@ -184,7 +180,7 @@ public class MyPlotFragment extends Fragment {
                 text = text.toLowerCase();
 
                 for (Plot plot : allPlots) {
-                    if (plot.getPlotname().toLowerCase().contains(text)) {
+                    if (plot.getName().toLowerCase().contains(text)) {
                         filteredPlots.add(plot);
                     }
                 }
@@ -204,7 +200,7 @@ public class MyPlotFragment extends Fragment {
         private final TextView azoteScore;
         private final TextView groundScore;
         private final TextView waterScore;
-        //private final ImageView flagImage;
+        private final ShapeableImageView imageView;
 
 
         public PlotViewHolder(@NonNull View itemView,FragmentManager fragmentManager) {
@@ -218,40 +214,17 @@ public class MyPlotFragment extends Fragment {
             this.azoteScore = itemView.findViewById(R.id.azote_score);
             this.waterScore = itemView.findViewById(R.id.water_score);
             this.groundScore = itemView.findViewById(R.id.ground_score);
+            this.imageView = itemView.findViewById(id.imageView);
         }
 
-        public void bind(Plot plot, PlotAdapter adapter) {
-            plotName.setText(plot.getPlotname());
+        public void bind(Plot plot) {
+            plotName.setText(plot.getName());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
-            azoteScore.setText(plot.getAzoteScore().toString());
-            waterScore.setText(plot.getWaterScore().toString());
-            groundScore.setText(plot.getGroundScore().toString());
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             waterScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
             groundScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
-
-            if (plot.getAzoteScore()>=0.33){
-                azoteScore.setBackgroundColor(getResources().getColor(color.pale_orange));
-                if (plot.getAzoteScore()>=0.66){
-                    azoteScore.setBackgroundColor(getResources().getColor(color.pale_green));
-                }
-            }
-            if (plot.getGroundScore()>=0.33){
-                groundScore.setBackgroundColor(getResources().getColor(color.pale_orange));
-                if (plot.getGroundScore()>=0.66){
-                    groundScore.setBackgroundColor(getResources().getColor(color.pale_green));
-                }
-            }
-            if (plot.getWaterScore()>=0.33){
-                waterScore.setBackgroundColor(getResources().getColor(color.pale_orange));
-                if (plot.getWaterScore()>=0.66){
-                    waterScore.setBackgroundColor(getResources().getColor(color.pale_green));
-                }
-            }
-
-
 
             detailsBtn.setOnClickListener(v -> {
                 if (detailedField.getVisibility() == GONE){
@@ -263,7 +236,7 @@ public class MyPlotFragment extends Fragment {
 
             manageBtn.setOnClickListener(v->{
                 String plotID;
-                plotID = plot.getId();
+                plotID = plot.getPlotId();
                 Fragment fragment = ManagePlotFragment.newInstance(false,plotID);
                 fragmentManager.beginTransaction()
                         .replace(R.id.fragment_container,fragment)
@@ -271,59 +244,18 @@ public class MyPlotFragment extends Fragment {
                         .commit();
             });
 
+            String imageURL = plot.getPictureUri();
+            if (Objects.equals(imageURL, "")){
+                int imageResId = drawable.jardin;
+                imageURL= Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + imageResId).toString();
+            }
+
+            Glide.with(requireContext())
+                    .load(plot.getPictureUri())
+                    .fitCenter()
+                    .into(imageView);
+
         }
     }
 
-    public static class Plot {
-        private final String id;
-        private final String plotname;
-        private final int nbPlant;
-
-        private final Double azoteScore;
-        private final Double groundScore;
-        private final Double waterScore;
-
-
-
-        public Plot(String id, String plotname, int nbPlant, Double azoteScore, Double groundScore, Double waterScore) {
-            this.plotname = plotname;
-            this.id = id;
-            this.nbPlant = nbPlant;
-            this.azoteScore = azoteScore;
-            this.groundScore = groundScore;
-            this.waterScore = waterScore;
-
-        }
-
-        public String getId() {
-            return id;
-        }
-
-
-        public String getPlotname() {
-            return plotname;
-        }
-
-        public int getNbPlant() {
-            return nbPlant;
-        }
-
-        public Double getAzoteScore() {
-            return azoteScore;
-        }
-
-        public Double getGroundScore() {
-            return groundScore;
-        }
-
-        public Double getWaterScore() {
-            return waterScore;
-        }
-
-        @Override
-        @NonNull
-        public String toString(){
-            return this.getPlotname() + "-"+ this.getId();
-        }
-    }
 }
