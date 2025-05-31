@@ -5,8 +5,10 @@ import android.location.Location;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
@@ -14,7 +16,7 @@ import com.launay.ecoplant.repositories.ObservationRepositories;
 
 import java.util.List;
 
-public class ObservationViewModel extends ViewModel{
+public class ObservationViewModel extends AndroidViewModel {
     private ObservationRepositories observationRepositories;
     private LiveData<List<Observation>> observationListLiveData;
     private LiveData<Observation> currentObservationLiveData;

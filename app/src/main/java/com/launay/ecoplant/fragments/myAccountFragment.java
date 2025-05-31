@@ -19,9 +19,6 @@ import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.MainActivity;
 import com.launay.ecoplant.viewmodels.AuthViewModel;
 import com.launay.ecoplant.viewmodels.UserViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
-
-import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.

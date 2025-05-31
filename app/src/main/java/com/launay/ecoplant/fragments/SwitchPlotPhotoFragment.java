@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

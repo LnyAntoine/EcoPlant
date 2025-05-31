@@ -18,7 +18,6 @@ import com.launay.ecoplant.fragments.PhotoFragment;
 import com.launay.ecoplant.fragments.myAccountFragment;
 import com.launay.ecoplant.viewmodels.AuthViewModel;
 import com.launay.ecoplant.viewmodels.UserViewModel;
-import com.launay.ecoplant.viewmodels.ViewModel;
 
 public class LoggedMainActivity extends AppCompatActivity {
 
