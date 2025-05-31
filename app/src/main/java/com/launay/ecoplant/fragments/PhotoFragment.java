@@ -118,7 +118,7 @@ public class PhotoFragment extends Fragment {
 
         plantNetViewModel.getPlantNetListLiveData().observe(requireActivity(),plantList -> {
             Log.d("plantNetlistobserver","observing"+plantList);
-            if (!plantList.isEmpty()){
+            if (!plantList.isEmpty() && adapter !=null){
                 adapter.updateList(plantList);
             }
         });
@@ -281,6 +281,12 @@ public class PhotoFragment extends Fragment {
 
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        plotViewModel.refreshData();
+        observationViewModel.refreshData((plotViewModel.getCurrentPlotLiveData().getValue()!=null) ? plotViewModel.getCurrentPlotLiveData().getValue().getPlotId() : "");
+    }
 
     public class PlantAdapter extends RecyclerView.Adapter<PlantViewHolder> {
 
@@ -308,7 +314,7 @@ public class PhotoFragment extends Fragment {
             Location location = observationViewModel.getObservationLocationLiveData().getValue();
 
             holder.bind(plant, obsUri, location, p -> {
-                observationViewModel.createObservation(p, plotID, obsUri);
+                observationViewModel.createObservation(p, plotID, obsUri,1);
             });
 
         }
@@ -418,5 +424,6 @@ public class PhotoFragment extends Fragment {
 
         }
     }
+
 
 }

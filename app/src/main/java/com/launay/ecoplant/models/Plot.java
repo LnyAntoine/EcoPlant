@@ -1,35 +1,31 @@
 package com.launay.ecoplant.models;
 
 public class Plot {
-    String type;
+    Boolean publicP;
     String name;
     String plotId;
-    String pictureUri;
+    String pictureUrl;
     String ownerId;
     Double latitude;
     Double longitude;
     int nbPlant;
-    Double scoreAzote;
-    Double scoreStruct;
-    Double scoreWater;
+
 
     public Plot(){}
 
-    public Plot(String type, String name, String plotId, String ownerId, Double latitude, Double longitude, int nbPlant, Double scoreAzote, Double scoreStruct, Double scoreWater) {
-        this.type = type;
+    public Plot(Boolean publicP, String name, String plotId, String ownerId, Double latitude, Double longitude, int nbPlant) {
+        this.publicP = publicP;
         this.name = name;
         this.plotId = plotId;
         this.ownerId = ownerId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.nbPlant = nbPlant;
-        this.scoreAzote = scoreAzote;
-        this.scoreStruct = scoreStruct;
-        this.scoreWater = scoreWater;
+
     }
 
-    public String getType() {
-        return type;
+    public Boolean getPublicP() {
+        return publicP;
     }
 
     public String getName() {
@@ -40,8 +36,8 @@ public class Plot {
         return plotId;
     }
 
-    public String getPictureUri() {
-        return pictureUri;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
     public String getOwnerId() {
@@ -60,20 +56,10 @@ public class Plot {
         return nbPlant;
     }
 
-    public Double getScoreAzote() {
-        return scoreAzote;
-    }
 
-    public Double getScoreStruct() {
-        return scoreStruct;
-    }
 
-    public Double getScoreWater() {
-        return scoreWater;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setType(Boolean publicP) {
+        this.publicP = publicP;
     }
 
     public void setName(String name) {
@@ -84,8 +70,8 @@ public class Plot {
         this.plotId = plotId;
     }
 
-    public void setPictureUri(String pictureUri) {
-        this.pictureUri = pictureUri;
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
     public void setLatitude(Double latitude) {
@@ -104,15 +90,5 @@ public class Plot {
         this.nbPlant = nbPlant;
     }
 
-    public void setScoreAzote(Double scoreAzote) {
-        this.scoreAzote = scoreAzote;
-    }
 
-    public void setScoreStruct(Double scoreStruct) {
-        this.scoreStruct = scoreStruct;
-    }
-
-    public void setScoreWater(Double scoreWater) {
-        this.scoreWater = scoreWater;
-    }
 }

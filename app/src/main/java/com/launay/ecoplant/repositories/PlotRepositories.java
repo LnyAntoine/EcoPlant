@@ -1,5 +1,6 @@
 package com.launay.ecoplant.repositories;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -10,6 +11,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.utils;
 
@@ -17,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class PlotRepositories {
@@ -70,7 +75,7 @@ public class PlotRepositories {
     public LiveData<Plot> getPlotById(){
         return plotLiveData;
     }
-    public void createPlot(String name, Double lat, Double longi, String type,Consumer<String> callback){
+    public void createPlot(String name, Uri pictureUri, Double lat, Double longi, Boolean publicP, Consumer<String> callback){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
@@ -79,17 +84,39 @@ public class PlotRepositories {
 
             // Création de l'objet Plot
             Plot plot = new Plot(
-                    type,               // type
+                    publicP,               // publicP
                     name,     // name
                     null,                    // plotId (sera généré par Firestore)
                     userId,                  // ownerId
                     lat,                // latitude
                     longi,                 // longitude
-                    0,                      // nbPlant
-                    0.,                     // scoreAzote
-                    0.,                     // scoreStruct
-                    0.                     // scoreWater
+                    0                      // nbPlant
             );
+
+            //On enregistre l'image de l'observation dans storage
+            AtomicReference<String> photoUrl = new AtomicReference<>();
+            //TODO réactiver quand storage fonctionnera
+            /*
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+
+            String fileName = "images/" + UUID.randomUUID().toString() +"-1"+ ".jpg";
+            StorageReference imageRef = storageRef.child(fileName);
+
+            imageRef.putFile(pictureUri)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                            photoUrl.set(downloadUri.toString());
+                            Log.d("FirebaseStorage", "Image URL: " + photoUrl.get());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("FirebaseStorage", "Échec de l'upload", e);
+                    });
+            */
+            plot.setPictureUrl(photoUrl.get());
+
+
 
             // Ajout du plot dans la collection
             db.collection("plots")
@@ -171,43 +198,26 @@ public class PlotRepositories {
         }
 
     }
-    public void deletePlot(String plotId, utils.AuthCallback callback) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            // Pas d'utilisateur connecté
-            callback.onComplete(false);
-            return;
-        }
-
-        String userId = user.getUid();
+    public void deletePlot(String plotId, Consumer<Boolean> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // On récupère la référence du document à supprimer
-        DocumentReference plotRef = db.collection("plots").document(plotId);
-
-        // Vérifier que l'utilisateur est bien le propriétaire (optionnel mais recommandé en local)
-        plotRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                String ownerId = documentSnapshot.getString("ownerId");
-                if (userId.equals(ownerId)) {
-                    // L'utilisateur est propriétaire, on peut supprimer
-                    plotRef.delete()
-                            .addOnSuccessListener(unused -> callback.onComplete(true))
-                            .addOnFailureListener(e -> callback.onComplete(false));
-                } else {
-                    // Pas propriétaire
-                    callback.onComplete(false);
-                }
-            } else {
-                // Document inexistant
-                callback.onComplete(false);
-            }
-        }).addOnFailureListener(e -> callback.onComplete(false));
+        db.collection("plots").document(plotId).delete()
+                .addOnSuccessListener(avoid -> callback.accept(true))
+                .addOnFailureListener(e -> {
+                    Log.e("deletePlot"," "+e.getMessage());
+                    callback.accept(false);
+                });
     }
 
     public void reset(){
         this.plotsLiveData.setValue(null);
         this.currentPlotLiveData.setValue(null);
     }
+
+    public void refreshData(){
+        if (currentPlotLiveData.getValue()!=null){loadCurrentPlot(currentPlotLiveData.getValue().getPlotId());}
+        if (plotLiveData.getValue()!=null){loadPlotById(plotLiveData.getValue().getPlotId());}
+        loadUserPlots();
+    }
+
 
 }

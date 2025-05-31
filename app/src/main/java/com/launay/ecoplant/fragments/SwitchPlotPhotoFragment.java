@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 
 import java.util.ArrayList;
@@ -109,15 +110,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
         });
 
         plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            List<Plot> plotList = new ArrayList<>();
-            plots.forEach(plot -> {
-
-                Plot plot1 = new Plot(plot.getPlotId(),plot.getName(),plot.getNbPlant(),
-                        plot.getScoreAzote(),plot.getScoreStruct(),plot.getScoreWater());
-                plotList.add(plot1);
-
-            });
-            adapter.updateList(plotList);
+            adapter.updateList(plots);
         });
 
 
@@ -176,7 +169,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
                 text = text.toLowerCase();
 
                 for (Plot plot : allPlots) {
-                    if (plot.getPlotname().toLowerCase().contains(text)) {
+                    if (plot.getName().toLowerCase().contains(text)) {
                         filteredPlots.add(plot);
                     }
                 }
@@ -208,50 +201,15 @@ public class SwitchPlotPhotoFragment extends Fragment {
         }
 
         public void bind(Plot plot, PlotAdapter adapter) {
-            plotName.setText(plot.getPlotname());
+            plotName.setText(plot.getName());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             chooseBtn.setOnClickListener(v->{
 
                 PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-                plotViewModel.loadCurrentPlot(plot.getId());
+                plotViewModel.loadCurrentPlot(plot.getPlotId());
                 getParentFragmentManager().popBackStack();
             });
         }
     }
 
-    public static class Plot {
-        private final String id;
-        private final String plotname;
-        private final int nbPlant;
-
-
-
-
-        public Plot(String id, String plotname, int nbPlant, Double azoteScore, Double groundScore, Double waterScore) {
-            this.plotname = plotname;
-            this.id = id;
-            this.nbPlant = nbPlant;
-
-        }
-
-        public String getId() {
-            return id;
-        }
-
-
-        public String getPlotname() {
-            return plotname;
-        }
-
-        public int getNbPlant() {
-            return nbPlant;
-        }
-
-
-        @Override
-        @NonNull
-        public String toString(){
-            return this.getPlotname();
-        }
-    }
 }

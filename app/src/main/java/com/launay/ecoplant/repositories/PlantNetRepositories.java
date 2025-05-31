@@ -76,7 +76,21 @@ public class PlantNetRepositories {
                     }
                 }
             } catch (Exception e) {
-                Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image : " + e);
+                Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image via gbif : " + e);
+                /*try {
+                    url = "https://api.gbif.org/v1/occurrence/search?taxon_key=" + powoId + "&mediaType=StillImage";
+                    JSONArray results = getJsonArray(url); // ← doit être thread-safe
+                    if (results.length() > 0) {
+                        JSONObject first = results.getJSONObject(0);
+                        JSONArray media = first.getJSONArray("media");
+                        if (media.length() > 0) {
+                            pictureUrl = media.getJSONObject(0).getString("identifier");
+                        }
+                    }
+                } catch (Exception e1) {*/
+                    Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image via powo: " + e);
+
+                //}
             }
 
             String finalPictureUrl = pictureUrl;
@@ -118,7 +132,9 @@ public class PlantNetRepositories {
 
     private void getPlantById(String plantId,Consumer<Plant> callback){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+        if (plantId.isEmpty()){
+            callback.accept(null);
+        }
         db.collection("plants")
                 .document(plantId)
                 .get()
@@ -141,7 +157,9 @@ public class PlantNetRepositories {
 
     private PlantFullService getPlantService(String plantSpecies){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+        if (plantSpecies.isEmpty()){
+            return null;
+        }
         PlantFullService plantService = new PlantFullService(plantSpecies,0.0,0.0,0.0,0.0,0.0,0.0);
         db.collection("plant-service").whereEqualTo("species",plantSpecies).get()
                 .addOnSuccessListener(queryDocumentSnapshots->{

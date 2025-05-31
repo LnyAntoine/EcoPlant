@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class ObservationRepositories {
 
@@ -37,9 +38,9 @@ public class ObservationRepositories {
         currentObservation.setValue(null);
     }
 
-    public void createObservation(Plant plant, String plotId, Uri obsUri, Location location){
+    public void createObservation(Plant plant, String plotId, Uri obsUri, Location location, int nbPlantes){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user!=null) {
+        if (user!=null && !plotId.isEmpty()) {
             //On crée l'objet Observation à mettre en bdd
             Observation observation = new Observation(
                     null,
@@ -48,7 +49,8 @@ public class ObservationRepositories {
                     new Date(),
                     plotId,
                     "",
-                    plant
+                    plant,
+                    nbPlantes
             );
             observation.setLat(location.getLatitude());
             observation.setLongi(location.getLongitude());
@@ -88,12 +90,17 @@ public class ObservationRepositories {
                     })
                     .addOnFailureListener(e->{
                         Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
+                        currentObservation.setValue(null);
                     })
             ;
         }
     }
 
     public void loadObservationById(String plotId,String observationId){
+        if (plotId.isEmpty()){
+            currentObservation.setValue(null);
+            return;
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("plots")
                 .document(plotId)
@@ -109,10 +116,15 @@ public class ObservationRepositories {
                 })
                 .addOnFailureListener(e->{
                     Log.e("FirestoreObservations","Erreur lors ouverture bdd "+e.getMessage());
+                    currentObservation.setValue(null);
                 });
     }
     public void loadObservationListByPlotId(String plotId){
         List<Observation> observations = new ArrayList<>();
+        if (plotId.isEmpty()){
+            observationList.setValue(observations);
+            return;
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("plots")
                 .document(plotId)
@@ -130,8 +142,27 @@ public class ObservationRepositories {
                 })
                 .addOnFailureListener(e->{
                     Log.e("FirestoreObservations","Erreur lors ouverture bdd "+e.getMessage());
+                    observationList.setValue(observations);
                 });
-        observationList.setValue(observations);
+    }
+    public void deleteObservationById(String plotId,String obsId,Consumer<Boolean> callback){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (plotId.isEmpty()){
+            callback.accept(false);
+            return;
+        }
+        db.collection("plots")
+                .document(plotId)
+                .collection("observations")
+                .document(obsId)
+                .delete()
+                .addOnSuccessListener( avoid -> {
+                    callback.accept(true);
+                })
+                .addOnFailureListener(e->{
+                    Log.e("deleteObservationById"," " + e.getMessage());
+                    callback.accept(false);
+                });
     }
 
     public MutableLiveData<List<Observation>> getObservationList() {
@@ -140,5 +171,14 @@ public class ObservationRepositories {
 
     public MutableLiveData<Observation> getCurrentObservation() {
         return currentObservation;
+    }
+    public void refreshData(String plotId){
+        if (plotId.isEmpty()){
+            currentObservation.setValue(null);
+            observationList.setValue(new ArrayList<>());
+            return;
+        }
+        if (currentObservation.getValue()!=null){loadObservationById(plotId,currentObservation.getValue().getObservationId());}
+        loadObservationListByPlotId(plotId);
     }
 }

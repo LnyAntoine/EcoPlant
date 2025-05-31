@@ -8,13 +8,13 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
 import com.launay.ecoplant.repositories.ObservationRepositories;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ObservationViewModel extends AndroidViewModel {
     private ObservationRepositories observationRepositories;
@@ -51,8 +51,11 @@ public class ObservationViewModel extends AndroidViewModel {
     }
 
 
-    public void createObservation(Plant plant, String plotId, Uri obsUri){
-        observationRepositories.createObservation(plant,plotId,obsUri,observationLocationLiveData.getValue());
+    public void createObservation(Plant plant, String plotId, Uri obsUri,int nbPlantes){
+        observationRepositories.createObservation(plant,plotId,obsUri,observationLocationLiveData.getValue(),nbPlantes);
+    }
+    public void deleteObservationById(String plotId, String obsId, Consumer<Boolean> callback){
+        observationRepositories.deleteObservationById(plotId,obsId,callback);
     }
 
     public void loadObservationListLiveDataByPlotId(String plotId){
@@ -68,6 +71,9 @@ public class ObservationViewModel extends AndroidViewModel {
 
     public LiveData<Observation> getCurrentObservationLiveData() {
         return currentObservationLiveData;
+    }
+    public void refreshData(String plotId){
+        observationRepositories.refreshData(plotId);
     }
 
 }

@@ -17,17 +17,13 @@ public class Observation {
     private String plotId;
     private String notes;
 
-    public Plant getPlant() {
-        return plant;
-    }
+    private int nbPlantes;
 
-    public void setPlant(Plant plant) {
-        this.plant = plant;
-    }
 
     private Plant plant;
 
-    public Observation(String observationId,String userId, String plantId, Date date, String plotId, String notes,Plant plant,String pictureUrl) {
+    public Observation(String observationId,String userId, String plantId, Date date, String plotId, String notes,Plant plant,String pictureUrl,int nbPlantes) {
+        this.nbPlantes = nbPlantes;
         this.observationId = observationId;
         this.userId = userId;
         this.plantId = plantId;
@@ -37,7 +33,7 @@ public class Observation {
         this.plant = plant;
         this.pictureUrl = pictureUrl;
     }
-    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant) {
+    public Observation(String observationId,String observerId, String plantId, Date date, String plotId, String notes,Plant plant,int nbPlantes) {
         this.observationId = observationId;
         this.userId = observerId;
         this.plantId = plantId;
@@ -45,6 +41,7 @@ public class Observation {
         this.plotId = plotId;
         this.notes = notes;
         this.plant = plant;
+        this.nbPlantes = nbPlantes;
     }
 
     public Observation() {
@@ -130,6 +127,14 @@ public class Observation {
 
     public void setLat(Double lat) {
         this.lat = lat;
+    }
+
+    public Plant getPlant() {
+        return plant;
+    }
+
+    public void setPlant(Plant plant) {
+        this.plant = plant;
     }
 
 }

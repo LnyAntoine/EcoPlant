@@ -90,8 +90,6 @@ public class ManagePlotFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_manage_plot, container, false);
 
-
-
         Button changePictureBtn = view.findViewById(R.id.change_picture_btn);
         ImageButton editNameBtn = view.findViewById(R.id.edit_name_btn);
         EditText nameField = view.findViewById(R.id.name_field);
@@ -99,9 +97,6 @@ public class ManagePlotFragment extends Fragment {
         ImageButton returnBtn = view.findViewById(R.id.return_btn);
         Button addPlant = view.findViewById(R.id.add_plant_btn);
         RecyclerView plantListRCV = view.findViewById(R.id.plant_list);
-        TextView azoteScoreTV = view.findViewById(R.id.azote_score);
-        TextView groundScoreTV = view.findViewById(R.id.ground_score);
-        TextView waterScoreTV = view.findViewById(R.id.water_score);
 
         plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -154,13 +149,12 @@ public class ManagePlotFragment extends Fragment {
         deleteBtn.setOnClickListener(v->{
             Plot plot = plotViewModel.getPlotById().getValue();
             if (plot != null){
-                plotViewModel.deletePlot(plot.getPlotId(),success -> {
-                    if (success){
-
+                plotViewModel.deletePlot(plot.getPlotId(),deleted -> {
+                    if (deleted){
+                        getParentFragmentManager().popBackStack();
                     }
                 });
             }
-            getParentFragmentManager().popBackStack();
         });
 
         changePictureBtn.setOnClickListener(v->{
