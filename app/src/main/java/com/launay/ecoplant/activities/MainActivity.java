@@ -1,5 +1,6 @@
 package com.launay.ecoplant.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,10 +12,22 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.PlantService;
 import com.launay.ecoplant.viewmodels.AuthViewModel;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
         AuthViewModel authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
         authViewModel.loadCurrentUser();
+
+
+
 
         authViewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {

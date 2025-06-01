@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -121,6 +122,7 @@ public class PhotoFragment extends Fragment {
         plantNetViewModel.getPlantNetListLiveData().observe(requireActivity(),plantList -> {
             Log.d("plantNetlistobserver","observing"+plantList);
             if (!plantList.isEmpty() && adapter !=null){
+                plantList.sort(Comparator.comparingDouble(Plant::getScore).reversed());
                 adapter.updateList(plantList);
             }
         });
@@ -391,9 +393,9 @@ public class PhotoFragment extends Fragment {
             plantName.setText(plant.getShortname());
             //TODO régler ça nbPlant.setText(""+plant.getNbPlant());
             plantFullName.setText(plant.getFullname());
-            azoteScore.setText(plant.getScoreAzote().toString());
-            waterScore.setText(plant.getScoreWater().toString());
-            groundScore.setText(plant.getScoreStruct().toString());
+            azoteScore.setText(String.format("%.2f", plant.getScoreAzote()));
+            waterScore.setText(String.format("%.2f", plant.getScoreWater()));
+            groundScore.setText(String.format("%.2f", plant.getScoreStruct()));
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));

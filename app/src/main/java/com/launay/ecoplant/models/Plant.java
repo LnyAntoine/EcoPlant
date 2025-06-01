@@ -1,5 +1,7 @@
 package com.launay.ecoplant.models;
 
+import com.google.firebase.database.Exclude;
+
 public class Plant {
     String plantId;
     String shortname;
@@ -15,8 +17,8 @@ public class Plant {
     double reliabilityWater;
     double reliabilityGround;
     double reliabilityAzote;
-
-
+    @Exclude
+    double score;
 
     Double scoreWater;
 
@@ -52,6 +54,8 @@ public class Plant {
         return detailsLink;
     }
 
+    public void setScore(Double score){this.score=score;}
+    public Double getScore(){return this.score;}
     public Double getScoreAzote() {
         return scoreAzote;
     }

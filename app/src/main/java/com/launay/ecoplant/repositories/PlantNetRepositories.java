@@ -155,7 +155,8 @@ public class PlantNetRepositories {
 
     }
 
-    private PlantFullService getPlantService(String plantSpecies){
+    private PlantFullService getPlantService(String plantSpecies,Consumer<PlantFullService> callback){
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (plantSpecies.isEmpty()){
             return null;
@@ -163,6 +164,8 @@ public class PlantNetRepositories {
         PlantFullService plantService = new PlantFullService(plantSpecies,0.0,0.0,0.0,0.0,0.0,0.0);
         db.collection("plant-service").whereEqualTo("species",plantSpecies).get()
                 .addOnSuccessListener(queryDocumentSnapshots->{
+                    Log.d("FirestorePlantService", queryDocumentSnapshots.toString());
+
                     if (!queryDocumentSnapshots.isEmpty()){
                         for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots.getDocuments()){
                             PlantService plantService1 = documentSnapshot.toObject(PlantService.class);
@@ -179,14 +182,19 @@ public class PlantNetRepositories {
                                 plantService.setValueGround(plantService1.getValue());
                                 plantService.setReliabilityGround(plantService1.getReliability());
                             }
+
                         }
+                        Log.d("FirestorePlantService", "service trouvé "+plantSpecies+"\n"+plantService);
+
 
                     } else {
                         Log.d("FirestorePlantService","Aucun service trouvé "+plantSpecies);
                     }
+                    callback.accept(plantService);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FirestorePlantService","Erreur chargement bdd "+e.getMessage());
+                    callback.accept(null);
                 })
         ;
         return plantService;
@@ -199,6 +207,7 @@ public class PlantNetRepositories {
         Log.d("LoadPlantNetListByUri", "loading");
 
         List<Plant> plantList = new ArrayList<>();
+
         ObjectMapper mapper = new ObjectMapper();
 
 
@@ -251,33 +260,36 @@ public class PlantNetRepositories {
                                     } else {
                                         String powoId = (result.getPowo() != null) ? result.getPowo().getId() : "";
                                         String gbifId = (result.getGbif() != null) ? result.getGbif().getId() : "";
-                                        PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
-                                        if (plantFullService==null){
-                                            Log.d("LoadPlantNet","Erreur lors de la récupération du service"+plantFullService);
-                                            return;}
-                                        createPlant(
-                                                result.getSpecies().getCommonNames().get(0),
-                                                result.getSpecies().getScientificName(),
-                                                powoId,
-                                                gbifId,
-                                                plantFullService.getValueAzote(),
-                                                plantFullService.getReliabilityAzote(),
-                                                plantFullService.getValueGround(),
-                                                plantFullService.getReliabilityGround(),
-                                                plantFullService.getValueWater(),
-                                                plantFullService.getReliabilityWater(),
-                                                plant -> {
-                                                    if (plant != null) {
-                                                        plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
-                                                                (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
-                                                        plantList.add(plant);
+                                        this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor(),plantFullService -> {
+                                            if (plantFullService==null){
+                                                Log.d("LoadPlantNet","Erreur lors de la récupération du service"+plantFullService);
+                                                return;}
+                                            createPlant(
+                                                    result.getSpecies().getCommonNames().get(0),
+                                                    result.getSpecies().getScientificName(),
+                                                    powoId,
+                                                    gbifId,
+                                                    plantFullService.getValueAzote(),
+                                                    plantFullService.getReliabilityAzote(),
+                                                    plantFullService.getValueGround(),
+                                                    plantFullService.getReliabilityGround(),
+                                                    plantFullService.getValueWater(),
+                                                    plantFullService.getReliabilityWater(),
+                                                    plant -> {
+                                                        if (plant != null) {
+                                                            plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
+                                                                    (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
+                                                            plant.setScore(result.getScore());
+                                                            plantList.add(plant);
+                                                        }
+                                                        if (completedRequests.incrementAndGet() == total) {
+                                                            Log.d("LoadPlantNetListByUri", "end " + plantList);
+                                                            plantNetList.setValue(plantList);
+                                                        }
                                                     }
-                                                    if (completedRequests.incrementAndGet() == total) {
-                                                        Log.d("LoadPlantNetListByUri", "end " + plantList);
-                                                        plantNetList.setValue(plantList);
-                                                    }
-                                                }
-                                        );
+                                            );
+                                        });
+
 
                                     }
 
@@ -285,8 +297,6 @@ public class PlantNetRepositories {
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.e("loadPlant", " " + e.getMessage());
-
-                                    // On compte aussi les erreurs comme complétées
                                     if (completedRequests.incrementAndGet() == total) {
                                         plantNetList.setValue(plantList);
                                     }

@@ -1,15 +1,17 @@
 package com.launay.ecoplant.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PlantService {
 
     private String service;
     private String species;
     private double value;
     private double reliability;
+    @JsonProperty("cultural_condition")
     private String culturalCondition;
 
     public PlantService() {
-        // Constructeur vide pour frameworks ou sérialisation
     }
 
     public PlantService(String service, String species, double value, double reliability, String culturalCondition) {
@@ -20,7 +22,6 @@ public class PlantService {
         this.culturalCondition = culturalCondition;
     }
 
-    // Getters et Setters
 
     public String getService() {
         return service;
