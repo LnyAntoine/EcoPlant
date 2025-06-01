@@ -1,5 +1,6 @@
 package com.launay.ecoplant.repositories;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -193,7 +193,7 @@ public class PlantNetRepositories {
     }
 
 
-    public void loadPlantNetListByUri(Uri plantUri) {
+    public void loadPlantNetListByUri(Context context, Uri plantUri) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Log.d("LoadPlantNetListByUri", "loading");
@@ -203,12 +203,107 @@ public class PlantNetRepositories {
         // pour chacun vérifier si il existe une Plant en bdd existante
         // sinon : la créer
 
-
         ObjectMapper mapper = new ObjectMapper();
-        List<PlantNetResult> results = mapper.convertValue(resultData.get("results"),
-                new TypeReference<>() {
-                });
 
+
+        try {
+            byte[] imageBytes = utils.uriToBytes(context, plantUri);
+
+            utils.callIdentifyPlantFunction(imageBytes,result1 -> {
+                if (result1==null){
+                    Log.e("PlantNetResult","Erreur result1 = null" + result1);
+                    return;
+                }
+                List<PlantNetResult> results = mapper.convertValue(result1.get("results"),
+                        new TypeReference<>() {
+                        });
+
+
+                AtomicInteger completedRequests = new AtomicInteger(0);
+                int total = results.size();
+
+                for (PlantNetResult result : results) {
+                    String field;
+                    String search;
+
+                    if (result.getPowo()==null && result.getGbif() == null) {
+                        if (completedRequests.incrementAndGet() == total) {
+                            plantNetList.setValue(plantList);
+                        }
+                    } else {
+                        if (result.getGbif() != null) {
+                            field = "gbifId";
+                            search = result.getGbif().getId();
+                        } else {
+                            field = "powoId";
+                            search = result.getPowo().getId();
+                        }
+                        db.collection("plants").whereEqualTo(field, search)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    if (!queryDocumentSnapshots.isEmpty()) {
+                                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                                        if (documentSnapshot.exists()) {
+                                            Plant plant = documentSnapshot.toObject(Plant.class);
+                                            plantList.add(plant);
+
+                                        }
+                                        if (completedRequests.incrementAndGet() == total) {
+                                            Log.d("LoadPlantNetListByUri", "end " + plantList);
+                                            plantNetList.setValue(plantList);
+                                        }
+                                    } else {
+                                        String powoId = (result.getPowo() != null) ? result.getPowo().getId() : "";
+                                        String gbifId = (result.getGbif() != null) ? result.getGbif().getId() : "";
+                                        PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
+                                        createPlant(
+                                                result.getSpecies().getCommonNames().get(0),
+                                                result.getSpecies().getScientificName(),
+                                                powoId,
+                                                gbifId,
+                                                plantFullService.getValueAzote(),
+                                                plantFullService.getReliabilityAzote(),
+                                                plantFullService.getValueGround(),
+                                                plantFullService.getReliabilityGround(),
+                                                plantFullService.getValueWater(),
+                                                plantFullService.getReliabilityWater(),
+                                                plant -> {
+                                                    if (plant != null) {
+                                                        plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
+                                                                (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
+                                                        plantList.add(plant);
+                                                    }
+                                                    if (completedRequests.incrementAndGet() == total) {
+                                                        Log.d("LoadPlantNetListByUri", "end " + plantList);
+                                                        plantNetList.setValue(plantList);
+                                                    }
+                                                }
+                                        );
+
+                                    }
+
+
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("loadPlant", " " + e.getMessage());
+
+                                    // On compte aussi les erreurs comme complétées
+                                    if (completedRequests.incrementAndGet() == total) {
+                                        plantNetList.setValue(plantList);
+                                    }
+                                });
+                    }
+                }
+
+            });
+        } catch (Exception e) {
+            Log.e("Exception"," "+e.getMessage());
+        }
+
+
+
+
+        /*
         String jsonresponse = utils.requestAPIPlantNet();
 
         try {
@@ -217,7 +312,7 @@ public class PlantNetRepositories {
             });
 
             // Extraire et convertir la liste des résultats
-            results = mapper.convertValue(
+            results =mapper.convertValue(
                     jsonMap.get("results"),
                     new TypeReference<>() {
                     }
@@ -225,83 +320,13 @@ public class PlantNetRepositories {
         } catch (JsonProcessingException e) {
             Log.e("Erreur", " " + e.getMessage());
         }
+        */
 
 
-        AtomicInteger completedRequests = new AtomicInteger(0);
-        int total = results.size();
-
-        for (PlantNetResult result : results) {
-            String field;
-            String search;
-
-            if (result.getPowo()==null && result.getGbif() == null) {
-                if (completedRequests.incrementAndGet() == total) {
-                    plantNetList.setValue(plantList);
-                }
-            } else {
-                if (result.getGbif() != null) {
-                    field = "gbifId";
-                    search = result.getGbif().getId();
-                } else {
-                    field = "powoId";
-                    search = result.getPowo().getId();
-                }
-                db.collection("plants").whereEqualTo(field, search)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            if (!queryDocumentSnapshots.isEmpty()) {
-                                DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
-                                if (documentSnapshot.exists()) {
-                                    Plant plant = documentSnapshot.toObject(Plant.class);
-                                    plantList.add(plant);
-
-                                }
-                                if (completedRequests.incrementAndGet() == total) {
-                                    Log.d("LoadPlantNetListByUri", "end " + plantList);
-                                    plantNetList.setValue(plantList);
-                                }
-                            } else {
-                                String powoId = (result.getPowo() != null) ? result.getPowo().getId() : "";
-                                String gbifId = (result.getGbif() != null) ? result.getGbif().getId() : "";
-                                PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
-                                createPlant(
-                                        result.getSpecies().getCommonNames().get(0),
-                                        result.getSpecies().getScientificName(),
-                                        powoId,
-                                        gbifId,
-                                        plantFullService.getValueAzote(),
-                                        plantFullService.getReliabilityAzote(),
-                                        plantFullService.getValueGround(),
-                                        plantFullService.getReliabilityGround(),
-                                        plantFullService.getValueWater(),
-                                        plantFullService.getReliabilityWater(),
-                                        plant -> {
-                                            if (plant != null) {
-                                                plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
-                                                        (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
-                                                plantList.add(plant);
-                                            }
-                                            if (completedRequests.incrementAndGet() == total) {
-                                                Log.d("LoadPlantNetListByUri", "end " + plantList);
-                                                plantNetList.setValue(plantList);
-                                            }
-                                        }
-                                );
-
-                            }
 
 
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("loadPlant", " " + e.getMessage());
 
-                            // On compte aussi les erreurs comme complétées
-                            if (completedRequests.incrementAndGet() == total) {
-                                plantNetList.setValue(plantList);
-                            }
-                        });
-            }
-        }
+
     }
 
     @NonNull

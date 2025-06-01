@@ -146,7 +146,7 @@ public class PhotoFragment extends Fragment {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
                             observationViewModel.setObsUriLiveData(selectedImageUri);
-                            plantNetViewModel.loadPlantNetListLiveDataByUri(selectedImageUri);
+                            plantNetViewModel.loadPlantNetListLiveDataByUri(requireContext(),selectedImageUri);
                             checkLocationPermissionAndGetLocation();
                         }
                     }
@@ -158,7 +158,7 @@ public class PhotoFragment extends Fragment {
                 success -> {
                     if (success) {
                         observationViewModel.setObsUriLiveData(photoUri);
-                        plantNetViewModel.loadPlantNetListLiveDataByUri(photoUri);
+                        plantNetViewModel.loadPlantNetListLiveDataByUri(requireContext(),photoUri);
                         checkLocationPermissionAndGetLocation();
                     }
                 }

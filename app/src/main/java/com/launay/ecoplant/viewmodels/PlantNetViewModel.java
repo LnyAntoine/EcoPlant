@@ -1,6 +1,7 @@
 package com.launay.ecoplant.viewmodels;
 
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,8 @@ public class PlantNetViewModel extends AndroidViewModel {
         return plantNetListLiveData;
     }
 
-    public void loadPlantNetListLiveDataByUri(Uri uri){
-        plantNetRepositories.loadPlantNetListByUri(uri);
+    public void loadPlantNetListLiveDataByUri(Context context,Uri uri){
+        plantNetRepositories.loadPlantNetListByUri(context,uri);
     }
 
 }
