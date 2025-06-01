@@ -75,6 +75,7 @@ public class PhotoFragment extends Fragment {
     ObservationViewModel observationViewModel;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private static final int REQUEST_LOCATION_PERMISSION = 101;
+    private static final int REQUEST_GALLERY_PERMISSION = 102;
 
     public PhotoFragment() {
     }
@@ -178,7 +179,7 @@ public class PhotoFragment extends Fragment {
         });
 
         galleryBtn.setOnClickListener(v->{
-            openGallery();
+            checkPermissionAndOpenGallery();
         });
 
         switchPlotBtn.setOnClickListener(v->{
@@ -255,6 +256,18 @@ public class PhotoFragment extends Fragment {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
     }
+
+    private void checkPermissionAndOpenGallery(){
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                    REQUEST_GALLERY_PERMISSION); // ton requestCode
+        } else {
+            openGallery(); // si déjà accordée
+        }
+    }
     private void checkPermissionAndOpenCamera() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -279,6 +292,12 @@ public class PhotoFragment extends Fragment {
                 Toast.makeText(requireContext(), "Permission de localisation refusée", Toast.LENGTH_SHORT).show();
             }
 
+        } else if (requestCode == REQUEST_GALLERY_PERMISSION ){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery(); // permission maintenant accordée
+            } else {
+                Toast.makeText(requireContext(), "Permission de localisation refusée", Toast.LENGTH_SHORT).show();
+            }
         }
     }
     @Override
