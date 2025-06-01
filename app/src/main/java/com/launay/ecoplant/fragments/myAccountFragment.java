@@ -76,14 +76,11 @@ public class myAccountFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_my_account, container, false);
         ImageView pfp = view.findViewById(R.id.pfpField);
-        ImageButton pfpEditBtn = view.findViewById(R.id.pfpEditBtn);
         TextView fullNameField = view.findViewById(R.id.fullNameField);
-        ImageButton fullnameEditBtn = view.findViewById(R.id.fullNameEditBtn);
         TextView mailField = view.findViewById(R.id.emailField);
-        ImageButton mailEditBtn = view.findViewById(R.id.emailEditBtn);
         TextView displayNameField = view.findViewById(R.id.displayNameField);
-        ImageButton idEditBtn = view.findViewById(R.id.idEditBtn);
         Button logoutBtn = view.findViewById(R.id.logoutBtn);
+        Button editBtn = view.findViewById(R.id.editBtn);
 
 
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
@@ -96,7 +93,8 @@ public class myAccountFragment extends Fragment {
                 displayNameField.setText(user.getDisplayName());
 
                 Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.ic_launcher_foreground);
-                String pictureUrl = user.getPfpURL().isEmpty()?imageUri.toString():user.getPfpURL();
+                String pictureUrl = user.getPfpURL()!=null?
+                        (user.getPfpURL().isEmpty()?imageUri.toString():user.getPfpURL()):imageUri.toString();
 
                 Glide.with(requireContext())
                         .load(pictureUrl)
@@ -104,6 +102,17 @@ public class myAccountFragment extends Fragment {
                         .into(pfp);
             }
         });
+
+        editBtn.setOnClickListener(v->{
+            Fragment fragment = new modifyAccountFragment();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack("modifyAccountFragment")
+                    .commit();
+        });
+
+
+
 
         logoutBtn.setOnClickListener(v->{
             Log.d("MYAccFragment","Signout");

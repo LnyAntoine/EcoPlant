@@ -77,7 +77,7 @@ public class PlantNetRepositories {
                 }
             } catch (Exception e) {
                 Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image via gbif : " + e);
-                /*try {
+                try {
                     url = "https://api.gbif.org/v1/occurrence/search?taxon_key=" + powoId + "&mediaType=StillImage";
                     JSONArray results = getJsonArray(url); // ← doit être thread-safe
                     if (results.length() > 0) {
@@ -87,10 +87,10 @@ public class PlantNetRepositories {
                             pictureUrl = media.getJSONObject(0).getString("identifier");
                         }
                     }
-                } catch (Exception e1) {*/
-                    Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image via powo: " + e);
+                } catch (Exception e1) {
+                    Log.e("FirebasePlantNet", "Erreur lors de la récuperation de l'image via powo: " + e1);
 
-                //}
+                }
             }
 
             String finalPictureUrl = pictureUrl;
@@ -197,12 +197,8 @@ public class PlantNetRepositories {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Log.d("LoadPlantNetListByUri", "loading");
-        Map<String, Object> resultData = new HashMap<>();
-        List<Plant> plantList = new ArrayList<>();
-        //TODO récupérer les guess de plantNet
-        // pour chacun vérifier si il existe une Plant en bdd existante
-        // sinon : la créer
 
+        List<Plant> plantList = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
 
@@ -256,6 +252,9 @@ public class PlantNetRepositories {
                                         String powoId = (result.getPowo() != null) ? result.getPowo().getId() : "";
                                         String gbifId = (result.getGbif() != null) ? result.getGbif().getId() : "";
                                         PlantFullService plantFullService = this.getPlantService(result.getSpecies().getScientificNameWithoutAuthor());
+                                        if (plantFullService==null){
+                                            Log.d("LoadPlantNet","Erreur lors de la récupération du service"+plantFullService);
+                                            return;}
                                         createPlant(
                                                 result.getSpecies().getCommonNames().get(0),
                                                 result.getSpecies().getScientificName(),
@@ -299,34 +298,6 @@ public class PlantNetRepositories {
         } catch (Exception e) {
             Log.e("Exception"," "+e.getMessage());
         }
-
-
-
-
-        /*
-        String jsonresponse = utils.requestAPIPlantNet();
-
-        try {
-            // Convertir la chaîne JSON en Map
-            Map<String, Object> jsonMap = mapper.readValue(jsonresponse, new TypeReference<>() {
-            });
-
-            // Extraire et convertir la liste des résultats
-            results =mapper.convertValue(
-                    jsonMap.get("results"),
-                    new TypeReference<>() {
-                    }
-            );
-        } catch (JsonProcessingException e) {
-            Log.e("Erreur", " " + e.getMessage());
-        }
-        */
-
-
-
-
-
-
     }
 
     @NonNull

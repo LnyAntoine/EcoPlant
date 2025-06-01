@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.myAccountFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/pfpField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="0dp"
+            android:layout_marginTop="64dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/pfp_style"
+            android:src="@drawable/ic_launcher_foreground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <EditText
+
+            android:id="@+id/fullNameField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:minWidth="300dp"
+            android:minHeight="50dp"
+
+            android:layout_marginTop="32dp"
+            android:background="@drawable/edit_text_style"
+
+            android:text=""
+            android:textSize="16sp"
+
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+
+            android:textColor="@color/text1_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pfpField" />
+
+        <EditText
+
+            android:id="@+id/displayNameField"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="32dp"
+
+            android:background="@drawable/edit_text_style"
+
+            android:enabled="false"
+            android:minWidth="300dp"
+
+            android:minHeight="50dp"
+            android:paddingStart="16dp"
+
+
+            android:paddingEnd="16dp"
+            android:text=""
+
+            android:textColor="@color/text1_black"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/fullNameField"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="460dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/displayNameField">
+
+            <Button
+                android:id="@+id/cancelBtn"
+                style="@style/Theme.EcoPlant.MaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="200dp"
+                android:text="Annuler"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/validate_btn"
+                style="@style/Theme.EcoPlant.MaterialButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="200dp"
+                android:text="Valider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

@@ -23,6 +23,8 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
+
+
         <EditText
 
             android:id="@+id/fullNameField"
@@ -33,7 +35,6 @@
             android:minWidth="300dp"
             android:minHeight="50dp"
 
-            android:layout_marginEnd="64dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
@@ -58,7 +59,6 @@
             android:minWidth="300dp"
             android:minHeight="50dp"
 
-            android:layout_marginEnd="64dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
@@ -86,7 +86,6 @@
             android:minWidth="300dp"
             android:minHeight="50dp"
 
-            android:layout_marginEnd="64dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/edit_text_style"
 
@@ -103,6 +102,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/emailField" />
 
+
+
+        <com.google.android.material.button.MaterialButton
+
+            android:layout_marginTop="32dp"
+
+            android:minWidth="269dp"
+            app:strokeColor="@color/stroke1_dark_green"
+            app:strokeWidth="1dp"
+
+            android:backgroundTint="@color/bg1_pale_green"
+            android:textColor="@color/text1_black"
+
+            android:text="Modifier profil"
+            app:layout_constraintTop_toBottomOf="@id/displayNameField"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/editBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
 
 
@@ -128,79 +147,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/displayNameField"
-            />
-
-
-        <ImageButton
-            android:id="@+id/fullNameEditBtn"
-            android:src="@drawable/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:padding="4dp"
-
-            android:background="@drawable/edit_button_style"
-            app:tint="@color/btn2_green"
-
-            app:layout_constraintStart_toEndOf="@id/fullNameField"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/fullNameField"
-            app:layout_constraintBottom_toBottomOf="@id/fullNameField"
-            />
-
-        <ImageButton
-            android:id="@+id/emailEditBtn"
-            android:src="@drawable/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:padding="4dp"
-
-            android:background="@drawable/edit_button_style"
-            app:tint="@color/btn2_green"
-
-            app:layout_constraintStart_toEndOf="@id/emailField"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/emailField"
-            app:layout_constraintBottom_toBottomOf="@id/emailField"
-            />
-
-
-        <ImageButton
-            android:id="@+id/idEditBtn"
-
-            android:src="@drawable/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:padding="4dp"
-
-            android:background="@drawable/edit_button_style"
-            app:tint="@color/btn2_green"
-
-            app:layout_constraintStart_toEndOf="@id/displayNameField"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/displayNameField"
-            app:layout_constraintBottom_toBottomOf="@id/displayNameField"
-            app:strokeColor="@color/stroke1_dark_green"
-            app:strokeWidth="1dp" />
-
-        <ImageButton
-            android:id="@+id/pfpEditBtn"
-            android:src="@drawable/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:padding="4dp"
-
-            android:background="@drawable/edit_button_style"
-            app:tint="@color/btn2_green"
-
-            app:layout_constraintStart_toEndOf="@id/pfpField"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/pfpField"
-            app:layout_constraintBottom_toBottomOf="@id/pfpField"
+            app:layout_constraintTop_toBottomOf="@id/editBtn"
             />
 
 

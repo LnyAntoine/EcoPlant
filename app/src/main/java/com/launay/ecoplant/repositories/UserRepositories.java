@@ -16,6 +16,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.launay.ecoplant.models.User;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 public class UserRepositories {
     private final MutableLiveData<User> userLiveData;
 
@@ -36,6 +40,22 @@ public class UserRepositories {
 
     public MutableLiveData<User> getUserLiveData(){
         return this.userLiveData;
+    }
+
+    public void updateUser(User user, Consumer<Boolean> callback) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String uid = firebaseUser.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("fullname",user.getFullname());
+            updates.put("displayName",user.getDisplayName());
+            updates.put("pfpURL",user.getPfpURL());
+            db.collection("users").document(uid)
+                    .update(updates)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "User mise à jour avec succès"))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Erreur mise à jour user", e));
+        }
     }
 
     public void loadCurrentUser(){

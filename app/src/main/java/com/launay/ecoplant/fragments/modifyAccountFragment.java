@@ -14,7 +14,6 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
@@ -22,12 +21,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Environment;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -39,7 +39,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
+import com.launay.ecoplant.models.User;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
+import com.launay.ecoplant.viewmodels.UserViewModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +51,10 @@ import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link CreatePlotFragment#newInstance} factory method to
+ * Use the {@link modifyAccountFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CreatePlotFragment extends Fragment {
+public class modifyAccountFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,14 +70,22 @@ public class CreatePlotFragment extends Fragment {
     private PlotViewModel plotViewModel;
     private Uri photoUri;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
-    private static final int REQUEST_LOCATION_PERMISSION = 101;
 
-    public CreatePlotFragment() {
-
+    public modifyAccountFragment() {
+        // Required empty public constructor
     }
 
-    public static CreatePlotFragment newInstance(String param1, String param2) {
-        CreatePlotFragment fragment = new CreatePlotFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment modifyAccountFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static modifyAccountFragment newInstance(String param1, String param2) {
+        modifyAccountFragment fragment = new modifyAccountFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -96,48 +106,50 @@ public class CreatePlotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_create_plot, container, false);
+        View view = inflater.inflate(R.layout.fragment_modify_account, container, false);
+        ShapeableImageView pfpIV = view.findViewById(R.id.pfpField);
+        EditText fullNameField = view.findViewById(R.id.fullNameField);
+        EditText displayNameField = view.findViewById(R.id.displayNameField);
+        Button cancelBtn = view.findViewById(R.id.cancelBtn);
+        Button validateBtn = view.findViewById(R.id.validate_btn);
 
-        Button modifyPictureBtn = view.findViewById(R.id.change_picture_btn);
-        ShapeableImageView picture = view.findViewById(R.id.imageView);
-        AppCompatEditText changeName = view.findViewById(R.id.name_field);
-        Button createBtn = view.findViewById(R.id.create_btn);
-        Button cancelBtn  = view.findViewById(R.id.cancel_btn);
+        UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+        userViewModel.getCurrentUser().observe(getViewLifecycleOwner(),user -> {
+            if (user!=null){
+                fullNameField.setText(user.getFullname());
+                displayNameField.setText(user.getDisplayName());
 
-        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+                Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.ic_launcher_foreground);
+                String pictureUrl = user.getPfpURL()!=null?
+                        (user.getPfpURL().isEmpty()?imageUri.toString():user.getPfpURL()):imageUri.toString();
 
-        checkLocationPermissionAndGetLocation();
+                Glide.with(requireActivity()).load(pictureUrl).fitCenter().into(pfpIV);
+            }
+        });
 
-        modifyPictureBtn.setOnClickListener(v->{
+        pfpIV.setOnClickListener(v->{
             showImagePickerDialog();
         });
 
-        createBtn.setOnClickListener(v->{
-            Location location = plotViewModel.getPlotLocationLiveData().getValue();
-            if (location==null){
-                getParentFragmentManager().popBackStack();
-                return;
-            }
-            if (changeName.getText()==null){
-                return;
-            }
-            createBtn.setEnabled(false);
-            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
-            photoUri = photoUri==null?imageUri:photoUri;
-            plotViewModel.createPlot(changeName.getText().toString(),photoUri,location.getLatitude(),location.getLongitude(),false,plotid -> {
-                createBtn.setEnabled(true);
-                if (!plotid.isEmpty()) {
-                    Fragment fragment = ManagePlotFragment.newInstance(true,plotid);
-                    getParentFragmentManager().beginTransaction()
-                            .addToBackStack("manage_plot_fragment")
-                            .replace(R.id.fragment_container, fragment)
-                            .commit();
-                }
-            });
-
-        });
-
         cancelBtn.setOnClickListener(v->{
+            getParentFragmentManager().popBackStack();
+        });
+        validateBtn.setOnClickListener(v->{
+            validateBtn.setEnabled(false);
+
+            User user = userViewModel.getCurrentUser().getValue();
+            if (user!=null){
+                Uri imageUri = Uri.parse(user.getPfpURL());
+                photoUri = photoUri==null?imageUri:photoUri;
+                user.setFullname(fullNameField.getText().toString().isEmpty()?user.getFullname():fullNameField.getText().toString());
+                user.setDisplayName(displayNameField.getText().toString().isEmpty()?user.getDisplayName():displayNameField.getText().toString());
+                user.setPfpURL(photoUri.toString());
+            }
+            userViewModel.updateUser(user,aBoolean -> {
+
+            });
+            validateBtn.setEnabled(true);
+            userViewModel.loadCurrentUser();
             getParentFragmentManager().popBackStack();
         });
 
@@ -148,7 +160,7 @@ public class CreatePlotFragment extends Fragment {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
                             photoUri=selectedImageUri;
-                            Glide.with(requireContext()).load(photoUri).fitCenter().into(picture);
+                            Glide.with(requireContext()).load(photoUri).fitCenter().into(pfpIV);
                         }
                     }
                 }
@@ -157,9 +169,10 @@ public class CreatePlotFragment extends Fragment {
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
                 success -> {
-                    Glide.with(requireContext()).load(photoUri).fitCenter().into(picture);
+                    Glide.with(requireContext()).load(photoUri).fitCenter().into(pfpIV);
                 }
         );
+
 
 
         return view;
@@ -178,45 +191,6 @@ public class CreatePlotFragment extends Fragment {
                     }
                 });
         builder.create().show();
-    }
-
-    private void getLocationAndSave() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.e("CreatePlotFragment", "Permission de localisation non accordée");
-            return;
-        }
-
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
-
-        LocationRequest locationRequest = LocationRequest.create()
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .setInterval(1000)
-                .setFastestInterval(500)
-                .setNumUpdates(1);
-
-        try {
-            fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
-                @Override
-                public void onLocationResult(@NonNull LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
-                    if (location != null) {
-                        plotViewModel.setPlotLocationLiveData(location);
-                        Log.d("CreatePlotFragment", "Location set: " + location.getLatitude() + ", " + location.getLongitude());
-                    }
-                    fusedLocationClient.removeLocationUpdates(this);
-                }
-            }, Looper.getMainLooper());
-        } catch (SecurityException e) {
-            Log.e("CreatePlotFragment", "SecurityException lors de la récupération de la localisation", e);
-        }
-    }
-
-    private void checkLocationPermissionAndGetLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getLocationAndSave(); // permission déjà accordée
-        } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-        }
     }
 
     private File createImageFile() throws IOException {
@@ -256,13 +230,6 @@ public class CreatePlotFragment extends Fragment {
             } else {
                 Toast.makeText(requireContext(), "Permission caméra refusée", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocationAndSave(); // permission maintenant accordée
-            } else {
-                Toast.makeText(requireContext(), "Permission de localisation refusée", Toast.LENGTH_SHORT).show();
-            }
-
         }
     }
 }

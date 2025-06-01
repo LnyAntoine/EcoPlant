@@ -10,6 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.launay.ecoplant.models.User;
 import com.launay.ecoplant.repositories.UserRepositories;
 
+import java.util.function.Consumer;
+
 public class UserViewModel extends AndroidViewModel {
     private final UserRepositories userRepositories;
     private final LiveData<User> currentUser;
@@ -18,6 +20,9 @@ public class UserViewModel extends AndroidViewModel {
         super(application);
         this.userRepositories = UserRepositories.getInstance();
         this.currentUser = userRepositories.getUserLiveData();
+    }
+    public void updateUser(User user, Consumer<Boolean> callback){
+            userRepositories.updateUser(user,callback);
     }
     public LiveData<User> getCurrentUser(){
         return this.currentUser;

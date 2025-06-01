@@ -103,6 +103,7 @@ public class PhotoFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photo, container, false);
         Button switchPlotBtn = view.findViewById(R.id.switch_plot_btn);
         View plantField = view.findViewById(R.id.plant_field);
+        ShapeableImageView pictureField = view.findViewById(R.id.picture_field);
         ImageButton photoBtn = view.findViewById(R.id.photo_btn);
         ImageButton galleryBtn = view.findViewById(R.id.gallery_btn);
         RecyclerView plantRCV = view.findViewById(R.id.plant_list);
@@ -146,6 +147,7 @@ public class PhotoFragment extends Fragment {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri selectedImageUri = result.getData().getData();
                         if (selectedImageUri != null) {
+                            Glide.with(requireContext()).load(selectedImageUri).fitCenter().into(pictureField);
                             observationViewModel.setObsUriLiveData(selectedImageUri);
                             plantNetViewModel.loadPlantNetListLiveDataByUri(requireContext(),selectedImageUri);
                             checkLocationPermissionAndGetLocation();
@@ -158,6 +160,8 @@ public class PhotoFragment extends Fragment {
                 new ActivityResultContracts.TakePicture(),
                 success -> {
                     if (success) {
+                        Glide.with(requireContext()).load(photoUri).fitCenter().into(pictureField);
+
                         observationViewModel.setObsUriLiveData(photoUri);
                         plantNetViewModel.loadPlantNetListLiveDataByUri(requireContext(),photoUri);
                         checkLocationPermissionAndGetLocation();
@@ -253,7 +257,8 @@ public class PhotoFragment extends Fragment {
         }
     }
     public void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
         galleryLauncher.launch(intent);
     }
 
@@ -433,7 +438,10 @@ public class PhotoFragment extends Fragment {
                 }
             });
             knowmoreBtn.setOnClickListener(v->{
-                //TODO renvoyer vers une page web
+                String url = plant.getDetailsLink();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
             });
 
             Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.pissenlit);
