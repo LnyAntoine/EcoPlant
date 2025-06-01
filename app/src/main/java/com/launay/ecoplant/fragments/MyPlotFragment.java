@@ -244,14 +244,17 @@ public class MyPlotFragment extends Fragment {
                         .commit();
             });
 
-            String imageURL = plot.getPictureUrl();
-            if (Objects.equals(imageURL, "")){
-                int imageResId = drawable.jardin;
-                imageURL= Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + imageResId).toString();
-            }
+            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + drawable.jardin);
+
+            String pictureUrl = plot.getPictureUrl()!=null
+                    ?(plot.getPictureUrl().isEmpty()
+                        ? imageUri.toString()
+                        :plot.getPictureUrl()
+                    )
+                    :imageUri.toString();
 
             Glide.with(requireContext())
-                    .load(plot.getPictureUrl())
+                    .load(pictureUrl)
                     .fitCenter()
                     .into(imageView);
 

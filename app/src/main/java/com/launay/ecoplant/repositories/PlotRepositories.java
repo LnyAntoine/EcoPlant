@@ -18,7 +18,9 @@ import com.launay.ecoplant.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +47,28 @@ public class PlotRepositories {
             instance = new PlotRepositories();
         }
         return instance;
+    }
+
+    public void updatePlot(String plotId,Plot plot){
+        if (plot==null||plotId.isEmpty()){
+            Log.e("UpdatePlot"," "+plot + " - "+ plotId);
+            return;
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("publicP", plot.getPublicP());
+        updates.put("name", plot.getName());
+        updates.put("pictureUrl", plot.getPictureUrl());
+        updates.put("latitude", plot.getLatitude());
+        updates.put("longitude", plot.getLongitude());
+        updates.put("nbPlant", plot.getNbPlant());
+
+        db.collection("plots").document(plotId).update(updates)
+                .addOnSuccessListener(aVoid -> Log.d("UpdatePlot", "Plot mis à jour avec succès"))
+                .addOnFailureListener(e -> Log.e("UpdatePlot", "Erreur lors de la mise à jour du plot", e));
+        ;
+
     }
 
     public void loadPlotById(String plotId){

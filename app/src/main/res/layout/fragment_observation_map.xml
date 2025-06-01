@@ -20,31 +20,39 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <ImageButton
+                android:layout_marginStart="30dp"
+                app:tint="@color/btn2_green"
+                android:background="@drawable/imagebutton_style"
+                android:src="@drawable/return_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/return_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <Button
                 android:enabled="true"
                 android:visibility="visible"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:padding="10dp"
                 android:text="Deplacer"
                 style="@style/Theme.EcoPlant.MaterialButton"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/return_btn"
                 app:layout_constraintEnd_toEndOf="parent"
-
+                app:layout_constraintTop_toTopOf="@id/return_btn"
+                app:layout_constraintBottom_toBottomOf="@id/return_btn"
                 android:id="@+id/move_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <Button
                 android:enabled="false"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:padding="10dp"
                 android:text="Valider"
                 style="@style/Theme.EcoPlant.MaterialButton"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/return_btn"
                 app:layout_constraintEnd_toEndOf="parent"
-
+                app:layout_constraintTop_toTopOf="@id/return_btn"
+                app:layout_constraintBottom_toBottomOf="@id/return_btn"
                 android:id="@+id/validate_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

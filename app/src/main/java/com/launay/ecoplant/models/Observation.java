@@ -17,6 +17,7 @@ public class Observation {
     private String plotId;
     private String notes;
 
+
     private int nbPlantes;
 
 
@@ -136,5 +137,14 @@ public class Observation {
     public void setPlant(Plant plant) {
         this.plant = plant;
     }
+
+    public int getNbPlantes() {
+        return nbPlantes;
+    }
+
+    public void setNbPlantes(int nbPlantes) {
+        this.nbPlantes = nbPlantes;
+    }
+
 
 }

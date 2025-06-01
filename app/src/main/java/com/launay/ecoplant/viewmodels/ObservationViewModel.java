@@ -35,6 +35,10 @@ public class ObservationViewModel extends AndroidViewModel {
         observationLocationLiveData = new MutableLiveData<>();
     }
 
+    public void updateObservation(String plotId,String obsId,Observation observation){
+        observationRepositories.updateObservation(plotId,obsId,observation);
+    }
+
     public LiveData<Uri> getObsUriLiveData(){
         return obsUriLiveData;
     }

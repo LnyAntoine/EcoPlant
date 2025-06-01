@@ -15,7 +15,9 @@ import com.launay.ecoplant.models.Plant;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -36,6 +38,34 @@ public class ObservationRepositories {
         this.currentObservation = new MutableLiveData<>();
         observationList.setValue(new ArrayList<>());
         currentObservation.setValue(null);
+    }
+
+    public void updateObservation(String plotId,String obsId,Observation observation){
+        if (observation==null||plotId.isEmpty()||obsId.isEmpty()){
+            Log.e("updateObservation"," "+observation + " - "+ plotId +" - "+obsId);
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("notes", observation.getNotes());
+        updates.put("pictureUrl", observation.getPictureUrl());
+        updates.put("lat", observation.getLat());
+        updates.put("longi", observation.getLongi());
+        updates.put("nbPlantes", observation.getNbPlantes());
+        updates.put("plantId", observation.getPlantId());
+        updates.put("date", observation.getDate());
+
+
+        db.collection("plots")
+                .document(plotId)
+                .collection("observations")
+                .document(obsId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Observation mise à jour avec succès"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Erreur mise à jour Observation", e));
+
     }
 
     public void createObservation(Plant plant, String plotId, Uri obsUri, Location location, int nbPlantes){
@@ -133,7 +163,9 @@ public class ObservationRepositories {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()){
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()){
-                            observations.add(documentSnapshot.toObject(Observation.class));
+                            Observation observation = documentSnapshot.toObject(Observation.class);
+                            if (observation!=null) {observation.setObservationId(documentSnapshot.getId());}
+                            observations.add(observation);
                         }
                         observationList.setValue(observations);
                     } else {

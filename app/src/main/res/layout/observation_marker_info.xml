@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <androidx.cardview.widget.CardView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/cardView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="5dp"
+        android:elevation="6dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:background="@drawable/plot_item_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/base_field"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/left_field"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/right_field"
+                    app:layout_constraintBottom_toBottomOf="parent"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    >
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:strokeColor="@color/stroke1_dark_green"
+                        app:strokeWidth="1dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/imageView"
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/cannabis"
+                        app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
+
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/right_field"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="0dp"
+
+                    android:layout_marginEnd="10dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/left_field"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/name_field"
+                        style="@style/Theme.EcoPlant.TextView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Pissenlit"
+                        app:layout_constraintBottom_toTopOf="@id/nb_field"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/nb_field"
+                        style="@style/Theme.EcoPlant.TextView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:orientation="horizontal"
+
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/details_field"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/name_field">
+                        <TextView
+                            android:id="@+id/nb_text"
+                            android:textColor="@color/text1_black"
+                            android:text="Nombre :"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/nb_value"
+                            android:layout_marginStart="5dp"
+                            android:textColor="@color/text1_black"
+                            android:text="0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/details_field"
+                        style="@style/Theme.EcoPlant.TextView2"
+                        android:layout_width="match_parent"
+
+                        android:layout_height="wrap_content"
+
+                        android:text="Détails"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/nb_field" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageButton
+                    app:layout_constraintTop_toTopOf="@id/right_field"
+                    app:layout_constraintStart_toEndOf="@id/right_field"
+                    android:id="@+id/close"
+                    android:backgroundTint="@color/pale_green"
+                    android:src="@drawable/close"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/pale_red" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="visible"
+                android:id="@+id/detailed_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/base_field">
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider"
+                    android:layout_width="0dp"
+
+                    android:layout_height="wrap_content"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/fullname_plant"
+                    style="@style/Theme.EcoPlant.TextViewTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:minHeight="5dp"
+                    android:orientation="horizontal"
+                    android:text="Nom scientifique : Taraxacum officinale"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider">
+                    <TextView
+                        android:id="@+id/full_name_text"
+                        android:textColor="@color/text1_black"
+                        android:text="Nom scientifique :"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+
+                        android:layout_marginStart="5dp"
+                        android:id="@+id/full_name_value"
+                        android:textColor="@color/text1_black"
+                        android:text="Taraxacum officinale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:padding="5dp"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/score_field"
+                    style="@style/Theme.EcoPlant.TextViewTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/fullname_plant">
+
+                    <TextView
+                        android:id="@+id/azote_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fixation de l'azote dans le sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_red"
+                        android:textColor="@color/text1_black"
+                        android:text="0.22"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/azote_text"
+                        android:id="@+id/azote_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/ground_text"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Structure du sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/azote_text" />
+                    <TextView
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_green"
+                        android:textColor="@color/text1_black"
+                        android:text="0.9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/ground_text"
+                        android:id="@+id/ground_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/water_text"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rétention d’eau dans le sol :"
+                        android:textColor="@color/text1_black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/ground_text" />
+                    <TextView
+
+                        android:gravity="center"
+                        android:minWidth="30dp"
+                        android:background="@color/pale_orange"
+                        android:textColor="@color/text1_black"
+                        android:text="0.3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/water_text"
+                        android:id="@+id/water_score"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <Button
+                    android:id="@+id/knowmore_btn"
+                    android:minHeight="10dp"
+                    android:minWidth="50dp"
+                    android:textSize="11sp"
+                    android:text="En savoir plus"
+                    style="@style/Theme.EcoPlant.MaterialButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/score_field"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

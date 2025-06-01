@@ -417,8 +417,11 @@ public class PhotoFragment extends Fragment {
                 //TODO renvoyer vers une page web
             });
 
+            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.pissenlit);
+            String pictureUrl = plant.getPictureUrl().isEmpty()?imageUri.toString():plant.getPictureUrl();
+
             Glide.with(requireContext())
-                    .load(plant.getPictureUrl())
+                    .load(pictureUrl)
                     .fitCenter()
                     .into(pictureView);
 

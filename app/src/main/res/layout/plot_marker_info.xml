@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:visibility="visible"
+
+    >
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="5dp"
+        android:elevation="6dp">
+        <LinearLayout
+            android:background="@drawable/plot_item_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView"
+                android:layout_width="110dp"
+                android:layout_height="65dp"
+                android:layout_margin="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/jardin"
+                app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="10dp"
+
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/plot_name"
+                    style="@style/Theme.EcoPlant.TextView2"
+                    android:text="Mon jardin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/details"
+                    android:layout_marginTop="2dp"
+
+                    style="@style/Theme.EcoPlant.TextView2"
+
+                    android:text="Details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/plantMap"
+                    android:layout_marginTop="2dp"
+
+                    style="@style/Theme.EcoPlant.TextView2"
+
+                    android:text="Accéder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/close"
+                android:backgroundTint="@color/pale_green"
+                android:src="@drawable/close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:tint="@color/pale_red" />
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

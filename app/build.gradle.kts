@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")

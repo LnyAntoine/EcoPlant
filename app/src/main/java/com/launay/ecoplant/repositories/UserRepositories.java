@@ -48,6 +48,7 @@ public class UserRepositories {
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             User user = documentSnapshot.toObject(User.class);
+                            user.setUserId(documentSnapshot.getId());
                             userLiveData.setValue(user);
                         } else {
                             Log.d("UserRepo","Document not found");

@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.fragments.CommunityFragment;
-import com.launay.ecoplant.fragments.MapFragment;
+import com.launay.ecoplant.fragments.PlotMapFragment;
 import com.launay.ecoplant.fragments.MyPlotFragment;
 import com.launay.ecoplant.fragments.PhotoFragment;
 import com.launay.ecoplant.fragments.myAccountFragment;
@@ -64,7 +64,7 @@ public class LoggedMainActivity extends AppCompatActivity {
                     }
                     else {
                         if (id == R.id.mapFragment){
-                            changeFragment(new MapFragment(),"map_fragment");
+                            changeFragment(new PlotMapFragment(),"map_fragment");
                             return true;
                         } else {
                             if (id == R.id.communityFragment){

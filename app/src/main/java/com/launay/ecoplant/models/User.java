@@ -5,8 +5,9 @@ public class User {
     String fullname;
     String displayName;
     String mail;
-    String pwd;
-    String pfpURI;
+
+
+    String pfpURL;
 
     public User(){}
 
@@ -33,7 +34,27 @@ public class User {
         return mail;
     }
 
-    public String getPwd() {
-        return pwd;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setPfpURL(String pfpURL) {
+        this.pfpURL = pfpURL;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+    public String getPfpURL() {
+        return pfpURL;
+    }
+
 }

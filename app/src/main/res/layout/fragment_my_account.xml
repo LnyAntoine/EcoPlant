@@ -103,32 +103,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/emailField" />
 
-        <EditText
-
-            android:id="@+id/pwdField"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:minWidth="300dp"
-            android:minHeight="50dp"
-
-            android:layout_marginEnd="64dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/edit_text_style"
-
-            android:text=""
-            android:textSize="16sp"
-
-
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-
-            android:enabled="false"
-            android:textColor="@color/text1_black"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/displayNameField" />
 
 
 
@@ -154,7 +128,7 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pwdField"
+            app:layout_constraintTop_toBottomOf="@id/displayNameField"
             />
 
 
@@ -211,24 +185,6 @@
             app:layout_constraintBottom_toBottomOf="@id/displayNameField"
             app:strokeColor="@color/stroke1_dark_green"
             app:strokeWidth="1dp" />
-
-        <ImageButton
-            android:id="@+id/pwdEditBtn"
-
-            android:src="@drawable/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:padding="4dp"
-
-            android:background="@drawable/edit_button_style"
-            app:tint="@color/btn2_green"
-
-            app:layout_constraintStart_toEndOf="@id/pwdField"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/pwdField"
-            app:layout_constraintBottom_toBottomOf="@id/pwdField"
-            />
 
         <ImageButton
             android:id="@+id/pfpEditBtn"

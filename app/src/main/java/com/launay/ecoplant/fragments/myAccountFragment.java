@@ -1,6 +1,7 @@
 package com.launay.ecoplant.fragments;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.MainActivity;
 import com.launay.ecoplant.viewmodels.AuthViewModel;
@@ -81,8 +83,6 @@ public class myAccountFragment extends Fragment {
         ImageButton mailEditBtn = view.findViewById(R.id.emailEditBtn);
         TextView displayNameField = view.findViewById(R.id.displayNameField);
         ImageButton idEditBtn = view.findViewById(R.id.idEditBtn);
-        TextView pwdFIeld = view.findViewById(R.id.pwdField);
-        ImageButton pwdEditBtn = view.findViewById(R.id.pwdEditBtn);
         Button logoutBtn = view.findViewById(R.id.logoutBtn);
 
 
@@ -94,7 +94,14 @@ public class myAccountFragment extends Fragment {
                 fullNameField.setText(user.getFullname());
                 mailField.setText(user.getMail());
                 displayNameField.setText(user.getDisplayName());
-                pwdFIeld.setText(user.getPwd());
+
+                Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.ic_launcher_foreground);
+                String pictureUrl = user.getPfpURL().isEmpty()?imageUri.toString():user.getPfpURL();
+
+                Glide.with(requireContext())
+                        .load(pictureUrl)
+                        .fitCenter()
+                        .into(pfp);
             }
         });
 
@@ -104,6 +111,8 @@ public class myAccountFragment extends Fragment {
             Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
             startActivity(logoutIntent);
         });
+
+
 
         return view;
     }
