@@ -1,9 +1,43 @@
 package com.launay.ecoplant;
 
+import android.net.Uri;
+import android.util.Log;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.UUID;
+import java.util.function.Consumer;
+
 public class utils {
     public interface AuthCallback {
         void onComplete(boolean success);
     }
+
+    public static void uploadImage(String path,Uri obsUri, Consumer<String> callback) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        String fileName = "images/"+path+ UUID.randomUUID().toString() + ".jpg";
+        StorageReference imageRef = storageRef.child(fileName);
+
+        imageRef.putFile(obsUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                        String url = downloadUri.toString();
+                        Log.d("FirebaseStorage", "Image URL: " + url);
+                        callback.accept(url);
+                    }).addOnFailureListener(e -> {
+                        Log.e("FirebaseStorage", "Échec de l'upload", e);
+
+                        callback.accept("");
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseStorage", "Échec de l'upload", e);
+                    callback.accept("");
+                });
+    }
+
     public static String requestAPIPlantNet(){
         String jsonresponse = "{\n" +
                 "  \"query\": {\n" +

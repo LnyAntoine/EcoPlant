@@ -10,14 +10,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.launay.ecoplant.models.Observation;
 import com.launay.ecoplant.models.Plant;
+import com.launay.ecoplant.utils;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -85,49 +89,28 @@ public class ObservationRepositories {
             observation.setLat(location.getLatitude());
             observation.setLongi(location.getLongitude());
 
-            //On enregistre l'image de l'observation dans storage
-            AtomicReference<String> photoUrl = new AtomicReference<>();
-            //TODO réactiver quand storage fonctionnera
-            /*
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
 
-            String fileName = "images/" + UUID.randomUUID().toString() +"-1"+ ".jpg";
-            StorageReference imageRef = storageRef.child(fileName);
-
-            imageRef.putFile(obsUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                            photoUrl.set(downloadUri.toString());
-                            Log.d("FirebaseStorage", "Image URL: " + photoUrl.get());
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("FirebaseStorage", "Échec de l'upload", e);
-                    });
-            */
-            observation.setPictureUrl(photoUrl.get());
-
-            //On push l'objet dans la bdd
-
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("plots")
-                    .document(plotId)
-                    .collection("observations")
-                    .add(observation)
-                    .addOnSuccessListener(documentReference -> {
-                        this.loadObservationById(plotId,documentReference.getId());
-                    })
-                    .addOnFailureListener(e->{
-                        Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
-                        currentObservation.setValue(null);
-                    })
-            ;
+            utils.uploadImage("/plots/"+plotId+"/observations/",obsUri, url -> {
+                if (!url.isEmpty()){observation.setPictureUrl(url);}
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("plots")
+                        .document(plotId)
+                        .collection("observations")
+                        .add(observation)
+                        .addOnSuccessListener(documentReference -> {
+                            this.loadObservationById(plotId,documentReference.getId());
+                        })
+                        .addOnFailureListener(e->{
+                            Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
+                            currentObservation.setValue(null);
+                        })
+                ;
+            });
         }
     }
 
     public void loadObservationById(String plotId,String observationId){
-        if (plotId.isEmpty()){
+        if (plotId.isEmpty() || observationId.isEmpty()){
             currentObservation.setValue(null);
             return;
         }
@@ -139,7 +122,9 @@ public class ObservationRepositories {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()){
-                        currentObservation.setValue(documentSnapshot.toObject(Observation.class));
+                        Observation observation = documentSnapshot.toObject(Observation.class);
+                        if (observation!=null) {observation.setObservationId(documentSnapshot.getId());}
+                        currentObservation.setValue(observation);
                     } else {
                         Log.d("FirestoreObservations","Il n'existe pas d'observation avec cet id "+observationId);
                     }
@@ -213,4 +198,5 @@ public class ObservationRepositories {
         if (currentObservation.getValue()!=null){loadObservationById(plotId,currentObservation.getValue().getObservationId());}
         loadObservationListByPlotId(plotId);
     }
+
 }

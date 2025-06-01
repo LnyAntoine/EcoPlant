@@ -117,43 +117,25 @@ public class PlotRepositories {
                     0                      // nbPlant
             );
 
-            //On enregistre l'image de l'observation dans storage
-            AtomicReference<String> photoUrl = new AtomicReference<>();
-            //TODO réactiver quand storage fonctionnera
-            /*
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-
-            String fileName = "images/" + UUID.randomUUID().toString() +"-1"+ ".jpg";
-            StorageReference imageRef = storageRef.child(fileName);
-
-            imageRef.putFile(pictureUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
-                            photoUrl.set(downloadUri.toString());
-                            Log.d("FirebaseStorage", "Image URL: " + photoUrl.get());
+            utils.uploadImage("/plots/",pictureUri,url ->{
+                if (!url.isEmpty()){plot.setPictureUrl(url);}
+                // Ajout du plot dans la collection
+                db.collection("plots")
+                        .add(plot)
+                        .addOnSuccessListener(documentReference -> {
+                            Log.d("Firestore", "Plot créé avec ID: " + documentReference.getId());
+                            this.loadCurrentPlot(documentReference.getId());
+                            callback.accept(documentReference.getId());
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firestore", "Erreur lors de la création du plot", e);
+                            callback.accept("");
                         });
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("FirebaseStorage", "Échec de l'upload", e);
-                    });
-            */
-            plot.setPictureUrl(photoUrl.get());
+            });
 
 
 
-            // Ajout du plot dans la collection
-            db.collection("plots")
-                    .add(plot)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "Plot créé avec ID: " + documentReference.getId());
-                        this.loadCurrentPlot(documentReference.getId());
-                        callback.accept(documentReference.getId());
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Erreur lors de la création du plot", e);
-                        callback.accept("");
-                    });
+
         }
         else {
             callback.accept("");

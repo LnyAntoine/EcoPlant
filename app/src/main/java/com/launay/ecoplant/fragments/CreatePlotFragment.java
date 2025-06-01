@@ -121,7 +121,11 @@ public class CreatePlotFragment extends Fragment {
             if (changeName.getText()==null){
                 return;
             }
+            createBtn.setEnabled(false);
+            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
+            photoUri = photoUri==null?imageUri:photoUri;
             plotViewModel.createPlot(changeName.getText().toString(),photoUri,location.getLatitude(),location.getLongitude(),false,plotid -> {
+                createBtn.setEnabled(true);
                 if (!plotid.isEmpty()) {
                     Fragment fragment = ManagePlotFragment.newInstance(true,plotid);
                     getParentFragmentManager().beginTransaction()

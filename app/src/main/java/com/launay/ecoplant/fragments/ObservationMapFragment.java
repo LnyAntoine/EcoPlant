@@ -320,7 +320,7 @@ public class ObservationMapFragment extends Fragment implements LocationListener
             Marker marker = (Marker) item;
             View itemView = getView();
 
-            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
+            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.pissenlit);
             String pictureUrl = obs.getPictureUrl() != null ? (obs.getPictureUrl().isEmpty() ? imageUri.toString() : obs.getPictureUrl()) : imageUri.toString();
 
 
