@@ -41,7 +41,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <com.google.android.material.imageview.ShapeableImageView
                         app:strokeWidth="1dp"
@@ -58,7 +58,7 @@
                         app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/change_picture_btn"
-                        android:layout_margin="5dp"
+                        android:layout_margin="10dp"
                         android:textSize="11sp"
                         android:text="Modifier bannière"
                         style="@style/Theme.EcoPlant.MaterialButton"
@@ -73,31 +73,19 @@
 
                 <EditText
                     android:id="@+id/name_field"
-                    android:text="Nom de la parcelle"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="parent"
                     style="@style/Theme.EcoPlant.EditText"
-                    app:layout_constraintTop_toBottomOf="@id/picture_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-                <ImageButton
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    app:tint="@color/btn2_green"
-                    android:background="@drawable/imagebutton_style"
-                    android:src="@drawable/edit"
-                    app:layout_constraintBottom_toBottomOf="@id/name_field"
-                    app:layout_constraintTop_toTopOf="@id/name_field"
-                    app:layout_constraintStart_toEndOf="@id/name_field"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Nom de la parcelle"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:id="@+id/edit_name_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/picture_field" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:padding="5dp"
                     android:layout_marginTop="5dp"
-                    android:id="@+id/score_field"
+                    android:id="@+id/location_field"
                     style="@style/Theme.EcoPlant.TextViewTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -106,66 +94,59 @@
                     app:layout_constraintTop_toBottomOf="@id/name_field">
 
                     <TextView
-                        android:id="@+id/azote_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fixation de l'azote dans le sol :"
-                        android:textColor="@color/text1_black"
+                        android:textSize="12sp"
+                        android:layout_marginTop="5dp"
+
+                        android:id="@+id/latitude_text"
+                        android:text="Latitude :"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                     <TextView
-                        android:gravity="center"
-                        android:minWidth="30dp"
-                        android:background="@color/pale_red"
-                        android:textColor="@color/text1_black"
-                        android:text="0.22"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/azote_text"
-                        android:id="@+id/azote_score"
+                        android:textSize="12sp"
+
+                        android:id="@+id/longitude_text"
+                        android:text="Longitude :"
+                        android:layout_marginBottom="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:textSize="10sp"
+
+                        android:text="gAGSUAHSANSJNJANS"
+                        app:layout_constraintStart_toStartOf="@id/longitudeVal"
+                        app:layout_constraintTop_toTopOf="@id/latitude_text"
+                        app:layout_constraintBottom_toBottomOf="@id/latitude_text"
+
+                        android:id="@+id/latitudeVal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_marginStart="10dp"
+                        android:textSize="10sp"
+                        android:text="gAGSUAHSANSJNJANS"
+                        app:layout_constraintStart_toEndOf="@id/longitude_text"
+                        app:layout_constraintTop_toTopOf="@id/longitude_text"
+                        app:layout_constraintBottom_toBottomOf="@id/longitude_text"
+                        android:id="@+id/longitudeVal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
-                    <TextView
-                        android:id="@+id/ground_text"
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Structure du sol :"
-                        android:textColor="@color/text1_black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/azote_text" />
-                    <TextView
-                        android:gravity="center"
-                        android:minWidth="30dp"
-                        android:background="@color/pale_green"
-                        android:textColor="@color/text1_black"
-                        android:text="0.9"
+                    <com.google.android.material.button.MaterialButton
+                        android:text="Carte"
+                        style="@style/Theme.EcoPlant.MaterialButton"
+                        android:minWidth="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/ground_text"
-                        android:id="@+id/ground_score"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:id="@+id/mapBtn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
-                    <TextView
-                        android:id="@+id/water_text"
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rétention d’eau dans le sol :"
-                        android:textColor="@color/text1_black"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/ground_text" />
-                    <TextView
-                        android:gravity="center"
-                        android:minWidth="30dp"
-                        android:background="@color/pale_orange"
-                        android:textColor="@color/text1_black"
-                        android:text="0.3"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/water_text"
-                        android:id="@+id/water_score"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
@@ -177,7 +158,7 @@
                     style="@style/Theme.EcoPlant.TextViewTitle"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/score_field"
+                    app:layout_constraintTop_toBottomOf="@id/location_field"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"/>
 

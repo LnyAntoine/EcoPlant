@@ -44,6 +44,10 @@ public class ObservationRepositories {
         currentObservation.setValue(null);
     }
 
+    public void signOut(){
+        instance = null;
+    }
+
     public void updateObservation(String plotId,String obsId,Observation observation){
         if (observation==null||plotId.isEmpty()||obsId.isEmpty()){
             Log.e("updateObservation"," "+observation + " - "+ plotId +" - "+obsId);
@@ -72,7 +76,7 @@ public class ObservationRepositories {
 
     }
 
-    public void createObservation(Plant plant, String plotId, Uri obsUri, Location location, int nbPlantes){
+    public void createObservation(Plant plant, String plotId, Uri obsUri, Location location, int nbPlantes,Consumer<Boolean> callback){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user!=null && !plotId.isEmpty()) {
             //On crée l'objet Observation à mettre en bdd
@@ -99,10 +103,12 @@ public class ObservationRepositories {
                         .add(observation)
                         .addOnSuccessListener(documentReference -> {
                             this.loadObservationById(plotId,documentReference.getId());
+                            callback.accept(true);
                         })
                         .addOnFailureListener(e->{
                             Log.e("FirebaseObservation","Erreur lors de l'ajout de "+observation);
                             currentObservation.setValue(null);
+                            callback.accept(false);
                         })
                 ;
             });

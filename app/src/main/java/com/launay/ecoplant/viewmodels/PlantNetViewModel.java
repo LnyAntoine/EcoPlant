@@ -26,6 +26,7 @@ public class PlantNetViewModel extends AndroidViewModel {
     public LiveData<List<Plant>> getPlantNetListLiveData() {
         return plantNetListLiveData;
     }
+    public void signOut(){plantNetRepositories.signOut();}
 
     public void loadPlantNetListLiveDataByUri(Context context,Uri uri){
         plantNetRepositories.loadPlantNetListByUri(context,uri);

@@ -80,7 +80,7 @@ public class SignUpFragment extends Fragment {
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
         authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
-            if (firebaseUser!=null){
+            if (firebaseUser!=null&& isAdded()){
                 userViewModel.loadCurrentUser();
                 Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toLoggedMainIntent);

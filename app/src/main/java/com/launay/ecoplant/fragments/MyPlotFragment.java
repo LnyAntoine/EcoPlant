@@ -50,6 +50,7 @@ public class MyPlotFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private PlotAdapter adapter;
+    private PlotViewModel plotViewModel;
 
     public MyPlotFragment() {
         // Required empty public constructor
@@ -97,11 +98,11 @@ public class MyPlotFragment extends Fragment {
         plotListRCV.setAdapter(adapter);
 
 
-        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
         plotViewModel.loadPlots();
 
         plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            adapter.updateList(plots);
+            if (!plots.isEmpty() && isAdded()){adapter.updateList(plots);}
         });
 
         addPlotBtn.setOnClickListener(v->{
@@ -197,10 +198,10 @@ public class MyPlotFragment extends Fragment {
 
         private final TextView plotName;
         private final TextView nbPlant;
-        private final TextView azoteScore;
-        private final TextView groundScore;
-        private final TextView waterScore;
         private final ShapeableImageView imageView;
+        private final Button mapBtn;
+        private final TextView latTV;
+        private final TextView longTv;
 
 
         public PlotViewHolder(@NonNull View itemView,FragmentManager fragmentManager) {
@@ -211,20 +212,27 @@ public class MyPlotFragment extends Fragment {
             this.nbPlant = itemView.findViewById(R.id.nb_plant);
             this.detailsBtn = itemView.findViewById(R.id.details_field);
             this.manageBtn = itemView.findViewById(R.id.manage_plot);
-            this.azoteScore = itemView.findViewById(R.id.azote_score);
-            this.waterScore = itemView.findViewById(R.id.water_score);
-            this.groundScore = itemView.findViewById(R.id.ground_score);
-            this.imageView = itemView.findViewById(id.imageView);
+            this.imageView = itemView.findViewById(R.id.imageView);
+            this.mapBtn = itemView.findViewById(id.mapBtn);
+            this.latTV = itemView.findViewById(id.latitudeVal);
+            this.longTv = itemView.findViewById(id.longitudeVal);
         }
 
         public void bind(Plot plot) {
             plotName.setText(plot.getName());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             detailedField.setVisibility(GONE);
-
-            azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
-            waterScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
-            groundScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
+            latTV.setText(plot.getLatitude().toString());
+            longTv.setText(plot.getLongitude().toString());
+            mapBtn.setOnClickListener(v->{
+                if (isAdded()){
+                    Fragment fragment = PlotMapFragment.newInstance(plot.getLatitude(), plot.getLongitude());
+                    getParentFragmentManager().beginTransaction()
+                            .replace(id.fragment_container, fragment)
+                            .addToBackStack("PlotMapFragment")
+                            .commit();
+                }
+            });
 
             detailsBtn.setOnClickListener(v -> {
                 if (detailedField.getVisibility() == GONE){

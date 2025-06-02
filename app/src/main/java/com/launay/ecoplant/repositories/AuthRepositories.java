@@ -105,6 +105,7 @@ public class AuthRepositories {
 
     public void signOut() {
         Log.d("AuthRepo","SignedOut"+getCurrentUser().getValue());
+        instance = null;
         auth.signOut();
     }
 }

@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
@@ -98,7 +100,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
         plotViewModel.loadPlots();
 
         plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
-            if (p!=null){
+            if (p!=null&& isAdded()){
                 currentPlotView.setVisibility(VISIBLE);
                 plotName.setText(p.getName());
                 plotNbPlant.setText(p.getNbPlant()+" plantes");
@@ -110,7 +112,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
         });
 
         plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            adapter.updateList(plots);
+            if (isAdded()) adapter.updateList(plots);
         });
 
 
@@ -187,7 +189,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
         private final TextView nbPlant;
         private final ImageButton chooseBtn;
 
-        //private final ImageView flagImage;
+        private final ShapeableImageView flagImage;
 
 
         public PlotViewHolder(@NonNull View itemView,FragmentManager fragmentManager) {
@@ -196,19 +198,21 @@ public class SwitchPlotPhotoFragment extends Fragment {
             this.plotName = itemView.findViewById(R.id.plot_name);
             this.nbPlant = itemView.findViewById(R.id.nb_plant);
             this.chooseBtn = itemView.findViewById(R.id.choose_btn);
-
-
+            this.flagImage = itemView.findViewById(R.id.imageView);
         }
 
         public void bind(Plot plot, PlotAdapter adapter) {
             plotName.setText(plot.getName());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             chooseBtn.setOnClickListener(v->{
-
                 PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
                 plotViewModel.loadCurrentPlot(plot.getPlotId());
                 getParentFragmentManager().popBackStack();
             });
+            Glide.with(requireActivity())
+                    .load(plot.getPictureUrl())
+                    .fitCenter()
+                    .into(flagImage);
         }
     }
 

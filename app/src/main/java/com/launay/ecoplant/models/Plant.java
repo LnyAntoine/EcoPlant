@@ -20,6 +20,11 @@ public class Plant {
     @Exclude
     double score;
 
+
+
+    @Exclude
+    int nbplant;
+
     Double scoreWater;
 
     public Plant(){}
@@ -157,5 +162,13 @@ public class Plant {
     public void setPowoId(String powoId) {
         this.powoId = powoId;
     }
+    public int getNbplant() {
+        return nbplant;
+    }
+
+    public void setNbplant(int nbplant) {
+        this.nbplant = nbplant;
+    }
+
 
 }

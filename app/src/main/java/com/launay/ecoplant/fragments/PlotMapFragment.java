@@ -61,8 +61,8 @@ public class PlotMapFragment extends Fragment implements LocationListener {
     private LocationManager locationManager;
     private PlotViewModel plotViewModel;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private double lat = 41.588811;
-    private double lng = 9.284557;
+    private double lat = 0.0;
+    private double lng = 0.0;
     private List<Marker> markerList;
     private boolean isMoving = false;
     private IMapController mapController;
@@ -148,17 +148,37 @@ public class PlotMapFragment extends Fragment implements LocationListener {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         mapView = view.findViewById(R.id.map);
 
-        SharedPreferences prefs = requireContext().getSharedPreferences("map_state", Context.MODE_PRIVATE);
-        float lat = prefs.getFloat("lat", 0f);
-        float lon = prefs.getFloat("lon", 0f);
-        float zoom = prefs.getFloat("zoom", 10f); // par défaut zoom 10
+        double targetLat = 0;
+        double targetLng = 0;
+        boolean useDefault = true;
 
-        GeoPoint savedPoint = new GeoPoint(lat, lon);
-        mapView.getController().setZoom(zoom);
-        mapView.getController().setCenter(savedPoint);
+        if (lat != 0.0 && lng != 0.0) {
+            // Valeurs passées au fragment
+            targetLat = lat;
+            targetLng = lng;
+            useDefault = false;
+        } else {
+            SharedPreferences prefs = requireContext().getSharedPreferences("map_state", Context.MODE_PRIVATE);
+            float latPref = prefs.getFloat("lat", 0f);
+            float lonPref = prefs.getFloat("lon", 0f);
+            float zoom = prefs.getFloat("zoom", 10f);
+
+            if (latPref != 0f && lonPref != 0f) {
+                targetLat = latPref;
+                targetLng = lonPref;
+                mapView.getController().setZoom(zoom);
+                useDefault = false;
+            }
+        }
+
+        if (!useDefault) {
+            GeoPoint savedPoint = new GeoPoint(targetLat, targetLng);
+            mapView.getController().setZoom(15);
+            mapView.getController().setCenter(savedPoint);
+        }
 
         plotViewModel.getPlotsLiveData().observe(getViewLifecycleOwner(), plots -> {
-            if (mapView!=null && !plots.isEmpty()) {
+            if (mapView != null && !plots.isEmpty() && isAdded()) {
                 clearMap();
                 for (Plot plot : plots) {
                     createMarker(plot);
@@ -173,13 +193,19 @@ public class PlotMapFragment extends Fragment implements LocationListener {
             return;
         }
         Log.d("start GPS", "Initialisation du GPS...");
+
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapController = mapView.getController();
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
-
             Log.d("GPS Start", "Activé");
 
-            updateMap(lat, lng);
+            // Utiliser le GPS uniquement si on n’a pas déjà une lat/lng
+            if (lat == 0.0 && lng == 0.0) {
+                Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (lastLocation != null) {
+                    updateMap(lastLocation.getLatitude(), lastLocation.getLongitude());
+                }
+            }
         } else {
             Log.e("StartGPS", "Permission non accordée");
         }
@@ -275,8 +301,6 @@ public class PlotMapFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-        Log.d("Location changed", "Nouvelle position: " + location.toString());
-        updateMap(location.getLatitude(), location.getLongitude());
     }
 
     public class CustomInfoWindow extends InfoWindow {

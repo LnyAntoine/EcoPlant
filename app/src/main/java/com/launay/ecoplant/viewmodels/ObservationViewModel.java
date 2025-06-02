@@ -35,6 +35,7 @@ public class ObservationViewModel extends AndroidViewModel {
         observationLocationLiveData = new MutableLiveData<>();
     }
 
+    public void signOut(){observationRepositories.signOut();}
     public void updateObservation(String plotId,String obsId,Observation observation){
         observationRepositories.updateObservation(plotId,obsId,observation);
     }
@@ -55,8 +56,8 @@ public class ObservationViewModel extends AndroidViewModel {
     }
 
 
-    public void createObservation(Plant plant, String plotId, Uri obsUri,int nbPlantes){
-        observationRepositories.createObservation(plant,plotId,obsUri,observationLocationLiveData.getValue(),nbPlantes);
+    public void createObservation(Plant plant, String plotId, Uri obsUri,int nbPlantes,Consumer<Boolean> callback){
+        observationRepositories.createObservation(plant,plotId,obsUri,observationLocationLiveData.getValue(),nbPlantes,callback);
     }
     public void deleteObservationById(String plotId, String obsId, Consumer<Boolean> callback){
         observationRepositories.deleteObservationById(plotId,obsId,callback);

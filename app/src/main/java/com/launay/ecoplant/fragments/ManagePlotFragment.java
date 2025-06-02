@@ -1,18 +1,33 @@
 package com.launay.ecoplant.fragments;
 
+import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +36,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Observation;
@@ -31,8 +53,14 @@ import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,9 +78,16 @@ public class ManagePlotFragment extends Fragment {
     private Boolean fromCreate;
     private String plotID;
     private ObservationAdapter adapter;
+    private PlotViewModel plotViewModel;
 
+    private ObservationViewModel observationViewModel;
 
+    private Uri photoUri;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
+    private static final int REQUEST_LOCATION_PERMISSION = 101;
 
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Uri> cameraLauncher;
     public ManagePlotFragment() {
         // Required empty public constructor
     }
@@ -85,18 +120,41 @@ public class ManagePlotFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        int pltCount = 0;
+        for(Observation obs : adapter.getObservations()){
+            pltCount+=obs.getNbPlantes();
+            observationViewModel.updateObservation(plotID,obs.getObservationId(),obs);
+
+        }
+        Plot plot = plotViewModel.getCurrentPlotLiveData().getValue();
+        if (plot!=null){
+            Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
+            photoUri = photoUri==null?imageUri:photoUri;
+            plot.setPictureUrl(photoUri.toString());
+            plot.setNbPlant(pltCount);
+            plotViewModel.updatePlot(plotID,plot);
+
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_manage_plot, container, false);
 
         Button changePictureBtn = view.findViewById(R.id.change_picture_btn);
-        ImageButton editNameBtn = view.findViewById(R.id.edit_name_btn);
         EditText nameField = view.findViewById(R.id.name_field);
         Button deleteBtn = view.findViewById(R.id.delete_btn);
         ImageButton returnBtn = view.findViewById(R.id.return_btn);
         Button addPlant = view.findViewById(R.id.add_plant_btn);
         RecyclerView plantListRCV = view.findViewById(R.id.plant_list);
+        ShapeableImageView picture = view.findViewById(R.id.imageView);
+        Button mapBtn  = view.findViewById(R.id.mapBtn);
+        TextView latTV = view.findViewById(R.id.latitudeVal);
+        TextView longTV = view.findViewById(R.id.longitudeVal);
 
         plantListRCV.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
@@ -104,26 +162,42 @@ public class ManagePlotFragment extends Fragment {
 
         plantListRCV.setAdapter(adapter);
 
-        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
         plotViewModel.loadPlotByid(plotID);
 
-        ObservationViewModel observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
+        observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
         plotViewModel.getPlotById().observe(requireActivity(),plot ->{
             Log.d("getPlotById"," "+plot);
-            if (plot!=null) {
+            if (plot!=null && isAdded()) {
+                latTV.setText(plot.getLatitude()+"");
+                longTV.setText(plot.getLongitude()+"");
                 nameField.setText(plot.getName());
+                Glide.with(requireContext()).load(plot.getPictureUrl()).fitCenter().into(picture);
                 observationViewModel.loadObservationListLiveDataByPlotId(plot.getPlotId());
             }
         });
 
         observationViewModel.getObservationListLiveData().observe(requireActivity(),observationList -> {
             Log.d("getObservationListLiveData","" + observationList);
-            if (!observationList.isEmpty()) {
-                adapter.updateList(observationList);
+            if (!observationList.isEmpty()&& isAdded()) {
+                if (Objects.equals(observationList.get(0).getPlotId(), plotID)){adapter.updateList(observationList);}
+                else {plotViewModel.loadPlotByid(plotID);}
             }
         });
 
+        mapBtn.setOnClickListener(v->{
+            if (isAdded()){
+                Plot plot = plotViewModel.getPlotById().getValue();
+                if (plot!=null){
+                    Fragment fragment = PlotMapFragment.newInstance(plot.getLatitude(),plot.getLongitude());
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, fragment)
+                            .addToBackStack("PlotMapFragment")
+                            .commit();
+                }
+            }
+        });
 
         nameField.setActivated(false);
 
@@ -133,10 +207,6 @@ public class ManagePlotFragment extends Fragment {
                     .replace(R.id.fragment_container,fragment)
                     .addToBackStack("photo_fragment")
                     .commit();
-        });
-
-        editNameBtn.setOnClickListener(v->{
-            nameField.setActivated(true);
         });
 
         returnBtn.setOnClickListener(v->{
@@ -151,23 +221,109 @@ public class ManagePlotFragment extends Fragment {
             if (plot != null){
                 plotViewModel.deletePlot(plot.getPlotId(),deleted -> {
                     if (deleted){
+                        if (fromCreate){
+                            getParentFragmentManager().popBackStack();
+                        }
                         getParentFragmentManager().popBackStack();
                     }
                 });
             }
         });
 
+
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            photoUri=selectedImageUri;
+                            Glide.with(requireContext()).load(photoUri).fitCenter().into(picture);
+                        }
+                    }
+                }
+        );
+
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                success -> {
+                    Glide.with(requireContext()).load(photoUri).fitCenter().into(picture);
+                }
+        );
+
+
+
         changePictureBtn.setOnClickListener(v->{
-            //TODO récupérer l'image dans la gallerie
+            showImagePickerDialog();
         });
         return view;
     }
+    private void showImagePickerDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Choisir une option")
+                .setItems(new CharSequence[]{"Prendre une photo", "Choisir dans la galerie"}, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            checkPermissionAndOpenCamera();
+                        } else if (which == 1) {
+                            openGallery();
+                        }
+                    }
+                });
+        builder.create().show();
+    }
+
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+    public void openCamera() {
+        try {
+            File photoFile = createImageFile();
+            photoUri = FileProvider.getUriForFile(requireActivity(), "com.launay.ecoplant.fileprovider", photoFile);
+            cameraLauncher.launch(photoUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        galleryLauncher.launch(intent);
+    }
+    private void checkPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        } else {
+            openCamera();
+        }
+    }
+
+    @Override //TODO regarder deprecate ici
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(requireContext(), "Permission caméra refusée", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+
 
     public class ObservationAdapter extends RecyclerView.Adapter<ObservationViewHolder> {
 
         private final List<Observation> observations;
         private final Context ctx;
         private final FragmentManager fragmentManager;
+
+        public List<Observation> getObservations(){return observations;}
 
         public ObservationAdapter(Context ctx, List<Observation> observations, FragmentManager fragmentManager) {
             this.observations = new ArrayList<>(observations);
@@ -214,8 +370,13 @@ public class ManagePlotFragment extends Fragment {
         private final TextView waterScore;
         private final TextView plantFullName;
         private final Button knowmoreBtn;
-        private final Button addBtn;
+        private final Button delete;
+        private final ImageButton add;
+        private final ImageButton remove;
         private final ShapeableImageView picture;
+        private int plantCount;
+
+
 
 
         public ObservationViewHolder(@NonNull View itemView, FragmentManager fragmentManager) {
@@ -231,18 +392,22 @@ public class ManagePlotFragment extends Fragment {
             this.waterScore = itemView.findViewById(R.id.water_score);
             this.groundScore = itemView.findViewById(R.id.ground_score);
             this.knowmoreBtn =itemView.findViewById(R.id.knowmore_btn);
-            this.addBtn = itemView.findViewById(R.id.add_btn);
+            this.delete = itemView.findViewById(R.id.removeObsBtn);
             this.picture = itemView.findViewById(R.id.imageView);
+            this.add = itemView.findViewById(R.id.addOne);
+            this.remove = itemView.findViewById(R.id.removeoneBtn);
         }
 
         public void bind(Observation obs, ObservationAdapter adapter) {
             Plant plant = obs.getPlant();
+            plantCount=obs.getNbPlantes();
+
             plantName.setText(plant.getShortname());
-            //TODO nbPlant.setText(""+obs.getNbPlantes());
+            nbPlant.setText(""+obs.getNbPlantes());
             plantFullName.setText(plant.getFullname());
-            azoteScore.setText(plant.getScoreAzote().toString());
-            waterScore.setText(plant.getScoreWater().toString());
-            groundScore.setText(plant.getScoreStruct().toString());
+            azoteScore.setText(String.format("%.2f", plant.getScoreAzote()));
+            waterScore.setText(String.format("%.2f", plant.getScoreWater()));
+            groundScore.setText(String.format("%.2f", plant.getScoreStruct()));
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
@@ -276,11 +441,31 @@ public class ManagePlotFragment extends Fragment {
                 }
             });
 
-            addBtn.setOnClickListener(v->{
-                //TODO ajouter la fleur dans la bdd
+            add.setOnClickListener(v->{
+                plantCount++;
+                nbPlant.setText(""+plantCount);
+                obs.setNbPlantes(plantCount);
+            });
+            remove.setOnClickListener(v->{
+                plantCount = plantCount==0?0:plantCount-1;
+                nbPlant.setText(""+plantCount);
+                obs.setNbPlantes(plantCount);
+            });
+
+            delete.setOnClickListener(v->{
+                delete.setEnabled(false);
+                observationViewModel.deleteObservationById(plotID,obs.getObservationId(),b ->{
+                    delete.setEnabled(true);
+                    if (b) {
+                        observationViewModel.loadObservationListLiveDataByPlotId(plotID);
+                    }
+                });
             });
             knowmoreBtn.setOnClickListener(v->{
-                //TODO renvoyer vers une page web
+                String url = plant.getDetailsLink();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
             });
 
             Glide.with(requireActivity())

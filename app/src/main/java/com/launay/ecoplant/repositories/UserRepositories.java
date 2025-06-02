@@ -87,10 +87,6 @@ public class UserRepositories {
     }
 
     public void logout(){
-        //TODO quand firebase auth et BDD active activer le code :
-        /*
-        FirebaseAuth.getInstance().signOut();
-        */
-        this.userLiveData.setValue(null);
+        instance = null;
     }
 }

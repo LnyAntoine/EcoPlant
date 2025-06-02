@@ -20,6 +20,7 @@
         app:cardCornerRadius="5dp"
         android:elevation="6dp">
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:padding="5dp"
             android:background="@drawable/plot_item_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,28 +66,39 @@
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginStart="5dp"
                     android:id="@+id/right_field"
                     android:layout_width="wrap_content"
 
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
 
                     android:layout_marginEnd="10dp"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/left_field"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:minWidth="50dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+
                         android:id="@+id/name_field"
                         style="@style/Theme.EcoPlant.TextView2"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="Pissenlit"
                         app:layout_constraintBottom_toTopOf="@id/nb_field"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <LinearLayout
+                        app:layout_constraintStart_toStartOf="parent"
+
+
+                        android:minWidth="50dp"
+
                         android:id="@+id/nb_field"
                         style="@style/Theme.EcoPlant.TextView2"
                         android:layout_width="match_parent"
@@ -114,9 +126,15 @@
                     </LinearLayout>
 
                     <TextView
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+
+
+                        android:minWidth="30dp"
+
                         android:id="@+id/details_field"
                         style="@style/Theme.EcoPlant.TextView2"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
 
                         android:layout_height="wrap_content"
 
@@ -126,7 +144,9 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <ImageButton
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/right_field"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/right_field"
                     android:id="@+id/close"
                     android:backgroundTint="@color/pale_green"
@@ -161,6 +181,8 @@
                 <LinearLayout
                     android:id="@+id/fullname_plant"
                     style="@style/Theme.EcoPlant.TextViewTitle"
+                    android:minWidth="30dp"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"

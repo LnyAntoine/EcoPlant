@@ -115,7 +115,7 @@ public class modifyAccountFragment extends Fragment {
 
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         userViewModel.getCurrentUser().observe(getViewLifecycleOwner(),user -> {
-            if (user!=null){
+            if (user!=null&& isAdded()){
                 fullNameField.setText(user.getFullname());
                 displayNameField.setText(user.getDisplayName());
 
@@ -139,7 +139,12 @@ public class modifyAccountFragment extends Fragment {
 
             User user = userViewModel.getCurrentUser().getValue();
             if (user!=null){
-                Uri imageUri = Uri.parse(user.getPfpURL());
+
+                Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.ic_launcher_foreground);
+                String pictureUrl = user.getPfpURL()!=null?
+                        (user.getPfpURL().isEmpty()?imageUri.toString():user.getPfpURL()):imageUri.toString();
+
+                imageUri = Uri.parse(pictureUrl);
                 photoUri = photoUri==null?imageUri:photoUri;
                 user.setFullname(fullNameField.getText().toString().isEmpty()?user.getFullname():fullNameField.getText().toString());
                 user.setDisplayName(displayNameField.getText().toString().isEmpty()?user.getDisplayName():displayNameField.getText().toString());

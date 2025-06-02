@@ -29,6 +29,7 @@ public class PlotViewModel extends AndroidViewModel {
         plotLocationLiveData = new MutableLiveData<>();
         plotLocationLiveData.setValue(null);
     }
+    public void signOut(){plotRepositories.signOut();}
 
     public void updatePlot(String plotId,Plot plot){
         plotRepositories.updatePlot(plotId,plot);

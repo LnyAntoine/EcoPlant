@@ -20,6 +20,9 @@ import com.bumptech.glide.Glide;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.activities.MainActivity;
 import com.launay.ecoplant.viewmodels.AuthViewModel;
+import com.launay.ecoplant.viewmodels.ObservationViewModel;
+import com.launay.ecoplant.viewmodels.PlantNetViewModel;
+import com.launay.ecoplant.viewmodels.PlotViewModel;
 import com.launay.ecoplant.viewmodels.UserViewModel;
 
 /**
@@ -85,9 +88,14 @@ public class myAccountFragment extends Fragment {
 
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         AuthViewModel authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        PlantNetViewModel plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
+        ObservationViewModel observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
+        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+
+
 
         userViewModel.getCurrentUser().observe(requireActivity(),user -> {
-            if (user!=null) {
+            if (user!=null&& isAdded()) {
                 fullNameField.setText(user.getFullname());
                 mailField.setText(user.getMail());
                 displayNameField.setText(user.getDisplayName());
@@ -116,9 +124,14 @@ public class myAccountFragment extends Fragment {
 
         logoutBtn.setOnClickListener(v->{
             Log.d("MYAccFragment","Signout");
+            userViewModel.signOut();
+            plotViewModel.signOut();
+            plantNetViewModel.signOut();
+            observationViewModel.signOut();
             authViewModel.signOut();
             Intent logoutIntent = new Intent(requireActivity(),MainActivity.class);
             startActivity(logoutIntent);
+            requireActivity().finish();
         });
 
 

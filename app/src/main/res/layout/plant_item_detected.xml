@@ -60,9 +60,8 @@
                         app:shapeAppearanceOverlay="@style/ImageViewRoundedStyle" />
 
                     <Button
-                        android:id="@+id/removeObsBtn"
+                        android:id="@+id/add_btn"
                         style="@style/Theme.EcoPlant.MaterialButton"
-                        android:backgroundTint="@color/pale_red"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -71,7 +70,7 @@
                         android:minHeight="30dp"
                         android:paddingStart="15dp"
                         android:paddingEnd="15dp"
-                        android:text="Retirer"
+                        android:text="Ajouter"
                         android:textSize="8sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

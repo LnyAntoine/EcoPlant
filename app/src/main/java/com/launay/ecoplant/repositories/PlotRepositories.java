@@ -49,6 +49,10 @@ public class PlotRepositories {
         return instance;
     }
 
+    public void signOut(){
+        instance = null;
+    }
+
     public void updatePlot(String plotId,Plot plot){
         if (plot==null||plotId.isEmpty()){
             Log.e("UpdatePlot"," "+plot + " - "+ plotId);

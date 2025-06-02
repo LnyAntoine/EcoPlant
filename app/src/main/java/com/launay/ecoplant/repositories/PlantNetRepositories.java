@@ -54,6 +54,10 @@ public class PlantNetRepositories {
         this.plantNetList.setValue(new ArrayList<>());
     }
 
+    public void signOut(){
+        instance = null;
+    }
+
     public void createPlant(String shortname, String fullname,String powoId ,String gbifId,
                             Double scoreAzote, Double scoreStruct, double reliabilityWater,
                             double reliabilityGround, double reliabilityAzote, Double scoreWater,
@@ -265,7 +269,9 @@ public class PlantNetRepositories {
                                                 Log.d("LoadPlantNet","Erreur lors de la récupération du service"+plantFullService);
                                                 return;}
                                             createPlant(
-                                                    result.getSpecies().getCommonNames().get(0),
+                                                    result.getSpecies().getCommonNames().isEmpty()
+                                                            ?result.getSpecies().getScientificName()
+                                                            :result.getSpecies().getCommonNames().get(0),
                                                     result.getSpecies().getScientificName(),
                                                     powoId,
                                                     gbifId,
@@ -280,6 +286,7 @@ public class PlantNetRepositories {
                                                             plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
                                                                     (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
                                                             plant.setScore(result.getScore());
+                                                            plant.setNbplant(1);
                                                             plantList.add(plant);
                                                         }
                                                         if (completedRequests.incrementAndGet() == total) {

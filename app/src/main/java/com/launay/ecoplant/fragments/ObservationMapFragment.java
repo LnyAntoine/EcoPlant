@@ -5,6 +5,7 @@ import static android.view.View.VISIBLE;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -142,7 +143,7 @@ public class ObservationMapFragment extends Fragment implements LocationListener
         plotViewModel.loadPlotByid(plotId);
 
         plotViewModel.getPlotById().observe(getViewLifecycleOwner(),plot1 -> {
-                if (plot1!=null){
+                if (plot1!=null&& isAdded()){
                     plot = plot1;
                     lat = plot1.getLatitude();
                     lng = plot1.getLongitude();
@@ -170,7 +171,7 @@ public class ObservationMapFragment extends Fragment implements LocationListener
         mapView.getController().setCenter(savedPoint);
 
         observationViewModel.getObservationListLiveData().observe(getViewLifecycleOwner(),observations -> {
-            if (mapView!=null && !observations.isEmpty()){
+            if (mapView!=null && !observations.isEmpty()&& isAdded()){
                 clearMap();
                 for (Observation obs: observations){
                     createMarker(obs);
@@ -338,11 +339,11 @@ public class ObservationMapFragment extends Fragment implements LocationListener
 
             Plant plant = obs.getPlant();
             plantName.setText(plant.getShortname());
-            //TODO nbPlant.setText(""+obs.getNbPlantes());
+            nbPlant.setText(""+obs.getNbPlantes());
             plantFullName.setText(plant.getFullname());
-            azoteScore.setText(plant.getScoreAzote().toString());
-            waterScore.setText(plant.getScoreWater().toString());
-            groundScore.setText(plant.getScoreStruct().toString());
+            azoteScore.setText(String.format("%.2f", plant.getScoreAzote()));
+            waterScore.setText(String.format("%.2f", plant.getScoreWater()));
+            groundScore.setText(String.format("%.2f", plant.getScoreStruct()));
             detailedField.setVisibility(GONE);
 
             azoteScore.setBackgroundColor(getResources().getColor(R.color.pale_red));
@@ -376,6 +377,12 @@ public class ObservationMapFragment extends Fragment implements LocationListener
                 }
             });
 
+            knowmoreBtn.setOnClickListener(v->{
+                String url = plant.getDetailsLink();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            });
 
             closeBtn.setOnClickListener(v->{
                 this.close();

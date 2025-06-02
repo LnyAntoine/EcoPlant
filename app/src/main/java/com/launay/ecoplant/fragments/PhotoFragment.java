@@ -44,6 +44,7 @@ import com.google.android.gms.location.Priority;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.launay.ecoplant.R;
 import com.launay.ecoplant.models.Plant;
+import com.launay.ecoplant.models.Plot;
 import com.launay.ecoplant.viewmodels.ObservationViewModel;
 import com.launay.ecoplant.viewmodels.PlantNetViewModel;
 import com.launay.ecoplant.viewmodels.PlotViewModel;
@@ -111,6 +112,7 @@ public class PhotoFragment extends Fragment {
         View currentPlotView = view.findViewById(R.id.current_plot);
         TextView plotName = currentPlotView.findViewById(R.id.plot_name);
         TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
+        ShapeableImageView picture = currentPlotView.findViewById(R.id.imageView);
 
 
         plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
@@ -121,19 +123,29 @@ public class PhotoFragment extends Fragment {
 
         plantNetViewModel.getPlantNetListLiveData().observe(requireActivity(),plantList -> {
             Log.d("plantNetlistobserver","observing"+plantList);
-            if (!plantList.isEmpty() && adapter !=null){
+            if (!plantList.isEmpty() && adapter !=null&& isAdded()){
                 plantList.sort(Comparator.comparingDouble(Plant::getScore).reversed());
                 adapter.updateList(plantList);
             }
         });
 
         plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
-            if (p!=null){
+            if (p!=null&& isAdded()){
+
                 Log.d("currentplot",p.toString());
                 plotID = p.getPlotId();
                 currentPlotView.setVisibility(VISIBLE);
                 plotName.setText(p.getName());
                 plotNbPlant.setText(p.getNbPlant()+" plantes");
+
+                Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
+                String pictureUrl = p.getPictureUrl().isEmpty()?imageUri.toString():p.getPictureUrl();
+
+                Glide.with(requireContext())
+                        .load(pictureUrl)
+                        .fitCenter()
+                        .into(picture);
+
                 Log.d("currentplot"," "+plotID);
             }
             else {
@@ -171,11 +183,11 @@ public class PhotoFragment extends Fragment {
                 }
         );
         observationViewModel.getObsUriLiveData().observe(getViewLifecycleOwner(), uri -> {
-            adapter.notifyDataSetChanged();
+            if (isAdded()) adapter.notifyDataSetChanged();
         });
 
         observationViewModel.getObservationLocationLiveData().observe(getViewLifecycleOwner(), loc -> {
-            adapter.notifyDataSetChanged();
+            if (isAdded()) adapter.notifyDataSetChanged();
         });
 
 
@@ -283,7 +295,7 @@ public class PhotoFragment extends Fragment {
         }
     }
 
-    @Override //TODO regarder deprecate ici
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
@@ -329,7 +341,7 @@ public class PhotoFragment extends Fragment {
         @NonNull
         @Override
         public PlantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(ctx).inflate(R.layout.plant_item, parent, false);
+            View view = LayoutInflater.from(ctx).inflate(R.layout.plant_item_detected, parent, false);
             return new PlantViewHolder(view,fragmentManager);
         }
 
@@ -340,7 +352,15 @@ public class PhotoFragment extends Fragment {
             Location location = observationViewModel.getObservationLocationLiveData().getValue();
 
             holder.bind(plant, obsUri, location, p -> {
-                observationViewModel.createObservation(p, plotID, obsUri,1);
+
+                observationViewModel.createObservation(p, plotID, obsUri,p.getNbplant(),b->{
+                    Plot plot = plotViewModel.getCurrentPlotLiveData().getValue();
+                    if (plot!=null){
+                        plot.setNbPlant(plot.getNbPlant()+p.getNbplant());
+                        plotViewModel.updatePlot(plot.getPlotId(),plot);
+                    }
+                    Toast.makeText(ctx, "Observation ajoutée", Toast.LENGTH_SHORT).show();
+                });
             });
 
         }
@@ -369,12 +389,15 @@ public class PhotoFragment extends Fragment {
         private final Button knowmoreBtn;
         private final Button addBtn;
         private final ShapeableImageView pictureView;
+        private final ImageButton add;
+        private final ImageButton remove;
+        private int plantCount;
         //private final ImageView flagImage;
 
 
         public PlantViewHolder(@NonNull View itemView, FragmentManager fragmentManager) {
             super(itemView);
-
+            plantCount=1;
             this.fragmentManager = fragmentManager;
             this.plantFullName = itemView.findViewById(R.id.full_name_value);
             this.detailedField = itemView.findViewById(R.id.detailed_field);
@@ -387,11 +410,13 @@ public class PhotoFragment extends Fragment {
             this.knowmoreBtn =itemView.findViewById(R.id.knowmore_btn);
             this.addBtn = itemView.findViewById(R.id.add_btn);
             this.pictureView = itemView.findViewById(R.id.imageView);
+            this.add = itemView.findViewById(R.id.addOne);
+            this.remove = itemView.findViewById(R.id.removeoneBtn);
         }
 
         public void bind(Plant plant, Uri obsUri, Location location, Consumer<Plant> onAddClicked) {
             plantName.setText(plant.getShortname());
-            //TODO régler ça nbPlant.setText(""+plant.getNbPlant());
+            nbPlant.setText(""+plantCount);
             plantFullName.setText(plant.getFullname());
             azoteScore.setText(String.format("%.2f", plant.getScoreAzote()));
             waterScore.setText(String.format("%.2f", plant.getScoreWater()));
@@ -429,11 +454,23 @@ public class PhotoFragment extends Fragment {
                 }
             });
 
+            add.setOnClickListener(v->{
+                plantCount++;
+                nbPlant.setText(""+plantCount);
+
+            });
+            remove.setOnClickListener(v->{
+                plantCount = plantCount==0?0:plantCount-1;
+                nbPlant.setText(""+plantCount);
+
+            });
+
             boolean enabled = obsUri != null && location != null;
             addBtn.setEnabled(enabled);
 
             addBtn.setOnClickListener(v -> {
                 if (enabled) {
+                    plant.setNbplant(plantCount);
                     onAddClicked.accept(plant);
                 } else {
                     Toast.makeText(itemView.getContext(), "Données non prêtes", Toast.LENGTH_SHORT).show();
@@ -456,6 +493,7 @@ public class PhotoFragment extends Fragment {
 
         }
     }
+
 
 
 }

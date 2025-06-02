@@ -83,7 +83,7 @@ public class LoginFragment extends Fragment {
 
         authViewModel.getCurrentUser().observe(requireActivity(),firebaseUser -> {
             //TODO retirer le ou après
-            if (firebaseUser!=null){
+            if (firebaseUser!=null&& isAdded()){
                 userViewModel.loadCurrentUser();
                 Intent toLoggedMainIntent = new Intent(requireActivity(), LoggedMainActivity.class);
                 startActivity(toLoggedMainIntent);
