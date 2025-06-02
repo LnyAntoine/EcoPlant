@@ -119,11 +119,9 @@ public class PlantNetRepositories {
                 db.collection("plants")
                         .add(plant)
                         .addOnSuccessListener(documentReference -> {
+                            // ✅ Retour ici
                             getPlantById(documentReference.getId(),
-                                    plant2 -> {
-                                            plant2.setPlantId(documentReference.getId());
-                                            callback.accept(plant2); // ✅ Retour ici
-                            });
+                                    callback);
 
                         })
                         .addOnFailureListener(e -> {
@@ -254,6 +252,14 @@ public class PlantNetRepositories {
                                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
                                         if (documentSnapshot.exists()) {
                                             Plant plant = documentSnapshot.toObject(Plant.class);
+                                            plant.setPlantId(documentSnapshot.getId());
+                                            plant.setDetailsLink((result.getPowo() != null)
+                                                    ? result.getPowo().getUrl() :
+                                                    (result.getGbif() != null)
+                                                            ? result.getGbif().getUrl()
+                                                            : "https://cinepulse.to/sheet/movie-843");
+                                            plant.setScore(result.getScore());
+                                            plant.setNbplant(1);
                                             plantList.add(plant);
 
                                         }
@@ -283,8 +289,11 @@ public class PlantNetRepositories {
                                                     plantFullService.getReliabilityWater(),
                                                     plant -> {
                                                         if (plant != null) {
-                                                            plant.setDetailsLink((result.getPowo() != null) ? result.getPowo().getUrl() :
-                                                                    (result.getGbif() != null) ? result.getGbif().getUrl() : "https://cinepulse.to/sheet/movie-843");
+                                                            plant.setDetailsLink((result.getPowo() != null)
+                                                                    ? result.getPowo().getUrl() :
+                                                                    (result.getGbif() != null)
+                                                                            ? result.getGbif().getUrl()
+                                                                            : "https://cinepulse.to/sheet/movie-843");
                                                             plant.setScore(result.getScore());
                                                             plant.setNbplant(1);
                                                             plantList.add(plant);

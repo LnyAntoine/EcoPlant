@@ -95,7 +95,7 @@ public class myAccountFragment extends Fragment {
 
 
         userViewModel.getCurrentUser().observe(requireActivity(),user -> {
-            if (user!=null&& isAdded()) {
+            if (user!=null) {
                 fullNameField.setText(user.getFullname());
                 mailField.setText(user.getMail());
                 displayNameField.setText(user.getDisplayName());

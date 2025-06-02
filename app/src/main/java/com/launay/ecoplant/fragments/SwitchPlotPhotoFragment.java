@@ -4,6 +4,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,7 +47,7 @@ public class SwitchPlotPhotoFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private PlotAdapter adapter;
-
+    private PlotViewModel plotViewModel;
 
 
     public SwitchPlotPhotoFragment() {
@@ -81,6 +82,46 @@ public class SwitchPlotPhotoFragment extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @NonNull Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Button cancelBtn = view.findViewById(R.id.cancel_btn);
+        RecyclerView plotListRV = view.findViewById(R.id.plot_list);
+
+        View currentPlotView = view.findViewById(R.id.current_plot);
+        TextView plotName = currentPlotView.findViewById(R.id.plot_name);
+        TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
+        ShapeableImageView picture = currentPlotView.findViewById(R.id.imageView);
+        plotViewModel.loadPlots();
+
+        plotViewModel.getCurrentPlotLiveData().observe(getViewLifecycleOwner(),p -> {
+            if (p!=null){
+                currentPlotView.setVisibility(VISIBLE);
+                plotName.setText(p.getName());
+                plotNbPlant.setText(p.getNbPlant()+" plantes");
+
+                Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
+                String pictureUrl = p.getPictureUrl().isEmpty()
+                        ?imageUri.toString()
+                        :p.getPictureUrl();
+
+                Glide.with(requireContext())
+                        .load(pictureUrl)
+                        .fitCenter()
+                        .into(picture);
+
+            }
+            else {
+                currentPlotView.setVisibility(GONE);
+            }
+
+        });
+
+        plotViewModel.getPlotsLiveData().observe(getViewLifecycleOwner(),plots -> {
+            if (adapter!=null) adapter.updateList(plots);
+        });
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -96,24 +137,8 @@ public class SwitchPlotPhotoFragment extends Fragment {
         plotListRV.setLayoutManager(new LinearLayoutManager(requireActivity()));
         plotListRV.setAdapter(adapter);
 
-        PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-        plotViewModel.loadPlots();
+        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
 
-        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
-            if (p!=null&& isAdded()){
-                currentPlotView.setVisibility(VISIBLE);
-                plotName.setText(p.getName());
-                plotNbPlant.setText(p.getNbPlant()+" plantes");
-            }
-            else {
-                currentPlotView.setVisibility(GONE);
-            }
-
-        });
-
-        plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            if (isAdded()) adapter.updateList(plots);
-        });
 
 
         cancelBtn.setOnClickListener(v->{
@@ -205,10 +230,11 @@ public class SwitchPlotPhotoFragment extends Fragment {
             plotName.setText(plot.getName());
             nbPlant.setText("Nb plant : "+plot.getNbPlant());
             chooseBtn.setOnClickListener(v->{
-                PlotViewModel plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+                Log.d("ChooseBtn",plot.getPlotId());
                 plotViewModel.loadCurrentPlot(plot.getPlotId());
                 getParentFragmentManager().popBackStack();
             });
+
             Glide.with(requireActivity())
                     .load(plot.getPictureUrl())
                     .fitCenter()

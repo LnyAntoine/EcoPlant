@@ -178,7 +178,7 @@ public class PlotMapFragment extends Fragment implements LocationListener {
         }
 
         plotViewModel.getPlotsLiveData().observe(getViewLifecycleOwner(), plots -> {
-            if (mapView != null && !plots.isEmpty() && isAdded()) {
+            if (mapView != null && !plots.isEmpty()) {
                 clearMap();
                 for (Plot plot : plots) {
                     createMarker(plot);

@@ -115,7 +115,7 @@ public class modifyAccountFragment extends Fragment {
 
         UserViewModel userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
         userViewModel.getCurrentUser().observe(getViewLifecycleOwner(),user -> {
-            if (user!=null&& isAdded()){
+            if (user!=null){
                 fullNameField.setText(user.getFullname());
                 displayNameField.setText(user.getDisplayName());
 

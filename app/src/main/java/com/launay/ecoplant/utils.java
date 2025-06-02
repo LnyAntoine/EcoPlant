@@ -58,15 +58,15 @@ public class utils {
             callback.accept(null);
             return;
         }
-
-        FirebaseFunctions functions = FirebaseFunctions.getInstance();
-
         String imageBase64 = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
         Log.d("PlantNetFunction", "Image encodée en Base64, longueur: " + imageBase64.length());
 
         Map<String, Object> data = new HashMap<>();
         data.put("imageBase64", imageBase64);
         data.put("organs", "leaf");
+
+
+        FirebaseFunctions functions = FirebaseFunctions.getInstance();
 
         functions
                 .getHttpsCallable("identifyPlant")

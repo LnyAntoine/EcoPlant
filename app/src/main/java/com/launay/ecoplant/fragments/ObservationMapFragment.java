@@ -143,7 +143,7 @@ public class ObservationMapFragment extends Fragment implements LocationListener
         plotViewModel.loadPlotByid(plotId);
 
         plotViewModel.getPlotById().observe(getViewLifecycleOwner(),plot1 -> {
-                if (plot1!=null&& isAdded()){
+                if (plot1!=null){
                     plot = plot1;
                     lat = plot1.getLatitude();
                     lng = plot1.getLongitude();
@@ -171,7 +171,7 @@ public class ObservationMapFragment extends Fragment implements LocationListener
         mapView.getController().setCenter(savedPoint);
 
         observationViewModel.getObservationListLiveData().observe(getViewLifecycleOwner(),observations -> {
-            if (mapView!=null && !observations.isEmpty()&& isAdded()){
+            if (mapView!=null && !observations.isEmpty()){
                 clearMap();
                 for (Observation obs: observations){
                     createMarker(obs);

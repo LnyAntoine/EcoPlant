@@ -7,6 +7,21 @@ public class Plot {
     String pictureUrl;
     String ownerId;
     Double latitude;
+
+    @Override
+    public String toString() {
+        return "Plot{" +
+                "publicP=" + publicP +
+                ", name='" + name + '\'' +
+                ", plotId='" + plotId + '\'' +
+                ", pictureUrl='" + pictureUrl + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", nbPlant=" + nbPlant +
+                '}';
+    }
+
     Double longitude;
     int nbPlant;
 

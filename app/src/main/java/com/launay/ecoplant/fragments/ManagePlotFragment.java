@@ -120,23 +120,56 @@ public class ManagePlotFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        int pltCount = 0;
-        for(Observation obs : adapter.getObservations()){
-            pltCount+=obs.getNbPlantes();
-            observationViewModel.updateObservation(plotID,obs.getObservationId(),obs);
+    public void onPause() {
 
-        }
-        Plot plot = plotViewModel.getCurrentPlotLiveData().getValue();
+        super.onPause();
+        Plot plot = plotViewModel.getPlotById().getValue();
         if (plot!=null){
+            Log.d("onPauseMPF",plot.toString());
+            int pltCount = 0;
+            for(Observation obs : adapter.getObservations()){
+                pltCount+=obs.getNbPlantes();
+                observationViewModel.updateObservation(plot.getPlotId(),obs.getObservationId(),obs);
+
+            }
+
             Uri imageUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.drawable.jardin);
-            photoUri = photoUri==null?imageUri:photoUri;
+            photoUri = photoUri==null?
+                    Uri.parse(plot.getPictureUrl())==null?
+                    imageUri:Uri.parse(plot.getPictureUrl()):photoUri;
             plot.setPictureUrl(photoUri.toString());
             plot.setNbPlant(pltCount);
-            plotViewModel.updatePlot(plotID,plot);
+            plotViewModel.updatePlot(plot.getPlotId(),plot);
 
         }
+    }
+    @Override
+    public void onViewCreated(@NonNull View view, @NonNull Bundle savedInstanceState){
+        super.onViewCreated(view,savedInstanceState);
+
+        ShapeableImageView picture = view.findViewById(R.id.imageView);
+        TextView latTV = view.findViewById(R.id.latitudeVal);
+        TextView longTV = view.findViewById(R.id.longitudeVal);
+        EditText nameField = view.findViewById(R.id.name_field);
+
+        plotViewModel.getPlotById().observe(getViewLifecycleOwner(),plot ->{
+            Log.d("getPlotById"," "+plot);
+            if (plot!=null) {
+                latTV.setText(plot.getLatitude()+"");
+                longTV.setText(plot.getLongitude()+"");
+                nameField.setText(plot.getName());
+                photoUri = Uri.parse(plot.getPictureUrl());
+                Glide.with(requireContext()).load(plot.getPictureUrl()).fitCenter().into(picture);
+                observationViewModel.loadObservationListLiveDataByPlotId(plot.getPlotId());
+            }
+        });
+
+        observationViewModel.getObservationListLiveData().observe(getViewLifecycleOwner(),observationList -> {
+            Log.d("getObservationListLiveData","" + observationList);
+            if (!observationList.isEmpty()){
+                if (Objects.equals(observationList.get(0).getPlotId(), plotID)){adapter.updateList(observationList);}
+            }
+        });
     }
 
     @Override
@@ -167,24 +200,7 @@ public class ManagePlotFragment extends Fragment {
 
         observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
 
-        plotViewModel.getPlotById().observe(requireActivity(),plot ->{
-            Log.d("getPlotById"," "+plot);
-            if (plot!=null && isAdded()) {
-                latTV.setText(plot.getLatitude()+"");
-                longTV.setText(plot.getLongitude()+"");
-                nameField.setText(plot.getName());
-                Glide.with(requireContext()).load(plot.getPictureUrl()).fitCenter().into(picture);
-                observationViewModel.loadObservationListLiveDataByPlotId(plot.getPlotId());
-            }
-        });
 
-        observationViewModel.getObservationListLiveData().observe(requireActivity(),observationList -> {
-            Log.d("getObservationListLiveData","" + observationList);
-            if (!observationList.isEmpty()&& isAdded()) {
-                if (Objects.equals(observationList.get(0).getPlotId(), plotID)){adapter.updateList(observationList);}
-                else {plotViewModel.loadPlotByid(plotID);}
-            }
-        });
 
         mapBtn.setOnClickListener(v->{
             if (isAdded()){
@@ -202,6 +218,7 @@ public class ManagePlotFragment extends Fragment {
         nameField.setActivated(false);
 
         addPlant.setOnClickListener(v->{
+            plotViewModel.loadCurrentPlot(plotID);
             Fragment fragment = new PhotoFragment();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,fragment)
@@ -302,7 +319,7 @@ public class ManagePlotFragment extends Fragment {
         }
     }
 
-    @Override //TODO regarder deprecate ici
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {

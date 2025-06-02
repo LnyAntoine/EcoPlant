@@ -54,10 +54,13 @@ public class PlotRepositories {
     }
 
     public void updatePlot(String plotId,Plot plot){
+
         if (plot==null||plotId.isEmpty()){
             Log.e("UpdatePlot"," "+plot + " - "+ plotId);
             return;
         }
+        Log.d("UpdatePlot",plot.toString());
+        Log.d("UpdatePlot",plotId);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> updates = new HashMap<>();

@@ -100,9 +100,8 @@ public class PhotoFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+    public void onViewCreated(@NonNull View view, @NonNull Bundle savedInstanceState){
+        super.onViewCreated(view,savedInstanceState);
         Button switchPlotBtn = view.findViewById(R.id.switch_plot_btn);
         View plantField = view.findViewById(R.id.plant_field);
         ShapeableImageView pictureField = view.findViewById(R.id.picture_field);
@@ -114,24 +113,17 @@ public class PhotoFragment extends Fragment {
         TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
         ShapeableImageView picture = currentPlotView.findViewById(R.id.imageView);
 
-
-        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-
-
-        plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
-        observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
-
-        plantNetViewModel.getPlantNetListLiveData().observe(requireActivity(),plantList -> {
+        Log.d("OnViewCreatedPF","photoUri.toString()");
+        plantNetViewModel.getPlantNetListLiveData().observe(getViewLifecycleOwner(),plantList -> {
             Log.d("plantNetlistobserver","observing"+plantList);
-            if (!plantList.isEmpty() && adapter !=null&& isAdded()){
+            if (!plantList.isEmpty() && adapter !=null){
                 plantList.sort(Comparator.comparingDouble(Plant::getScore).reversed());
                 adapter.updateList(plantList);
             }
         });
 
-        plotViewModel.getCurrentPlotLiveData().observe(requireActivity(),p -> {
-            if (p!=null&& isAdded()){
-
+        plotViewModel.getCurrentPlotLiveData().observe(getViewLifecycleOwner(),p -> {
+            if (p!=null){
                 Log.d("currentplot",p.toString());
                 plotID = p.getPlotId();
                 currentPlotView.setVisibility(VISIBLE);
@@ -153,6 +145,31 @@ public class PhotoFragment extends Fragment {
             }
 
         });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+        Button switchPlotBtn = view.findViewById(R.id.switch_plot_btn);
+        View plantField = view.findViewById(R.id.plant_field);
+        ShapeableImageView pictureField = view.findViewById(R.id.picture_field);
+        ImageButton photoBtn = view.findViewById(R.id.photo_btn);
+        ImageButton galleryBtn = view.findViewById(R.id.gallery_btn);
+        RecyclerView plantRCV = view.findViewById(R.id.plant_list);
+        View currentPlotView = view.findViewById(R.id.current_plot);
+        TextView plotName = currentPlotView.findViewById(R.id.plot_name);
+        TextView plotNbPlant = currentPlotView.findViewById(R.id.nb_plant);
+        ShapeableImageView picture = currentPlotView.findViewById(R.id.imageView);
+
+
+        plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
+
+
+        plantNetViewModel = new ViewModelProvider(requireActivity()).get(PlantNetViewModel.class);
+        observationViewModel = new ViewModelProvider(requireActivity()).get(ObservationViewModel.class);
+
+
 
 
         galleryLauncher = registerForActivityResult(
@@ -201,6 +218,7 @@ public class PhotoFragment extends Fragment {
         });
 
         switchPlotBtn.setOnClickListener(v->{
+            Log.d("switchplot",""+plotID);
             Fragment fragment = new SwitchPlotPhotoFragment();
             getParentFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container,fragment)
@@ -322,8 +340,6 @@ public class PhotoFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        plotViewModel.refreshData();
-        observationViewModel.refreshData((plotViewModel.getCurrentPlotLiveData().getValue()!=null) ? plotViewModel.getCurrentPlotLiveData().getValue().getPlotId() : "");
     }
 
     public class PlantAdapter extends RecyclerView.Adapter<PlantViewHolder> {
@@ -479,6 +495,7 @@ public class PhotoFragment extends Fragment {
             knowmoreBtn.setOnClickListener(v->{
                 String url = plant.getDetailsLink();
                 Intent intent = new Intent(Intent.ACTION_VIEW);
+                Log.d("knowmore",plant.toString());
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
             });

@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -82,6 +83,15 @@ public class MyPlotFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+    @Override
+    public void onViewCreated(@NonNull View view, @NonNull Bundle savedInstanceState){
+        super.onViewCreated(view,savedInstanceState);
+        plotViewModel.loadPlots();
+
+        plotViewModel.getPlotsLiveData().observe(getViewLifecycleOwner(),plots -> {
+            if (!plots.isEmpty()){adapter.updateList(plots);}
+        });
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,11 +109,7 @@ public class MyPlotFragment extends Fragment {
 
 
         plotViewModel = new ViewModelProvider(requireActivity()).get(PlotViewModel.class);
-        plotViewModel.loadPlots();
 
-        plotViewModel.getPlotsLiveData().observe(requireActivity(),plots -> {
-            if (!plots.isEmpty() && isAdded()){adapter.updateList(plots);}
-        });
 
         addPlotBtn.setOnClickListener(v->{
             Fragment fragment = new CreatePlotFragment();
