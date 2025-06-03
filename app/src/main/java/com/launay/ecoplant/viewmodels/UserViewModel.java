@@ -5,10 +5,9 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.launay.ecoplant.models.User;
-import com.launay.ecoplant.repositories.UserRepositories;
+import com.launay.ecoplant.models.entity.User;
+import com.launay.ecoplant.models.repositories.UserRepositories;
 
 import java.util.function.Consumer;
 

@@ -9,9 +9,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.launay.ecoplant.models.Plot;
-import com.launay.ecoplant.repositories.PlotRepositories;
-import com.launay.ecoplant.utils;
+import com.launay.ecoplant.models.entity.Plot;
+import com.launay.ecoplant.models.repositories.PlotRepositories;
 
 import java.util.List;
 import java.util.function.Consumer;

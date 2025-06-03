@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.launay.ecoplant.models.Plant;
-import com.launay.ecoplant.repositories.PlantNetRepositories;
+import com.launay.ecoplant.models.entity.Plant;
+import com.launay.ecoplant.models.repositories.PlantNetRepositories;
 
 import java.util.List;
 

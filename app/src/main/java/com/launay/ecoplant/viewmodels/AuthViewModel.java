@@ -5,11 +5,9 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.launay.ecoplant.repositories.AuthRepositories;
+import com.launay.ecoplant.models.repositories.AuthRepositories;
 import com.launay.ecoplant.utils;
 
 public class AuthViewModel extends AndroidViewModel {
